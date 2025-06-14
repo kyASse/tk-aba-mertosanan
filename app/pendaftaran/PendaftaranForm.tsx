@@ -6,8 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 
 // CSS Styles untuk Form agar terlihat rapi
 const formStyles = {
-    form: { display: 'flex', flexDirection: 'column', gap: '1.25rem' },
-    inputGroup: { display: 'flex', flexDirection: 'column' },
+    form: { display: 'flex', flexDirection: 'column' as const, gap: '1.25rem' },
+    inputGroup: { display: 'flex', flexDirection: 'column' as const },
     label: { marginBottom: '0.5rem', fontWeight: 'bold', color: '#444' },
     input: { padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px' },
     select: { padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px', backgroundColor: 'white' },
@@ -16,7 +16,7 @@ const formStyles = {
     error: { color: 'red', marginTop: '1rem', textAlign: 'center' as const },
     successBox: { padding: '2rem', border: '2px solid #5cb85c', backgroundColor: '#f0fff4', borderRadius: '8px', color: '#155724' },
     successTitle: { marginTop: 0, color: '#155724' },
-    pre: { padding: '1rem', backgroundColor: '#e9ecef', borderRadius: '4px', whiteSpace: 'pre-wrap', wordBreak: 'break-all', border: '1px solid #ddd' }
+    pre: { padding: '1rem', backgroundColor: '#e9ecef', borderRadius: '4px', whiteSpace: 'pre-wrap' as const, wordBreak: 'break-all' as const, border: '1px solid #ddd' }
 };
 
 export default function PendaftaranForm() {
