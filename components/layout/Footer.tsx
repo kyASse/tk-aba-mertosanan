@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
     School, Phone, Mail, MapPin,
     Facebook, Instagram, Youtube,
-    Clock, Calender, BookOpen
+    Clock, Calendar, BookOpen
 } from "lucide-react";
 
 export default function Footer() {
@@ -91,31 +91,47 @@ export default function Footer() {
                     {/* Hours */}
                     <div>
                         <h3 className="text-lg font-bold mb-4 flex items-center">
-                            <Clock className="w-5 h-5 mr-2" />
+                            <Clock className="w-5 h-5 mr-2" /> 
                             Jam Sekolah
                         </h3>
                         <ul className="space-y-3">
-                            <li className="w-5 h-5 mr-2 mt-0.5 text-secondary-foreground">
+                            <li className="flex items-start">
+                                <Calendar className="w-5 h-5 mr-2 mt-0.5 text-secondary-foreground" />
                                 <div>
                                     <p className="font-medium">Senin - Jumat</p>
-                                    <p className="text-muted-foreground">07:30 -  11:00 WIB</p>
+                                    <p className="text-muted-foreground">07:30 - 11:00 WIB</p>
                                 </div>
                             </li>
                             <li className="flex items-start">
-                                <Calender className />
+                                <Calendar className="w-5 h-5 mr-2 mt-0.5 text-secondary-foreground" />
                                 <div>
-                                    <p></p>
-                                    <p></p>
+                                    <p className="font-medium">Sabtu</p>
+                                    <p className="text-muted-foreground">07:30 - 10:30 WIB</p>
                                 </div>
                             </li>
                         </ul>
-
-                        <div>
-                            <h4>
-                                
-                            </h4>
+                        
+                        <div className="mt-4">
+                            <h4 className="font-medium mb-2">Ikuti Kami:</h4>
+                            <div className="flex space-x-3">
+                                <a href="#" className="bg-highlight hover:bg-highlight/80 p-2 rounded-full transition-colors">
+                                    <Facebook className="w-5 h-5 text-highlight-foreground" />
+                                </a>
+                                <a href="#" className="bg-highlight hover:bg-highlight/80 p-2 rounded-full transition-colors">
+                                    <Instagram className="w-5 h-5 text-highlight-foreground" />
+                                </a>
+                                <a href="#" className="bg-highlight hover:bg-highlight/80 p-2 rounded-full transition-colors">
+                                    <Youtube className="w-5 h-5 text-highlight-foreground" />
+                                </a>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <div className="border-t border-muted mt-8 pt-6 text-center text-sm text-muted-foreground">
+                    <p>
+                        &copy; {new Date().getFullYear()} TK ABA Mertosanan. Semua Hak Dilindungi.
+                    </p>
                 </div>
             </div>
         </footer>
