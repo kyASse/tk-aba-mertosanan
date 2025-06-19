@@ -28,7 +28,7 @@ export default function LoginPage() {
                 </p>
                 
                 <div className='space-y-4'>
-                  <div className='flex items-start bg-white p-4 rounded-lg'>
+                  <div className='flex items-start bg-background p-4 rounded-lg'>
                     <div className='bg-primary/20 p-2 rounded-full mr-3'>
                       <User className='h-5 w-5 text-primary-foreground' />
                     </div>
@@ -40,7 +40,7 @@ export default function LoginPage() {
                     </div>
                   </div>
                   
-                  <div className='flex items-start bg-white p-4 rounded-lg'>
+                  <div className='flex items-start bg-background p-4 rounded-lg'>
                     <div className='bg-accent/20 p-2 rounded-full mr-3'>
                       <FileText className='h-5 w-5 text-accent-foreground' />
                     </div>
@@ -52,7 +52,7 @@ export default function LoginPage() {
                     </div>
                   </div>
                   
-                  <div className='flex items-start bg-white p-4 rounded-lg'>
+                  <div className='flex items-start bg-background p-4 rounded-lg'>
                     <div className='bg-attention/20 p-2 rounded-full mr-3'>
                       <Calendar className='h-5 w-5 text-accent-foreground' />
                     </div>
