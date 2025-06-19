@@ -16,8 +16,8 @@ const styles = {
     section: { marginBottom: '3rem', padding: '1.5rem', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: '#f9f9f9' },
     h1: { color: '#333', borderBottom: '2px solid #f0ad4e', paddingBottom: '0.5rem' },
     h2: { color: '#555', marginTop: 0 },
-    table: { width: '100%', borderCollapse: 'collapse', marginTop: '1rem' },
-    th: { backgroundColor: '#f0ad4e', color: 'white', padding: '12px', textAlign: 'left' },
+    table: { width: '100%', borderCollapse: 'collapse' as const, marginTop: '1rem' },
+    th: { backgroundColor: '#f0ad4e', color: 'white', padding: '12px', textAlign: 'left' as const },
     td: { padding: '12px', borderBottom: '1px solid #ddd' },
     button: { backgroundColor: '#5cb85c', color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px' },
 };

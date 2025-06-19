@@ -40,6 +40,11 @@ export default async function AdminDashboard() {
             </Link>
           </li>
           <li style={{ marginBottom: '1rem' }}>
+              <Link href="/admin/pendaftar">
+                  <button style={{ width: '200px', padding: '10px' }}>Kelola Pendaftar</button>
+              </Link>
+          </li>
+          <li style={{ marginBottom: '1rem' }}>
             <button style={{ width: '200px', padding: '10px' }} disabled>Kelola Galeri (Segera)</button>
           </li>
         </ul>
