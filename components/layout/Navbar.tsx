@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
+import { ThemeSwitcher } from "../theme-switcher";
 
 const navLinks = [
     { name: 'Beranda', href: '/', icon: <School className="w-5 h-5" /> },
@@ -87,43 +88,20 @@ export default function Navbar() {
                         </Link>
                     ))}
 
-                    {/* Button Masuk/Logout berdasarkan session */}
-                    {typeof window !== "undefined" && ( // pastikan hanya di client
-                        (() => {
-                            // Ambil session dari cookies (misal: "session" atau "token")
-                            const hasSession = document.cookie.split(";").some((c) => c.trim().startsWith("session="));
-                            if (hasSession) {
-                                return (
-                                    <Link
-                                        href="/auth/logout"
-                                        className={cn(
-                                            "ml-2 button-child bg-destructive text-destructive-foreground hover:bg-destructive/90",
-                                            pathname === "/auth/logout" && "active font-semibold"
-                                        )}
-                                    >
-                                        <span className="flex items-center space-x-1">
-                                            <LogIn className="w-4 h-4 rotate-180" />
-                                            <span>Logout</span>
-                                        </span>
-                                    </Link>
-                                );
-                            }
-                            return (
-                                <Link
-                                    href="/auth/login"
-                                    className={cn(
-                                        "ml-2 button-child bg-primary text-primary-foreground hover:bg-primary/90",
-                                        pathname === "/auth/login" && "active text-primary font-semibold"
-                                    )}
-                                >
-                                    <span className="flex items-center space-x-1">
-                                        <LogIn className="w-4 h-4" />
-                                        <span>Masuk</span>
-                                    </span>
-                                </Link>
-                            );
-                        })()
-                    )}
+                    <ThemeSwitcher/>
+
+                    <Link
+                        href="/auth/login"
+                        className={cn(
+                            "ml-2 button-child bg-primary text-primary-foreground hover:bg-primary/90",
+                            pathname === "/auth/login" && "active text-primary font-semibold"
+                        )}
+                    >
+                        <span className="flex items-center space-x-1">
+                            <LogIn className="w-4 h-4" />
+                            <span>Masuk</span>
+                        </span>
+                    </Link>
                 </nav>
 
                 {/* Mobile Menu Button */}
