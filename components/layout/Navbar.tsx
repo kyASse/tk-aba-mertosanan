@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
+import { ThemeSwitcher } from "../theme-switcher";
 
 const navLinks = [
     { name: 'Beranda', href: '/', icon: <School className="w-5 h-5" /> },
@@ -86,6 +87,8 @@ export default function Navbar() {
                             {link.name}
                         </Link>
                     ))}
+
+                    <ThemeSwitcher/>
 
                     <Link
                         href="/auth/login"
