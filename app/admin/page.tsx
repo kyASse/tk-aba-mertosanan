@@ -49,6 +49,11 @@ export default async function AdminDashboard() {
                   <button style={{ width: '200px', padding: '10px' }}>Kelola Galeri</button>
               </Link>
           </li>
+          <li style={{ marginBottom: '1rem' }}>
+              <Link href="/admin/testimoni">
+                  <button style={{ width: '200px', padding: '10px' }}>Kelola Testimoni</button>
+              </Link>
+          </li>
         </ul>
       </nav>
     </div>
