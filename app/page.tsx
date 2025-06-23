@@ -4,6 +4,7 @@ import { AuthButton } from "@/components/auth-button";
 import HomeHero from "@/components/home/HomeHero";
 import StatsSection from "@/components/home/StatsSection";
 import AboutSection from "@/components/home/AboutSection";
+import FeaturesSection from "@/components/home/FeaturesSection";
 import { Award, ChevronRight, Heart, Users } from "lucide-react";
 import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
 import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
@@ -22,6 +23,10 @@ export default function Home() {
 
       {/* About Section */}
       <AboutSection />
+
+      {/* Features Section */}
+      <FeaturesSection />
+
     </main>
   );
 }
