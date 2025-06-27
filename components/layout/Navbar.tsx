@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 import { ThemeSwitcher } from "../theme-switcher";
+import { Button } from "../ui/button";
 
 const navLinks = [
     { name: 'Beranda', href: '/', icon: <School className="w-5 h-5" /> },
@@ -54,7 +55,7 @@ export default function Navbar() {
         <header className={cn(
             "sticky top-0 z-50 w-full transition-all duration-300",
             scrolled
-                ? "bg-white/95 backdrop-blur-md shadow-md py-2"
+                ? "bg-white/95 dark:bg-gray-900/45 backdrop-blur-md shadow-md py-2"
                 : "bg-transparent py-4"
         )}>
             <div className="container mx-auto px-4 flex items-center justify-between">
@@ -94,14 +95,13 @@ export default function Navbar() {
                     <Link
                         href="/auth/login"
                         className={cn(
-                            "ml-2 button-child bg-primary text-primary-foreground hover:bg-primary/90",
                             pathname === "/auth/login" && "active text-primary font-semibold"
                         )}
                     >
-                        <span className="flex items-center space-x-1">
+                        <Button className="ml-2 flex items-center space-x-1 rounded-full">
                             <LogIn className="w-4 h-4" />
                             <span>Masuk</span>
-                        </span>
+                        </Button>
                     </Link>
                 </nav>
 
