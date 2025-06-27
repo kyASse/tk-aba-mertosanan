@@ -1,9 +1,14 @@
+// middleware.ts
 import { NextResponse, type NextRequest } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
 export async function middleware(request: NextRequest) {
-    let response = NextResponse.next({ request: { headers: request.headers } });
-    
+    let response = NextResponse.next({
+        request: {
+            headers: request.headers,
+        },
+    });
+
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -12,18 +17,29 @@ export async function middleware(request: NextRequest) {
                 get(name: string) {
                     return request.cookies.get(name)?.value
                 },
-                set(name: string, value: string, options: any) {
+                set(name: string, value: string, options: CookieOptions) {
                     response.cookies.set({ name, value, ...options })
                 },
-                remove(name: string, options: any) {
+                remove(name: string, options: CookieOptions) {
                     response.cookies.set({ name, value: '', ...options })
-                }
-            }
+                },
+            },
         }
     );
 
     const { data: { user } } = await supabase.auth.getUser();
 
+    const pathname = request.nextUrl.pathname;
+
+    // 1. Proteksi Halaman yang Memerlukan Login
+    if (!user) {
+        // Jika tidak ada user, dan mencoba akses /admin atau /portal, lempar ke login
+        if (pathname.startsWith('/admin') || pathname.startsWith('/portal')) {
+            return NextResponse.redirect(new URL('/auth/login', request.url));
+        }
+    }
+
+    // 2. Logika Redirect SETELAH Login Berdasarkan Role
     if (user) {
         const { data: profile } = await supabase
             .from('profiles')
@@ -32,18 +48,9 @@ export async function middleware(request: NextRequest) {
             .single();
 
         const role = profile?.role;
-        const pathname = request.nextUrl.pathname;
-
-        if (role === 'admin' && !pathname.startsWith('/admin')) {
-            if (pathname !== '/auth/login') return NextResponse.redirect(new URL('/admin', request.url));
-        } else if (role === 'orang_tua' && !pathname.startsWith('/portal')) {
-            if (pathname !== '/auth/login') return NextResponse.redirect(new URL('/portal', request.url));
-        }
-    }
-
-    if (!user) {
-        if (request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/portal')) {
-            return NextResponse.redirect(new URL('/auth/login', request.url));
+        if (role === 'orang_tua' && !pathname.startsWith('/portal') && !pathname.startsWith('/api')) {
+            // Arahkan 'orang_tua' kembali ke portal mereka jika mereka mencoba "keluar"
+            return NextResponse.redirect(new URL('/portal', request.url));
         }
     }
     
@@ -52,6 +59,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)'
+    '/((?!_next/static|_next/image|favicon.ico|api).*)',
   ],
 }

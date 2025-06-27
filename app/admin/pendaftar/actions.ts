@@ -2,109 +2,71 @@
 'use server';
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import type { User } from '@supabase/supabase-js';
 
-// =================================================================
-// ACTION UNTUK MEMPERBARUI STATUS PENDAFTARAN
-// =================================================================
-
-export async function updateStatusPendaftaranAction(pendaftarId: string, formData: FormData) {
-    const supabase = await createClient(); // Menggunakan klien standar
-    
-    const newStatus = formData.get('newStatus') as string;
-
-    if (!newStatus) {
-        return { success: false, message: 'Status tidak boleh kosong.' };
-    }
-
-    const { error } = await supabase
-        .from('pendaftar')
-        .update({ status_pendaftaran: newStatus })
-        .eq('id', pendaftarId);
-
-    if (error) {
-        console.error("Gagal update status:", error);
-        return { success: false, message: error.message };
-    }
-    
-    revalidatePath('/admin/pendaftar');
-    revalidatePath(`/admin/pendaftar/detail/${pendaftarId}`);
-    
-    return { success: true, message: 'Status berhasil diperbarui!' };
-}
-
-// =================================================================
-// ACTION UNTUK MEMBUAT AKUN PORTAL ORANG TUA
-// =================================================================
-
-// Tipe data untuk memastikan kita menerima data pendaftar yang benar
-type PendaftarLengkap = {
+type PendaftarData = {
     id: string;
     nama_lengkap: string | null;
     email: string | null;
 };
 
-export async function createPortalAccountAction(pendaftar: PendaftarLengkap) {
-    // PENTING: Kita tetap menggunakan createClient(), tapi kita akan memanggil .auth.admin
-    // Ini hanya akan berhasil jika createClient() di server menggunakan service_role_key.
-    // Berdasarkan setup kita sebelumnya di lib/supabase/admin.ts, kita seharusnya
-    // menggunakan createAdminClient(). Namun, jika Anda ingin tetap seperti ini,
-    // pastikan createClient() Anda di server memiliki hak akses yang cukup.
-    // Untuk tujuan ini, saya akan asumsikan createClient() bisa mengakses Admin API.
+export async function acceptAndCreatePortalAccountAction(pendaftar: PendaftarData) {
     const supabase = await createClient();
+    const supabaseAdmin = await createAdminClient();
 
     if (!pendaftar.email) {
         return { success: false, message: "Gagal: Pendaftar tidak memiliki alamat email." };
     }
 
+    let newUser: User | null = null;
+
     try {
-        // 1. Cek apakah user dengan email ini sudah ada
-        const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+        await supabase.from('pendaftar').update({ status_pendaftaran: 'Diterima' }).eq('id', pendaftar.id).throwOnError();
+
+        const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
         if (listError) throw listError;
-        const existingUser = users.find((user: any) => user.email === pendaftar.email);
+        
+        const existingUser = users.find(user => user.email === pendaftar.email);
         if (existingUser) {
-            return { success: false, message: `Gagal: Akun dengan email ${pendaftar.email} sudah terdaftar.` };
+            throw new Error(`Akun dengan email ${pendaftar.email} sudah terdaftar.`);
         }
 
-        // 2. Buat user baru di Supabase Auth
-        const { data: { user: newUser }, error: createError } = await supabase.auth.admin.createUser({
+        const { data, error: createError } = await supabaseAdmin.auth.admin.createUser({
             email: pendaftar.email,
             email_confirm: true,
         });
+        if (createError || !data.user) throw createError || new Error("Gagal membuat user baru di Auth.");
+        newUser = data.user;
 
-        if (createError || !newUser) {
-            throw createError || new Error("Gagal membuat user baru.");
-        }
+        await supabase.from('siswa').insert({
+            profile_orang_tua_id: newUser.id,
+            nama_lengkap: pendaftar.nama_lengkap,
+            pendaftar_asli_id: pendaftar.id,
+        }).throwOnError();
 
-        // 3. Buat entri siswa baru
-        const { error: siswaError } = await supabase
-            .from('siswa')
-            .insert({
-                profile_orang_tua_id: newUser.id,
-                nama_lengkap: pendaftar.nama_lengkap,
-                pendaftar_asli_id: pendaftar.id,
-            });
-        
-        if (siswaError) throw siswaError;
-
-        // 4. Kirim email reset password
-        const { error: resetError } = await supabase.auth.resetPasswordForEmail(pendaftar.email, {
+        await supabaseAdmin.auth.resetPasswordForEmail(pendaftar.email, {
             redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/update-password`,
-        });
-
-        if (resetError) throw resetError;
+        }).then(({ error }) => { if (error) throw error; });
         
-        // 5. Update status pendaftar
-        const { error: updateStatusError } = await supabase.from('pendaftar').update({ status_pendaftaran: 'Akun Dibuat' }).eq('id', pendaftar.id);
-        if (updateStatusError) throw updateStatusError;
-
+        await supabase.from('pendaftar').update({ status_pendaftaran: 'Akun Dibuat' }).eq('id', pendaftar.id).throwOnError();
+        
         revalidatePath('/admin/pendaftar');
         revalidatePath(`/admin/pendaftar/detail/${pendaftar.id}`);
 
-        return { success: true, message: `Akun portal untuk ${pendaftar.email} berhasil dibuat. Email instruksi telah dikirim.` };
+        return { success: true, message: `Pendaftar diterima dan akun portal untuk ${pendaftar.email} berhasil dibuat.` };
 
     } catch (error: any) {
-        console.error("Terjadi error di createPortalAccountAction:", error);
+        console.error("Terjadi error di acceptAndCreatePortalAccountAction:", error);
+
+        if (newUser) {
+            console.log(`Rollback: Menghapus user yang gagal dibuat: ${newUser.id}`);
+            await supabaseAdmin.auth.admin.deleteUser(newUser.id);
+        }
+        
+        await supabase.from('pendaftar').update({ status_pendaftaran: 'Menunggu Konfirmasi' }).eq('id', pendaftar.id);
+        revalidatePath(`/admin/pendaftar/detail/${pendaftar.id}`);
         return { success: false, message: error.message || "Terjadi kesalahan yang tidak diketahui." };
     }
 }

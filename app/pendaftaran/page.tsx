@@ -3,14 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import PendaftaranForm from "./PendaftaranForm";
 
 // Tipe untuk data biaya
-type Biaya = {
+type BiayaItem = {
     komponen_biaya: string | null;
-    biaya_kb: number | null;
-    biaya_tka: number | null;
-    biaya_tkb: number | null;
+    biaya_putra: number | null;
+    biaya_putri: number | null;
 };
 
-// CSS Styles Sederhana
+// CSS Styles Sederhana untuk kejelasan
 const styles = {
     container: { fontFamily: 'sans-serif', maxWidth: '800px', margin: '0 auto', padding: '2rem' },
     section: { marginBottom: '3rem', padding: '1.5rem', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: '#f9f9f9' },
@@ -19,73 +18,69 @@ const styles = {
     table: { width: '100%', borderCollapse: 'collapse' as const, marginTop: '1rem' },
     th: { backgroundColor: '#f0ad4e', color: 'white', padding: '12px', textAlign: 'left' as const },
     td: { padding: '12px', borderBottom: '1px solid #ddd' },
-    button: { backgroundColor: '#5cb85c', color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px' },
+    totalRow: { fontWeight: 'bold', backgroundColor: '#f2f2f2' },
 };
 
 export default async function PendaftaranPage() {
     const supabase = await createClient();
 
-    const { data: persyaratan } = await supabase
-        .from('konten_halaman')
-        .select('judul, isi')
-        .eq('slug', 'persyaratan-pendaftaran')
-        .single();
+    // Ambil semua data yang dibutuhkan secara paralel
+    const persyaratanPromise = supabase.from('konten_halaman').select('judul, isi').eq('slug', 'persyaratan-pendaftaran').single();
+    const biayaPromise = supabase.from('biaya_pendaftaran').select('*').order('id');
+    const sppPromise = supabase.from('konten_halaman').select('isi').eq('slug', 'catatan-spp').single();
     
-    const { data: biaya } = await supabase
-        .from('biaya_pendaftaran')
-        .select('komponen_biaya, biaya_kb, biaya_tka, biaya_tkb');
+    const [
+        { data: persyaratan }, 
+        { data: biaya }, 
+        { data: catatanSpp }
+    ] = await Promise.all([persyaratanPromise, biayaPromise, sppPromise]);
 
-    const { data: formulirOffline } = await supabase
-        .from('konten_halaman')
-        .select('isi')
-        .eq('slug', 'link-download-formulir')
-        .single();
+    // Hitung total biaya
+    const totalPutra = biaya?.reduce((acc, item) => acc + (item.biaya_putra || 0), 0);
+    const totalPutri = biaya?.reduce((acc, item) => acc + (item.biaya_putri || 0), 0);
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.h1}>Pendaftaran Siswa Baru</h1>
+            <h1 style={styles.h1}>Informasi & Pendaftaran Siswa Baru</h1>
             
             <section style={styles.section}>
                 <h2 style={styles.h2}>{persyaratan?.judul || 'Persyaratan Pendaftaran'}</h2>
                 <div dangerouslySetInnerHTML={{ __html: persyaratan?.isi || '<p>Informasi persyaratan akan segera tersedia.</p>' }} />
             </section>
 
+            {/* Menampilkan Tabel Rincian Biaya Dinamis */}
             <section style={styles.section}>
-                <h2 style={styles.h2}>Biaya Pendidikan</h2>
+                <h2 style={styles.h2}>Rincian Keuangan Anak Baru</h2>
                 <table style={styles.table}>
                     <thead>
                         <tr>
                             <th style={styles.th}>Komponen Biaya</th>
-                            <th style={styles.th}>Kelompok Bermain</th>
-                            <th style={styles.th}>TK A</th>
-                            <th style={styles.th}>TK B</th>
+                            <th style={styles.th}>PUTRA (Rp)</th>
+                            <th style={styles.th}>PUTRI (Rp)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {biaya?.map((item: Biaya, index) => (
-                            <tr key={index}>
+                        {biaya?.map((item: BiayaItem) => (
+                            <tr key={item.komponen_biaya}>
                                 <td style={styles.td}>{item.komponen_biaya}</td>
-                                <td style={styles.td}>Rp {item.biaya_kb?.toLocaleString('id-ID')}</td>
-                                <td style={styles.td}>Rp {item.biaya_tka?.toLocaleString('id-ID')}</td>
-                                <td style={styles.td}>Rp {item.biaya_tkb?.toLocaleString('id-ID')}</td>
+                                <td style={styles.td}>{item.biaya_putra?.toLocaleString('id-ID')}</td>
+                                <td style={styles.td}>{item.biaya_putri?.toLocaleString('id-ID')}</td>
                             </tr>
                         ))}
+                        <tr style={styles.totalRow}>
+                            <td style={styles.td}>JUMLAH</td>
+                            <td style={styles.td}>{totalPutra?.toLocaleString('id-ID')}</td>
+                            <td style={styles.td}>{totalPutri?.toLocaleString('id-ID')}</td>
+                        </tr>
                     </tbody>
                 </table>
+                <p style={{ marginTop: '1rem', fontStyle: 'italic' }}><strong>{catatanSpp?.isi}</strong></p>
             </section>
 
             <section style={styles.section}>
                 <h2 style={styles.h2}>Formulir Pendaftaran Online</h2>
                 <p>Silakan isi formulir di bawah ini dengan data yang benar dan lengkap.</p>
                 <PendaftaranForm />
-            </section>
-
-            <section style={styles.section}>
-                <h2 style={styles.h2}>Pendaftaran Offline</h2>
-                <p>Anda juga bisa mendaftar secara offline dengan mengunduh dan mengisi formulir di bawah ini, lalu menyerahkannya langsung ke sekolah.</p>
-                <a href={formulirOffline?.isi || '#'} target="_blank" rel="noopener noreferrer">
-                    <button style={styles.button}>Unduh Formulir Pendaftaran</button>
-                </a>
             </section>
         </div>
     );

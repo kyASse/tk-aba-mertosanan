@@ -1,17 +1,18 @@
-// app/admin/pendaftar/detail/[id]/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { updateStatusPendaftaranAction } from "../../actions";
-import CreateAccountButton from "./CreateAccountButton";
+import ProcessRegistrationButton from "./ProcessRegistrationButton";
 
 type DetailPageProps = { params: Promise<{ id: string }> };
 
-function DataField({ label, value }: { label: string, value: string | null | undefined }) {
+function DataField({ label, value }: { label: string, value: string | number | null | undefined }) {
+    if (!value && value !== 0) {
+        return null;
+    }
     return (
-        <div>
-            <strong>{label}</strong>
-            <p>{value || '-'}</p>
+        <div style={{ marginBottom: '12px', borderBottom: '1px solid #f0f0f0', paddingBottom: '8px' }}>
+            <strong style={{ display: 'block', color: '#555', fontSize: '14px', marginBottom: '4px' }}>{label}</strong>
+            <span>{value}</span>
         </div>
     );
 }
@@ -20,7 +21,6 @@ export default async function DetailPendaftarPage({ params }: DetailPageProps) {
     const { id } = await params;
     const supabase = await createClient();
 
-    // Ambil semua data pendaftar karena kita butuh banyak field untuk aksi
     const { data: pendaftar, error } = await supabase
         .from('pendaftar')
         .select('*')
@@ -32,79 +32,84 @@ export default async function DetailPendaftarPage({ params }: DetailPageProps) {
         return redirect('/admin/pendaftar');
     }
 
-    // Bind action untuk update status dengan pendaftarId
-    const actionWithId = async (formData: FormData) => {
-        await updateStatusPendaftaranAction(pendaftar.id, formData);
-    };
-
-    // Tentukan apakah tombol "Buat Akun" harus ditampilkan
-    const showCreateAccountButton = pendaftar.status_pendaftaran === 'Diterima';
-    const accountAlreadyExists = pendaftar.status_pendaftaran === 'Akun Dibuat';
+    const canBeProcessed = pendaftar.status_pendaftaran === 'Menunggu Konfirmasi';
+    const isProcessed = ['Diterima', 'Akun Dibuat'].includes(pendaftar.status_pendaftaran || '');
+    const isRejected = pendaftar.status_pendaftaran === 'Ditolak';
 
     return (
-        <div>
+        <div style={{ maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
             <Link href="/admin/pendaftar">← Kembali ke Daftar Pendaftar</Link>
-            <h1>Detail Pendaftar: {pendaftar.nama_lengkap}</h1>
+            <h1 style={{ borderBottom: '2px solid #ddd', paddingBottom: '10px' }}>Detail Pendaftar: {pendaftar.nama_lengkap}</h1>
 
-            {/* Bagian untuk menampilkan data pendaftar (tidak berubah) */}
-            <div>
-                <div>
-                    <h3>Data Calon Siswa</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }}>
+                <fieldset style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '1rem' }}>
+                    <legend>A. Keterangan Anak</legend>
                     <DataField label="Nama Lengkap" value={pendaftar.nama_lengkap} />
                     <DataField label="Nama Panggilan" value={pendaftar.nama_panggilan} />
                     <DataField label="Jenis Kelamin" value={pendaftar.jenis_kelamin} />
                     <DataField label="Tempat, Tanggal Lahir" value={`${pendaftar.tempat_lahir}, ${new Date(pendaftar.tanggal_lahir).toLocaleDateString('id-ID')}`} />
                     <DataField label="Agama" value={pendaftar.agama} />
-                    <DataField label="Alamat" value={pendaftar.alamat_lengkap} />
-                </div>
-                <div>
-                    <h3>Data Orang Tua/Wali</h3>
-                    <DataField label="Nama Orang Tua/Wali" value={pendaftar.nama_orang_tua} />
-                    <DataField label="Pekerjaan" value={pendaftar.pekerjaan_orang_tua} />
-                    <DataField label="Nomor Telepon (WA)" value={pendaftar.nomor_telepon} />
-                    <DataField label="Email" value={pendaftar.email} />
-                </div>
+                    <DataField label="Kewarganegaraan" value={pendaftar.kewarganegaraan} />
+                    <DataField label="Anak ke" value={pendaftar.anak_ke} />
+                    <DataField label="Jumlah Saudara Kandung" value={pendaftar.jumlah_saudara_kandung} />
+                    <DataField label="Status Anak" value={pendaftar.status_anak} />
+                    <DataField label="Bahasa Sehari-hari" value={pendaftar.bahasa_sehari_hari} />
+                    <DataField label="Berat / Tinggi Badan" value={`${pendaftar.berat_badan || '-'} Kg / ${pendaftar.tinggi_badan || '-'} Cm`} />
+                    <DataField label="Golongan Darah" value={pendaftar.golongan_darah} />
+                    <DataField label="Cita-cita" value={pendaftar.cita_cita} />
+                    <DataField label="Alamat Tempat Tinggal" value={pendaftar.alamat_lengkap} />
+                    <DataField label="Nomor Telepon/HP" value={pendaftar.nomor_telepon} />
+                    <DataField label="Jarak Tempat Tinggal" value={pendaftar.jarak_tempat_tinggal} />
+                </fieldset>
+
+                <fieldset style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '1rem' }}>
+                    <legend>B. Orang Tua</legend>
+                    <DataField label="Nama Ayah Kandung" value={pendaftar.nama_ayah_kandung} />
+                    <DataField label="Pendidikan Ayah" value={pendaftar.pendidikan_ayah} />
+                    <DataField label="Pekerjaan Ayah" value={pendaftar.pekerjaan_ayah} />
+                    <hr style={{margin: '1rem 0'}}/>
+                    <DataField label="Nama Ibu Kandung" value={pendaftar.nama_ibu_kandung} />
+                    <DataField label="Pendidikan Ibu" value={pendaftar.pendidikan_ibu} />
+                    <DataField label="Pekerjaan Ibu" value={pendaftar.pekerjaan_ibu} />
+                    <hr style={{margin: '1rem 0'}}/>
+                    <DataField label="Email Kontak Utama" value={pendaftar.email} />
+                </fieldset>
+
+                {pendaftar.wali_nama && (
+                    <fieldset style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '1rem' }}>
+                        <legend>C. Wali Anak</legend>
+                        <DataField label="Nama Wali" value={pendaftar.wali_nama} />
+                        <DataField label="Pendidikan Wali" value={pendaftar.wali_pendidikan} />
+                        <DataField label="Hubungan dengan Keluarga" value={pendaftar.wali_hubungan} />
+                        <DataField label="Pekerjaan Wali" value={pendaftar.wali_pekerjaan} />
+                    </fieldset>
+                )}
             </div>
 
-            <hr />
+            <hr style={{ margin: '2rem 0' }} />
 
-            {/* Bagian untuk memproses pendaftaran */}
             <div>
-                <h3>Proses Pendaftaran</h3>
+                <h3>Status & Aksi Pendaftaran</h3>
                 <p>Status Saat Ini: <strong>{pendaftar.status_pendaftaran}</strong></p>
                 
-                {/* Form untuk mengubah status */}
-                <form action={actionWithId}>
-                    <label htmlFor="status">Ubah Status Menjadi:</label>
-                    <select name="newStatus" defaultValue={pendaftar.status_pendaftaran || ''}>
-                        <option>Menunggu Konfirmasi</option>
-                        <option>Diterima</option>
-                        <option>Ditolak</option>
-                        <option disabled>Akun Dibuat</option>
-                    </select>
-                    <button type="submit">Simpan Perubahan</button>
-                </form>
+                {canBeProcessed && (
+                    <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#eef' }}>
+                        <p>Pendaftar ini sedang menunggu konfirmasi. Klik tombol di bawah untuk menerima siswa dan secara otomatis membuatkan akun portal untuk orang tua.</p>
+                        <ProcessRegistrationButton pendaftar={pendaftar} />
+                    </div>
+                )}
+
+                {isProcessed && (
+                    <p style={{ color: 'green', fontWeight: 'bold', marginTop: '1.5rem' }}>
+                        ✓ Proses penerimaan untuk siswa ini sudah selesai.
+                    </p>
+                )}
                 
-                {/* Bagian Aksi Lanjutan untuk membuat akun */}
-                <div style={{ marginTop: '1.5rem' }}>
-                    <h4>Aksi Lanjutan</h4>
-                    {showCreateAccountButton && (
-                        <div>
-                            <p>Status pendaftar adalah "Diterima". Anda sekarang dapat membuatkan akun portal untuk orang tua.</p>
-                            <CreateAccountButton pendaftar={pendaftar} />
-                        </div>
-                    )}
-                    {accountAlreadyExists && (
-                        <p style={{ color: 'green', fontWeight: 'bold' }}>
-                            ✓ Akun portal untuk pendaftar ini sudah berhasil dibuat.
-                        </p>
-                    )}
-                    {!showCreateAccountButton && !accountAlreadyExists && (
-                        <p style={{ color: '#666' }}>
-                            Ubah status menjadi "Diterima" terlebih dahulu untuk dapat membuat akun portal.
-                        </p>
-                    )}
-                </div>
+                {isRejected && (
+                    <p style={{ color: 'red', fontWeight: 'bold', marginTop: '1.5rem' }}>
+                        Pendaftaran untuk siswa ini telah ditolak.
+                    </p>
+                )}
             </div>
         </div>
     );
