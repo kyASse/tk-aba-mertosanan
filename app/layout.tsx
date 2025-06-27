@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import ClientLayoutContent from "@/components/layout/ClientLayoutContent";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -29,16 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.className} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navbar />
-          {children}
-          <Footer/>
-        </ThemeProvider>
+        <ClientLayoutContent>{children}</ClientLayoutContent>
       </body>
     </html>
   );
