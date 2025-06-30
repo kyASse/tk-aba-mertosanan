@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { Button } from './ui/button'
 
 export default function LogoutButton() {
     const router = useRouter()
@@ -14,5 +15,9 @@ export default function LogoutButton() {
         router.push('/') 
     }
 
-    return <button onClick={handleSignOut}>Logout</button>
+    return <Button
+        variant="outline"
+        onClick={handleSignOut}
+        className="rounded-full hover:bg-highlight/80 text-highlight-foreground hover:text-highlight-foreground"
+    >Logout</Button>
 }

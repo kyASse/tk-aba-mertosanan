@@ -3,7 +3,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import ClientLayoutContent from "@/components/layout/ClientLayoutContent";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
+import Script from "next/script";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -28,17 +31,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        />
+      </head>
       <body className={`${geistSans.className} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navbar />
-          {children}
-          <Footer/>
-        </ThemeProvider>
+        <ClientLayoutContent>{children}</ClientLayoutContent>
+        <Toaster
+          position="top-center"
+          swipeDirections={["top", "right"]}
+          closeButton={true}
+        />
       </body>
     </html>
   );
