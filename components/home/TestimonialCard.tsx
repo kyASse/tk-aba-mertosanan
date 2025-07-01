@@ -11,7 +11,7 @@ interface TestimonialCardProps {
     avatarUrl?: string;
 }
 
-const DEFAULT_AVATAR = "/app/avatar-man-placeholder.png";
+const DEFAULT_AVATAR = "/avatar-man-placeholder.png";
 
 export default function TestimonialCard({name, role, testimonial, avatarUrl}: TestimonialCardProps) {
     const safeAvatar = avatarUrl && avatarUrl.trim() !== "" ? avatarUrl : DEFAULT_AVATAR;
