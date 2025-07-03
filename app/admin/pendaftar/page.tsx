@@ -28,43 +28,65 @@ export default async function KelolaPendaftarPage() {
     }
 
     return (
-        <div>
-            <h1>Manajemen Pendaftar Siswa Baru</h1>
-            <Link href="/admin">Kembali ke Dasbor</Link>
-            <hr />
+        <div className="max-w-5xl mx-auto py-8 px-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <h1 className="text-2xl font-bold">Manajemen Pendaftar Siswa Baru</h1>
+                <Link href="/admin" className="text-blue-600 hover:underline">
+                    &larr; Kembali ke Dasbor
+                </Link>
+            </div>
+            <hr className="my-4" />
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nama Calon Siswa</th>
-                        <th>Nama Orang Tua</th>
-                        <th>Tanggal Daftar</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {pendaftar && pendaftar.length > 0 ? (
-                        pendaftar.map((item: Pendaftar) => (
-                            <tr key={item.id}>
-                                <td>{item.nama_lengkap}</td>
-                                <td>{item.nama_orang_tua}</td>
-                                <td>{new Date(item.created_at).toLocaleDateString('id-ID')}</td>
-                                <td>{item.status_pendaftaran}</td>
-                                <td>
-                                    <Link href={`/admin/pendaftar/detail/${item.id}`}>
-                                        Proses Pendaftar
-                                    </Link>
+            <div className="overflow-x-auto">
+                <table className="min-w-full bg-white rounded shadow">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="text-left px-4 py-2">Nama Calon Siswa</th>
+                            <th className="text-left px-4 py-2">Nama Orang Tua</th>
+                            <th className="text-left px-4 py-2">Tanggal Daftar</th>
+                            <th className="text-left px-4 py-2">Status</th>
+                            <th className="text-left px-4 py-2">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {pendaftar && pendaftar.length > 0 ? (
+                            pendaftar.map((item: Pendaftar) => (
+                                <tr key={item.id} className="border-b hover:bg-gray-50 transition">
+                                    <td className="px-4 py-2 font-medium">{item.nama_lengkap}</td>
+                                    <td className="px-4 py-2">{item.nama_orang_tua}</td>
+                                    <td className="px-4 py-2">{new Date(item.created_at).toLocaleDateString('id-ID')}</td>
+                                    <td className="px-4 py-2">
+                                        <span className={`px-2 py-1 rounded text-xs font-semibold
+                                            ${item.status_pendaftaran === "Akun Dibuat"
+                                                ? "bg-green-100 text-green-700"
+                                                : item.status_pendaftaran === "Diterima"
+                                                ? "bg-blue-100 text-blue-700"
+                                                : "bg-yellow-100 text-yellow-700"
+                                            }`
+                                        }>
+                                            {item.status_pendaftaran}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-2">
+                                        <Link
+                                            href={`/admin/pendaftar/detail/${item.id}`}
+                                            className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded transition font-semibold"
+                                        >
+                                            Proses Pendaftar
+                                        </Link>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={5} className="text-center py-8 text-gray-500">
+                                    Belum ada pendaftar baru.
                                 </td>
                             </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan={5}>Belum ada pendaftar baru.</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
