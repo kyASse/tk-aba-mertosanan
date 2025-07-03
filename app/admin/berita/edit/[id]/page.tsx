@@ -27,11 +27,31 @@ export default async function EditBeritaPage({ params }: { params: Promise<{ id:
   }
 
   return (
-    <div>
-      <h1>Edit Berita: {berita.judul}</h1>
-      <Link href="/admin/berita">Kembali ke Daftar Berita</Link>
-      <hr style={{ margin: "1rem 0" }} />
-      <EditForm berita={berita} />
+    <div className="max-w-3xl mx-auto py-8 px-4">
+      <h1 className="text-2xl font-bold mb-2 text-center">Edit Berita: {berita.judul}</h1>
+      <Link
+        href="/admin/berita"
+        className="text-blue-600 hover:underline inline-block mb-4 text-center w-full"
+      >
+        &larr; Kembali ke Daftar Berita
+      </Link>
+      <hr className="my-4" />
+
+      {berita.image_url && (
+        <div className="flex justify-center mb-6">
+          <img
+            src={berita.image_url}
+            alt={berita.judul}
+            className="rounded-lg shadow-md max-h-64 object-contain"
+          />
+        </div>
+      )}
+
+      <div className="bg-white rounded-xl shadow-lg p-6 flex justify-center">
+        <div className="w-full max-w-lg">
+          <EditForm berita={berita} />
+        </div>
+      </div>
     </div>
   );
 }
