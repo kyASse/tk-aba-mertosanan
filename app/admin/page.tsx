@@ -78,6 +78,11 @@ export default async function AdminDashboard() {
                   </Button>
                 </Link>
               </li>
+              <li style={{ marginBottom: '1rem' }}>
+                  <Link href="/admin/kalender">
+                      <button style={{ width: '200px', padding: '10px' }}>Kelola Kalender Akademik</button>
+                  </Link>
+              </li>
             </ul>
           </nav>
         </div>
