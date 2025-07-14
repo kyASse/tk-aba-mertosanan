@@ -10,7 +10,7 @@ export async function createAdminClient() {
 
   // Ambil kunci service_role dari environment variables
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
+  
   if (!serviceRoleKey) {
     throw new Error("FATAL: SUPABASE_SERVICE_ROLE_KEY tidak ditemukan di environment variables. Fitur admin tidak akan berfungsi.");
   }
