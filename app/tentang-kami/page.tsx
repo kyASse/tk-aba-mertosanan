@@ -1,18 +1,9 @@
 import Image from "next/image";
-import Link from "next/image";
+import Link from "next/link";
 // import { Button } from "@/components/ui/button";
-import {
-    Phone,
-    ChevronRight,
-    Clock,
-    Award,
-    BookOpen,
-    Heart,
-    Users,
-    Calendar
-} from "lucide-react";
+import { Phone, ChevronRight, Award } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import ValueCard from "@/components/tentang-kami/ValueCard";
-// import StaffCard from "@/components/StaffCard";
 import PageHeader from "@/components/shared/PageHeader";
 import SchoolIdentity from "@/components/tentang-kami/SchoolIdentity";
 import Achievements from "@/components/tentang-kami/Achievements";
@@ -114,7 +105,31 @@ export default function AboutUs() {
             {/* Prestasi */}
             <Achievements />
 
-            
+            {/* Guru-guru */}
+            {/* Masih dalam rancangan */}
+
+            {/* CTA */}
+            <section className="py-16 bg-primary/20">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold mb-4">Mari Bergabung dengan Kami</h2>
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+                        Berikan pendidikan terbaik untuk buah hati Anda di TK ABA Mertosanan.
+                        Hubungi kami atau kunjungi sekolah kami untuk informasi lebih lanjut.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Link href={"/pendaftaran"}>
+                            <Button className="rounded-full bg-primary hover:bg-primary/80 text-primary-foreground">
+                                Daftar Sekarang <ChevronRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
+                        <Link href={"/kontak"}>
+                            <Button variant={"outline"} className="rounded-full border-primary text-primary hover:bg-primary/10">
+                                <Phone className="mr-2 h-5 w-5"/> Hubungi Kami
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }
