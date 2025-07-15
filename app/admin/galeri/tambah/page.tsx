@@ -1,4 +1,3 @@
-// app/admin/galeri/tambah/page.tsx
 'use client';
 
 import { useState, type FormEvent } from 'react';
@@ -6,7 +5,6 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-// Daftar kategori yang bisa dipilih, sesuai desain Anda
 const kategoriPilihan = [
     "Kegiatan Belajar",
     "Bermain",
@@ -21,7 +19,7 @@ export default function TambahGaleriPage() {
     const [gambar, setGambar] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    
+
     const supabase = createClient();
     const router = useRouter();
 
@@ -37,20 +35,17 @@ export default function TambahGaleriPage() {
         }
 
         try {
-            // 1. Upload gambar ke Storage
             const fileName = `${Date.now()}-${gambar.name.replace(/\s/g, '_')}`;
-            const filePath = `galeri/${fileName}`; // Simpan di dalam folder 'galeri' di bucket
+            const filePath = `galeri/${fileName}`;
             const { error: uploadError } = await supabase.storage
                 .from('konten-publik')
                 .upload(filePath, gambar);
             if (uploadError) throw uploadError;
 
-            // 2. Dapatkan URL publik gambar
             const { data: { publicUrl } } = supabase.storage
                 .from('konten-publik')
                 .getPublicUrl(filePath);
 
-            // 3. Simpan info gambar ke tabel 'galeri'
             const { error: insertError } = await supabase
                 .from('galeri')
                 .insert({
@@ -71,35 +66,70 @@ export default function TambahGaleriPage() {
     };
 
     return (
-        <div>
-            <h1>Tambah Foto Baru ke Galeri</h1>
-            <Link href="/admin/galeri">Kembali ke Daftar Galeri</Link>
-            <hr style={{ margin: '1rem 0' }} />
-            
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '500px' }}>
-                <div>
-                    <label htmlFor="keterangan">Keterangan/Judul Foto</label>
-                    <input id="keterangan" type="text" value={keterangan} onChange={(e) => setKeterangan(e.target.value)} required />
-                </div>
-                <div>
-                    <label htmlFor="kategori">Kategori</label>
-                    <select id="kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} required>
-                        {kategoriPilihan.map(kat => (
-                            <option key={kat} value={kat}>{kat}</option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="gambar">Pilih File Gambar</label>
-                    <input id="gambar" type="file" onChange={(e) => e.target.files && setGambar(e.target.files[0])} accept="image/png, image/jpeg" required />
-                </div>
+        <div className="max-w-2xl mx-auto py-8 px-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <h1 className="text-2xl font-bold">Tambah Foto Galeri</h1>
+                <Link href="/admin/galeri" className="text-blue-600 hover:underline">
+                    &larr; Kembali ke Galeri
+                </Link>
+            </div>
+            <hr className="my-4" />
 
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                
-                <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Mengupload...' : 'Simpan Foto'}
-                </button>
-            </form>
+            <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                    <div>
+                        <label htmlFor="keterangan" className="font-medium block mb-1">Keterangan/Judul Foto</label>
+                        <input
+                            id="keterangan"
+                            type="text"
+                            value={keterangan}
+                            onChange={(e) => setKeterangan(e.target.value)}
+                            required
+                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-400"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="kategori" className="font-medium block mb-1">Kategori</label>
+                        <select
+                            id="kategori"
+                            value={kategori}
+                            onChange={(e) => setKategori(e.target.value)}
+                            required
+                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-400"
+                        >
+                            {kategoriPilihan.map(kat => (
+                                <option key={kat} value={kat}>{kat}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="gambar" className="font-medium block mb-1">Pilih File Gambar</label>
+                        <input
+                            id="gambar"
+                            type="file"
+                            onChange={(e) => e.target.files && setGambar(e.target.files[0])}
+                            accept="image/png, image/jpeg"
+                            required
+                            className="block"
+                        />
+                        {gambar && (
+                            <img
+                                src={URL.createObjectURL(gambar)}
+                                alt="Preview"
+                                className="mt-3 max-w-xs max-h-48 rounded shadow border"
+                            />
+                        )}
+                    </div>
+                    {error && <p className="text-red-600">{error}</p>}
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full py-3 rounded font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow hover:from-blue-600 hover:to-cyan-500 transition"
+                    >
+                        {isLoading ? 'Mengupload...' : 'Simpan Foto'}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
