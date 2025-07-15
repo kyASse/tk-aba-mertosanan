@@ -107,14 +107,23 @@ export default function TambahGaleriPage() {
                         <input
                             id="gambar"
                             type="file"
-                            onChange={(e) => e.target.files && setGambar(e.target.files[0])}
+                            onChange={(e) => {
+                                if (e.target.files) {
+                                    const file = e.target.files[0];
+                                    if (objectURL) {
+                                        URL.revokeObjectURL(objectURL);
+                                    }
+                                    setObjectURL(URL.createObjectURL(file));
+                                    setGambar(file);
+                                }
+                            }}
                             accept="image/png, image/jpeg"
                             required
                             className="block"
                         />
                         {gambar && (
                             <img
-                                src={URL.createObjectURL(gambar)}
+                                src={objectURL}
                                 alt="Preview"
                                 className="mt-3 max-w-xs max-h-48 rounded shadow border"
                             />
