@@ -122,13 +122,6 @@ export default function GalleryClient({
                 </div>
 
                 {/* Empty State */}
-                {galeriData.length === 0 && (
-                    <div className="text-center py-16">
-                        <p className="text-muted-foreground text-lg">
-                            Tidak ada foto dalam kategori ini.
-                        </p>
-                    </div>
-                )}
             </div>
         </section>
 
