@@ -42,7 +42,7 @@ export async function updateGaleriAction(
     // Jika ada file gambar baru, upload ke storage dan dapatkan url baru
     if (image) {
         // Ganti 'konten-publik' sesuai bucket Anda
-        const fileName = `galeri-${galeriId}-${Date.now()}-${image.name}`;
+        const fileName = `galeri/galeri-${galeriId}-${Date.now()}-${image.name}`;
         const { data, error } = await supabase.storage
             .from("konten-publik")
             .upload(fileName, image, { upsert: true });
