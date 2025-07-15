@@ -55,6 +55,20 @@ export default async function GaleriPublikPage({
 
     if (kategoriError) {
         console.error("Error mengambil kategori:", kategoriError);
+        return (
+            <div className="min-h-screen">
+                <PageHeader
+                    title="Galeri"
+                    description="Melihat keseruan anak-anak belajar dan bermain di TK ABA Mertosanan"
+                    background="bg-highlight/20"
+                />
+                <div className="container mx-auto px-4 py-16">
+                    <p className="text-center text-destructive">
+                        Gagal memuat kategori galeri. Silakan coba lagi nanti.
+                    </p>
+                </div>
+            </div>
+        );
     }
 
     // Ekstrak kategori unik
