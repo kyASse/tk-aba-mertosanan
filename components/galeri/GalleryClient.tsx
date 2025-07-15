@@ -182,12 +182,14 @@ export default function GalleryClient({
                                 <button
                                     className="bg-white/20 hover:bg-white/40 w-12 h-12 rounded-full flex items-center justify-center transition-colors pointer-events-auto"
                                     onClick={handlePrevImage}
+                                    aria-label="Previous image"
                                 >
                                     <ChevronLeft className="w-6 h-6 text-white" />
                                 </button>
                                 <button
                                     className="bg-white/20 hover:bg-white/40 w-12 h-12 rounded-full flex items-center justify-center transition-colors pointer-events-auto"
                                     onClick={handleNextImage}
+                                    aria-label="Next image"
                                 >
                                     <ChevronRight className="w-6 h-6 text-white" />
                                 </button>
