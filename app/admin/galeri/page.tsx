@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Image from 'next/image';
 // Kita akan buat komponen DeleteImageButton selanjutnya
 import DeleteImageButton from "./DeleteImageButton"; 
+import EditImageButton from "./EditImageButton";
 
 type GaleriItem = {
     id: number;
@@ -12,6 +13,7 @@ type GaleriItem = {
     keterangan: string | null;
     kategori: string | null;
 };
+
 
 export default async function KelolaGaleriPage() {
     const supabase = await createClient();
@@ -47,8 +49,14 @@ export default async function KelolaGaleriPage() {
                             <Image src={item.image_url} alt={item.keterangan || 'Gambar Galeri'} width={250} height={250} style={{ objectFit: 'cover', width: '100%', height: '200px', marginBottom: '1rem' }} />
                             <p><strong>{item.keterangan}</strong></p>
                             <p><small>Kategori: {item.kategori}</small></p>
-                            <DeleteImageButton galeriId={item.id} imageUrl={item.image_url} />
-                            <button disabled>Hapus</button> 
+                            <EditImageButton
+                                galeriId={item.id}
+                                imageUrl={item.image_url}
+                                keterangan={item.keterangan}
+                                kategori={item.kategori}
+                                // onUpdated={() => refreshData()} // opsional, jika ingin refresh data setelah edit
+                            />
+                            <DeleteImageButton galeriId={item.id} imageUrl={item.image_url} /> 
                         </div>
                     ))
                 ) : (
