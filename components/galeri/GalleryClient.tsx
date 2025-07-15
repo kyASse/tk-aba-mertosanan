@@ -146,6 +146,7 @@ export default function GalleryClient({
                         <button
                             className="absolute -top-12 right-0 text-white hover:text-primary transition-colors z-10"
                             onClick={() => setSelectedImage(null)}
+                            aria-label="Close lightbox"
                         >
                             <X className="w-8 h-8" />
                         </button>
