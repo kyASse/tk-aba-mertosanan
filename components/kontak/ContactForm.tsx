@@ -67,7 +67,7 @@ export default function ContactForm() {
             subjek: values.subjek,
             pesan: values.isi_pesan,
             status: 'belum_dibaca',
-            created_at: new Date().toISOString(),
+// Removed the created_at field to let the database handle timestamp generation.
           }
         ]);
 
