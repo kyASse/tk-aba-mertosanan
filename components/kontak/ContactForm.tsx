@@ -24,7 +24,9 @@ import { createClient } from "@/lib/supabase/client";
 const formSchema = z.object({
   nama_pengirim: z.string().min(2, { message: "Nama minimal 2 karakter" }),
   email_pengirim: z.string().email({ message: "Format email tidak valid" }),
-  telepon: z.string().min(10, { message: "Nomor telepon minimal 10 digit" }),
+  telepon: z.string()
+    .min(10, { message: "Nomor telepon minimal 10 digit" })
+    .regex(/^[0-9+\-\s]+$/, { message: "Nomor telepon hanya boleh mengandung angka, spasi, tanda plus, dan tanda hubung" }),
   subjek: z.string().min(1, { message: "Pilih subjek pesan" }),
   isi_pesan: z.string().min(10, { message: "Pesan minimal 10 karakter" }),
 });
