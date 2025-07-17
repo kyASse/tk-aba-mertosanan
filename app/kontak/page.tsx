@@ -104,7 +104,7 @@ export default async function ContactPage() {
                 <h2 className="text-2xl font-bold mb-6 text-center">Lokasi Kami</h2>
                 <div className="bg-white rounded-xl shadow-md p-2 h-[400px]">
                     <iframe
-                        src={kontak?.maps_embed_url}
+                        src={isTrustedDomain(kontak?.maps_embed_url) ? kontak?.maps_embed_url : undefined}
                         width="100%"
                         height="100%"
                         style={{ border: 0, borderRadius: '0.75rem' }}
