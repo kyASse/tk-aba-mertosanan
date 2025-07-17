@@ -122,13 +122,6 @@ export default function GalleryClient({
                 </div>
 
                 {/* Empty State */}
-                {galeriData.length === 0 && (
-                    <div className="text-center py-16">
-                        <p className="text-muted-foreground text-lg">
-                            Tidak ada foto dalam kategori ini.
-                        </p>
-                    </div>
-                )}
             </div>
         </section>
 
@@ -153,6 +146,7 @@ export default function GalleryClient({
                         <button
                             className="absolute -top-12 right-0 text-white hover:text-primary transition-colors z-10"
                             onClick={() => setSelectedImage(null)}
+                            aria-label="Close lightbox"
                         >
                             <X className="w-8 h-8" />
                         </button>
@@ -188,12 +182,14 @@ export default function GalleryClient({
                                 <button
                                     className="bg-white/20 hover:bg-white/40 w-12 h-12 rounded-full flex items-center justify-center transition-colors pointer-events-auto"
                                     onClick={handlePrevImage}
+                                    aria-label="Previous image"
                                 >
                                     <ChevronLeft className="w-6 h-6 text-white" />
                                 </button>
                                 <button
                                     className="bg-white/20 hover:bg-white/40 w-12 h-12 rounded-full flex items-center justify-center transition-colors pointer-events-auto"
                                     onClick={handleNextImage}
+                                    aria-label="Next image"
                                 >
                                     <ChevronRight className="w-6 h-6 text-white" />
                                 </button>
