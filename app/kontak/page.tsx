@@ -23,12 +23,6 @@ export default async function ContactPage() {
     // Gunakan data dari database atau fallback ke default
     const kontak = kontakData;
 
-    // Debug logging
-    console.log('=== CONTACT DATA DEBUG ===');
-    console.log('kontakData from DB:', kontakData);
-    console.log('error:', error);
-    console.log('final kontak:', kontak);
-    console.log('========================');
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
         console.error("Error fetching kontak sekolah:", error);
@@ -110,7 +104,7 @@ export default async function ContactPage() {
                 <h2 className="text-2xl font-bold mb-6 text-center">Lokasi Kami</h2>
                 <div className="bg-white rounded-xl shadow-md p-2 h-[400px]">
                     <iframe
-                        src={kontak?.maps_embed_url}
+                        src={isTrustedDomain(kontak?.maps_embed_url) ? kontak?.maps_embed_url : undefined}
                         width="100%"
                         height="100%"
                         style={{ border: 0, borderRadius: '0.75rem' }}
