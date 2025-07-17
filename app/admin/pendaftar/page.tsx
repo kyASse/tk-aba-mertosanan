@@ -3,10 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+
 type Pendaftar = {
     id: string;
     nama_lengkap: string | null;
-    nama_orang_tua: string | null;
+    nama_ayah_kandung: string | null;
+    nama_ibu_kandung?: string | null;
     status_pendaftaran: string | null;
     created_at: string;
 };
@@ -19,7 +21,7 @@ export default async function KelolaPendaftarPage() {
 
     const { data: pendaftar, error } = await supabase
         .from('pendaftar')
-        .select('id, nama_lengkap, nama_orang_tua, status_pendaftaran, created_at')
+        .select('id, nama_lengkap, nama_ayah_kandung, nama_ibu_kandung, status_pendaftaran, created_at')
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -48,12 +50,15 @@ export default async function KelolaPendaftarPage() {
                             <th className="text-left px-4 py-2">Aksi</th>
                         </tr>
                     </thead>
+                    
                     <tbody>
                         {pendaftar && pendaftar.length > 0 ? (
                             pendaftar.map((item: Pendaftar) => (
                                 <tr key={item.id} className="border-b hover:bg-gray-50 transition">
                                     <td className="px-4 py-2 font-medium">{item.nama_lengkap}</td>
-                                    <td className="px-4 py-2">{item.nama_orang_tua}</td>
+                                    <td className="px-4 py-2">
+                                        {(item.nama_ayah_kandung || "Tidak Diketahui")}/{(item.nama_ibu_kandung || "Tidak Diketahui")}
+                                    </td>
                                     <td className="px-4 py-2">{new Date(item.created_at).toLocaleDateString('id-ID')}</td>
                                     <td className="px-4 py-2">
                                         <span className={`px-2 py-1 rounded text-xs font-semibold

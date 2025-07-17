@@ -11,6 +11,27 @@ type PendaftarData = {
     nama_lengkap: string | null;
     email: string | null;
 };
+export async function updateStatusPendaftaran(id: string, status: string) {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from('pendaftar')
+        .update({ status_pendaftaran: status })
+        .eq('id', id);
+
+    if (!error) revalidatePath('/admin/pendaftar');
+    return { success: !error, message: error?.message };
+}
+
+export async function updatePendaftarData(id: string, data: any) {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from('pendaftar')
+        .update(data)
+        .eq('id', id);
+
+    if (!error) revalidatePath('/admin/pendaftar');
+    return { success: !error, message: error?.message };
+}
 
 export async function acceptAndCreatePortalAccountAction(pendaftar: PendaftarData) {
     const supabase = await createClient();
