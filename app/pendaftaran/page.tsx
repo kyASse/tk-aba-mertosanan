@@ -14,7 +14,13 @@ import {
     FileText,
     User,
     School,
-    Info
+    Info,
+    MapPin,
+    Download,
+    MessageCircle,
+    CreditCard,
+    UserCheck,
+    ArrowRight
 } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 
@@ -57,8 +63,9 @@ export default async function PendaftaranPage() {
                 <div className="container mx-auto px-4">
                         <div className="max-w-4xl mx-auto">
                             <Tabs defaultValue="form" className="w-full">
-                                <TabsList className="grid w-full grid-cols-2 mb-8">
+                                <TabsList className="grid w-full grid-cols-3 mb-8">
                                     <TabsTrigger value="requirements">Persyaratan</TabsTrigger>
+                                    <TabsTrigger value="flow">Alur Pendaftaran</TabsTrigger>
                                     <TabsTrigger value="form">Formulir Pendaftaran</TabsTrigger>
                                 </TabsList>
 
@@ -146,6 +153,195 @@ export default async function PendaftaranPage() {
                                                 <div className="bg-muted rounded-lg p-4">
                                                     <p className="text-muted-foreground">{catatanSpp?.isi}</p>
                                                 </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </TabsContent>
+
+                                <TabsContent value="flow">
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="flex items-center">
+                                                <UserCheck className="mr-2 h-5 w-5 text-primary" />
+                                                Alur Pendaftaran Siswa Baru
+                                            </CardTitle>
+                                            <CardDescription>
+                                                Panduan langkah demi langkah untuk melakukan pendaftaran siswa baru
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-8">
+                                            {/* Online Registration Flow */}
+                                            <div>
+                                                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                                                    <MessageCircle className="mr-2 h-5 w-5 text-blue-500" />
+                                                    Pendaftaran Online
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            1
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1">Siapkan Dokumen</h4>
+                                                            <p className="text-muted-foreground text-sm">
+                                                                Siapkan semua dokumen yang diperlukan sesuai dengan persyaratan pendaftaran
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            2
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1">Isi Formulir Online</h4>
+                                                            <p className="text-muted-foreground text-sm">
+                                                                Lengkapi formulir pendaftaran dengan data yang benar dan lengkap
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            3
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1">Upload Dokumen</h4>
+                                                            <p className="text-muted-foreground text-sm">
+                                                                Upload scan atau foto dokumen dengan kualitas yang jelas dan dapat dibaca
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            4
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1">Submit Pendaftaran</h4>
+                                                            <p className="text-muted-foreground text-sm">
+                                                                Periksa kembali data yang telah diisi, lalu klik tombol &quot;Daftar Sekarang&quot;
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            5
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1">Konfirmasi & Pembayaran</h4>
+                                                            <p className="text-muted-foreground text-sm">
+                                                                Tunggu konfirmasi dari pihak sekolah dan lakukan pembayaran sesuai instruksi
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Offline Registration Flow */}
+                                            <div>
+                                                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                                                    <MapPin className="mr-2 h-5 w-5 text-green-500" />
+                                                    Pendaftaran Offline
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            1
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1">Siapkan Dokumen Asli</h4>
+                                                            <p className="text-muted-foreground text-sm">
+                                                                Bawa semua dokumen asli dan fotokopi sesuai persyaratan
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            2
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1 flex items-center">
+                                                                Download Formulir
+                                                                <Download className="ml-2 h-4 w-4" />
+                                                            </h4>
+                                                            <p className="text-muted-foreground text-sm mb-3">
+                                                                Download dan isi formulir pendaftaran, atau ambil di kantor sekolah
+                                                            </p>
+                                                            <a 
+                                                                href="/Formulir Pendaftaran TK ABA Mertosanan.pdf" 
+                                                                download="Formulir Pendaftaran TK ABA Mertosanan.pdf"
+                                                                className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                                                            >
+                                                                <Download className="mr-2 h-4 w-4" />
+                                                                Download PDF
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            3
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1">Kunjungi Sekolah</h4>
+                                                            <p className="text-muted-foreground text-sm">
+                                                                Datang langsung ke TK ABA Mertosanan pada jam kerja (07:30 - 11:30 WIB)
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            4
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1">Serahkan Dokumen</h4>
+                                                            <p className="text-muted-foreground text-sm">
+                                                                Serahkan formulir dan dokumen lengkap kepada petugas pendaftaran
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start space-x-4 p-4 border rounded-lg">
+                                                        <div className="flex-shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold">
+                                                            5
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-medium mb-1 flex items-center">
+                                                                Pembayaran
+                                                                <CreditCard className="ml-2 h-4 w-4" />
+                                                            </h4>
+                                                            <p className="text-muted-foreground text-sm">
+                                                                Lakukan pembayaran biaya pendaftaran sesuai dengan ketentuan yang berlaku
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Important Notes */}
+                                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                                <h3 className="text-lg font-semibold mb-3 flex items-center text-yellow-800">
+                                                    <Info className="mr-2 h-5 w-5" />
+                                                    Catatan Penting
+                                                </h3>
+                                                <ul className="space-y-2 text-yellow-700 text-sm">
+                                                    <li className="flex items-start">
+                                                        <ArrowRight className="mr-2 h-4 w-4 flex-shrink-0 mt-0.5" />
+                                                        Pastikan semua dokumen yang diberikan adalah asli dan masih berlaku
+                                                    </li>
+                                                    <li className="flex items-start">
+                                                        <ArrowRight className="mr-2 h-4 w-4 flex-shrink-0 mt-0.5" />
+                                                        Pendaftaran online akan mendapat prioritas pemrosesan lebih cepat
+                                                    </li>
+                                                    <li className="flex items-start">
+                                                        <ArrowRight className="mr-2 h-4 w-4 flex-shrink-0 mt-0.5" />
+                                                        Hubungi kami jika mengalami kesulitan dalam proses pendaftaran
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </CardContent>
                                     </Card>
