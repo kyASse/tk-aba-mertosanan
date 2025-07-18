@@ -2,10 +2,10 @@
 'use client';
 import { createKegiatanAction } from '../actions';
 import Link from 'next/link';
-import { useFormState } from 'react-dom';
+import { useFormState, useFormStatus } from 'react-dom';
 
 function SubmitButton() {
-    const { pending } = require('react-dom');
+    const { pending } = useFormStatus();
     return <button type="submit" disabled={pending}>{pending ? 'Menyimpan...' : 'Simpan Kegiatan'}</button>
 }
 
