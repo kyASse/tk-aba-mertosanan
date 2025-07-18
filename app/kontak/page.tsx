@@ -11,10 +11,22 @@ import PageHeader from '@/components/shared/PageHeader';
 import ContactForm from '@/components/kontak/ContactForm';
 import { createClient } from "@/lib/supabase/server";
 
-function isTrustedDomain(url?: string) {
+// Function to validate trusted domains for Google Maps embed
+function isTrustedDomain(url: string | null | undefined): boolean {
     if (!url) return false;
-    // Ganti domain berikut sesuai kebutuhan Anda
-    return url.startsWith("https://www.google.com/maps") || url.startsWith("https://maps.google.com");
+    
+    const trustedDomains = [
+        'maps.google.com',
+        'www.google.com',
+        'google.com'
+    ];
+    
+    try {
+        const urlObj = new URL(url);
+        return trustedDomains.some(domain => urlObj.hostname === domain || urlObj.hostname.endsWith('.' + domain));
+    } catch {
+        return false;
+    }
 }
 
 export default async function ContactPage() {
