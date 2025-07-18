@@ -24,17 +24,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ImageIcon, AlertCircle, Calendar } from "lucide-react";
 import Image from "next/image";
 
-// Simple Alert Component
-const Alert = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-    <div className={`flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg ${className}`}>
-        {children}
-    </div>
-);
-
-const AlertDescription = ({ children }: { children: React.ReactNode }) => (
-    <div className="text-sm text-blue-700">{children}</div>
-);
-
+import { Alert, AlertDescription } from "@/components/ui/alert";
 // Schema validation untuk form edit
 const editNewsFormSchema = z.object({
     judul: z.string().min(1, "Judul berita wajib diisi").max(200, "Judul maksimal 200 karakter"),
