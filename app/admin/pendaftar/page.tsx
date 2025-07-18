@@ -30,24 +30,27 @@ export default async function KelolaPendaftarPage() {
     const pendaftarDitolak = pendaftar?.filter(p => p.status_pendaftaran === 'ditolak').length || 0;
 
     return (
-        <div className="w-full space-y-6">
+        <div className="max-w-7xl mx-auto py-8 px-4">
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div>
                     <h1 className="text-2xl font-bold">Kelola Pendaftaran</h1>
                     <p className="text-gray-600 mt-1">mengelola pendaftaran siswa untuk tahun ajaran mendatang</p>
                 </div>
-                <Link href="/admin">
-                    <Button variant="outline">
-                        &larr; Kembali ke Dashboard
-                    </Button>
-                </Link>
+                <Button variant="outline" size="sm" asChild className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                    <Link href="/admin" className="flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Kembali ke Dasbor
+                    </Link>
+                </Button>
             </div>
 
             {/* Status Pendaftaran Cards */}
             <div>
                 <h2 className="text-xl font-semibold mb-4">Status Pendaftaran</h2>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
                     <Card className="bg-orange-50 border-orange-200">
                         <CardContent className="p-4 text-center">
                             <p className="text-sm text-gray-600 mb-2">Total Pendaftar</p>
