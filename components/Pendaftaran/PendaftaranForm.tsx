@@ -1,4 +1,3 @@
-// components/Pendaftaran/PendaftaranForm.tsx
 'use client';
 
 import { useForm } from "react-hook-form";
@@ -29,8 +28,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 
-// Definisikan opsi kebutuhan khusus
 const jenisKebutuhanKhususItems = [
     { id: "gangguan_penglihatan", label: "Gangguan Penglihatan" },
     { id: "gangguan_pendengaran", label: "Gangguan Pendengaran" },
@@ -42,8 +41,6 @@ const jenisKebutuhanKhususItems = [
     { id: "lainnya", label: "Lainnya" },
 ] as const;
 
-
-// Perbarui skema form dengan kolom kebutuhan khusus
 const formSchema = z.object({
     nama_lengkap: z.string().min(1, "Nama lengkap wajib diisi"),
     nama_panggilan: z.string().min(1, "Nama panggilan wajib diisi"),
@@ -74,7 +71,6 @@ const formSchema = z.object({
     wali_pendidikan: z.string().optional(),
     wali_hubungan: z.string().optional(),
     wali_pekerjaan: z.string().optional(),
-    
     memiliki_kebutuhan_khusus: z.boolean().default(false),
     jenis_kebutuhan_khusus: z.array(z.string()).optional(),
     deskripsi_kebutuhan_khusus: z.string().optional(),
@@ -84,6 +80,9 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 export default function PendaftaranForm() {
+    // Ganti dengan nomor WhatsApp admin yang sebenarnya, diawali dengan 62
+    const NOMOR_WA_ADMIN = '6281234567890'; 
+
     const [isSuccess, setIsSuccess] = useState(false);
     const supabase = createClient();
     const [isUploading, setIsUploading] = useState(false);
@@ -94,17 +93,17 @@ export default function PendaftaranForm() {
             nama_lengkap: "",
             nama_panggilan: "",
             jenis_kelamin: undefined,
-            kewarganegaraan: undefined,
+            kewarganegaraan: "WNI",
             tempat_lahir: "",
             tanggal_lahir: "",
             agama: "",
             anak_ke: "",
             jumlah_saudara_kandung: "",
-            status_anak: "",
+            status_anak: "Anak Kandung",
             bahasa_sehari_hari: "",
             berat_badan: "",
             tinggi_badan: "",
-            golongan_darah: "",
+            golongan_darah: undefined,
             cita_cita: "",
             alamat_lengkap: "",
             nomor_telepon: "",
@@ -130,24 +129,35 @@ export default function PendaftaranForm() {
 
     useEffect(() => {
         if (isSuccess) {
-            toast.success("Pendaftaran Berhasil", {
+            const values = form.getValues();
+            const namaOrangTua = values.nama_ayah_kandung || values.nama_ibu_kandung || values.wali_nama || '(Nama Orang Tua)';
+            const templatePesan = `Assalamu’alaikum Wr. Wb.,\n\nSaya ${namaOrangTua}, orang tua dari *${values.nama_lengkap}*.\n\nSaya ingin memberikan konfirmasi bahwa saya telah melakukan pendaftaran peserta didik baru untuk ananda di TK ABA Mertosanan melalui website.\n\nMohon konfirmasinya apakah data pendaftaran sudah diterima.\nTerima kasih.\n\nWassalamu’alaikum Wr. Wb.`;
+            const encodedPesan = encodeURIComponent(templatePesan);
+            const waUrl = `https://wa.me/${NOMOR_WA_ADMIN}?text=${encodedPesan}`;
+
+            toast.success("Pendaftaran Berhasil! Satu langkah terakhir...", {
                 description: (
-                    <div>
+                    <div className="flex flex-col gap-4">
                         <p className="text-muted-foreground">
-                            Terima kasih. Langkah selanjutnya, silakan konfirmasi pendaftaran ke nomor WhatsApp sekolah di <strong>0812-3456-7890</strong> (ganti nomor) dengan format:
+                            Terima kasih! Untuk menyelesaikan proses, silakan kirim konfirmasi ke tim administrasi kami dengan menekan tombol di bawah.
                         </p>
-                        <pre className="text-muted-foreground p-4 rounded mt-2 border border-muted-200 whitespace-pre-wrap break-words">
-                            KONFIRMASI PENDAFTARAN - {form.getValues("nama_lengkap")}
-                        </pre>
+                        <a 
+                            href={waUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-flex items-center justify-center"
+                        >
+                            Konfirmasi via WhatsApp
+                        </a>
                     </div>
                 ),
-                duration: 30000,
-                onAutoClose: () => {
-                    window.location.href = "/";
-                },
+                duration: Infinity,
             });
+
+            form.reset();
+            setIsSuccess(false);
         }
-    }, [isSuccess, form]);
+    }, [isSuccess, form, NOMOR_WA_ADMIN]);
 
     async function onSubmit(values: FormSchema) {
         setIsUploading(false);
@@ -159,7 +169,7 @@ export default function PendaftaranForm() {
                 setIsUploading(true);
                 const fileName = `${Date.now()}_${file.name}`;
                 const { data: uploadData, error: uploadError } = await supabase.storage
-                    .from('dokumen-pendukung')
+                    .from('dokumen-pendukung') // Pastikan bucket ini ada dan bersifat publik
                     .upload(fileName, file);
 
                 if (uploadError) {
@@ -182,7 +192,7 @@ export default function PendaftaranForm() {
                 tinggi_badan: values.tinggi_badan ? parseInt(values.tinggi_badan) : null,
                 jalur_pendaftaran: "Online",
                 memiliki_kebutuhan_khusus: values.memiliki_kebutuhan_khusus,
-                jenis_kebutuhan_khusus: values.memiliki_kebutuhan_khusus ? values.jenis_kebutuhan_khusus : [],
+                jenis_kebutuhan_khusus: values.memiliki_kebutuhan_khusus ? JSON.stringify(values.jenis_kebutuhan_khusus) : JSON.stringify([]),
                 deskripsi_kebutuhan_khusus: values.memiliki_kebutuhan_khusus ? values.deskripsi_kebutuhan_khusus : "",
                 dokumen_pendukung_url: dokumen_pendukung_url,
             };
@@ -193,7 +203,6 @@ export default function PendaftaranForm() {
             if (insertError) throw insertError;
             
             setIsSuccess(true);
-            form.reset();
 
         } catch (err) {
             if (err instanceof Error) {
@@ -211,386 +220,56 @@ export default function PendaftaranForm() {
                 <fieldset className="flex flex-col gap-4 border border-gray-200 rounded-lg p-6">
                     <legend className="font-bold text-lg px-2 text-gray-700">A. Keterangan Anak</legend>
                     <div className="grid md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="nama_lengkap" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>1. Nama Lengkap</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="nama_panggilan" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>2. Nama Panggilan</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField
-                            control={form.control}
-                            name="jenis_kelamin"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>3. Jenis Kelamin</FormLabel>
-                                    <FormControl>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Pilih jenis kelamin" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="Laki-laki">Laki-laki</SelectItem>
-                                                <SelectItem value="Perempuan">Perempuan</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <div className="flex gap-4">
-                            <FormField control={form.control} name="tempat_lahir" render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel>4. Tempat Lahir</FormLabel>
-                                    <FormControl><Input {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}/>
-                            <FormField control={form.control} name="tanggal_lahir" render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel>Tanggal Lahir</FormLabel>
-                                    <FormControl><Input type="date" {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}/>
-                        </div>
-                        <FormField control={form.control} name="agama" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>5. Agama</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField
-                            control={form.control}
-                            name="kewarganegaraan"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>6. Kewarganegaraan</FormLabel>
-                                    <FormControl>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Pilih kewarganegaraan" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="WNI">WNI</SelectItem>
-                                                <SelectItem value="WNA">WNA</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField control={form.control} name="anak_ke" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>7. Anak ke</FormLabel>
-                                <FormControl><Input type="number" {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="jumlah_saudara_kandung" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>8. Jumlah saudara kandung</FormLabel>
-                                <FormControl><Input type="number" {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="status_anak" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>9. Status Anak</FormLabel>
-                                <FormControl><Input placeholder="Contoh: Anak Kandung" {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="bahasa_sehari_hari" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>10. Bahasa sehari-hari</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <div className="flex gap-4">
-                            <FormField control={form.control} name="berat_badan" render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel>11. Berat Badan (Kg)</FormLabel>
-                                    <FormControl><Input type="number" {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}/>
-                            <FormField control={form.control} name="tinggi_badan" render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel>Tinggi Badan (Cm)</FormLabel>
-                                    <FormControl><Input type="number" {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}/>
-                        </div>
-                        <FormField
-                            control={form.control}
-                            name="golongan_darah"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>12. Golongan Darah</FormLabel>
-                                    <FormControl>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Pilih golongan darah" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="A">A</SelectItem>
-                                                <SelectItem value="B">B</SelectItem>
-                                                <SelectItem value="AB">AB</SelectItem>
-                                                <SelectItem value="O">O</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField control={form.control} name="cita_cita" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>14. Cita-cita</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="alamat_lengkap" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>15. Alamat Tempat Tinggal</FormLabel>
-                                <FormControl><Textarea rows={3} {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="nomor_telepon" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>16. Nomor Telepon/HP</FormLabel>
-                                <FormControl><Input type="tel" {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="jarak_tempat_tinggal" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>17. Jarak tempat tinggal</FormLabel>
-                                <FormControl><Input placeholder="Contoh: ± 1 Km" {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
+                        <FormField control={form.control} name="nama_lengkap" render={({ field }) => ( <FormItem><FormLabel>1. Nama Lengkap</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="nama_panggilan" render={({ field }) => ( <FormItem><FormLabel>2. Nama Panggilan</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="jenis_kelamin" render={({ field }) => ( <FormItem><FormLabel>3. Jenis Kelamin</FormLabel><FormControl><Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Pilih jenis kelamin" /></SelectTrigger><SelectContent><SelectItem value="Laki-laki">Laki-laki</SelectItem><SelectItem value="Perempuan">Perempuan</SelectItem></SelectContent></Select></FormControl><FormMessage /></FormItem> )}/>
+                        <div className="flex gap-4"><FormField control={form.control} name="tempat_lahir" render={({ field }) => ( <FormItem className="flex-1"><FormLabel>4. Tempat Lahir</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/><FormField control={form.control} name="tanggal_lahir" render={({ field }) => ( <FormItem className="flex-1"><FormLabel>Tanggal Lahir</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem> )}/></div>
+                        <FormField control={form.control} name="agama" render={({ field }) => ( <FormItem><FormLabel>5. Agama</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="kewarganegaraan" render={({ field }) => ( <FormItem><FormLabel>6. Kewarganegaraan</FormLabel><FormControl><Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Pilih kewarganegaraan" /></SelectTrigger><SelectContent><SelectItem value="WNI">WNI</SelectItem><SelectItem value="WNA">WNA</SelectItem></SelectContent></Select></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="anak_ke" render={({ field }) => ( <FormItem><FormLabel>7. Anak ke</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="jumlah_saudara_kandung" render={({ field }) => ( <FormItem><FormLabel>8. Jumlah saudara kandung</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="status_anak" render={({ field }) => ( <FormItem><FormLabel>9. Status Anak</FormLabel><FormControl><Input placeholder="Contoh: Anak Kandung" {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="bahasa_sehari_hari" render={({ field }) => ( <FormItem><FormLabel>10. Bahasa sehari-hari</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <div className="flex gap-4"><FormField control={form.control} name="berat_badan" render={({ field }) => ( <FormItem className="flex-1"><FormLabel>11. Berat Badan (Kg)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem> )}/><FormField control={form.control} name="tinggi_badan" render={({ field }) => ( <FormItem className="flex-1"><FormLabel>Tinggi Badan (Cm)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem> )}/></div>
+                        <FormField control={form.control} name="golongan_darah" render={({ field }) => ( <FormItem><FormLabel>12. Golongan Darah</FormLabel><FormControl><Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Pilih golongan darah" /></SelectTrigger><SelectContent><SelectItem value="A">A</SelectItem><SelectItem value="B">B</SelectItem><SelectItem value="AB">AB</SelectItem><SelectItem value="O">O</SelectItem></SelectContent></Select></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="cita_cita" render={({ field }) => ( <FormItem><FormLabel>14. Cita-cita</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="alamat_lengkap" render={({ field }) => ( <FormItem><FormLabel>15. Alamat Tempat Tinggal</FormLabel><FormControl><Textarea rows={3} {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="nomor_telepon" render={({ field }) => ( <FormItem><FormLabel>16. Nomor Telepon/HP</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="jarak_tempat_tinggal" render={({ field }) => ( <FormItem><FormLabel>17. Jarak tempat tinggal</FormLabel><FormControl><Input placeholder="Contoh: ± 1 Km" {...field} /></FormControl><FormMessage /></FormItem> )}/>
                     </div>
                 </fieldset>
 
                 <fieldset className="border border-gray-200 rounded-lg p-6">
                     <legend className="font-bold text-lg px-2 text-gray-700">B. Orang Tua</legend>
                     <div className="grid md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="nama_ayah_kandung" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Nama Ayah Kandung</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="nama_ibu_kandung" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Nama Ibu Kandung</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="pendidikan_ayah" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Pendidikan Ayah</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="pendidikan_ibu" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Pendidikan Ibu</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="pekerjaan_ayah" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Pekerjaan Ayah</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="pekerjaan_ibu" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Pekerjaan Ibu</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="email" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Alamat Email (untuk Portal Orang Tua)</FormLabel>
-                                <FormControl><Input type="email" placeholder="contoh@email.com" {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
+                        <FormField control={form.control} name="nama_ayah_kandung" render={({ field }) => ( <FormItem><FormLabel>Nama Ayah Kandung</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="nama_ibu_kandung" render={({ field }) => ( <FormItem><FormLabel>Nama Ibu Kandung</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="pendidikan_ayah" render={({ field }) => ( <FormItem><FormLabel>Pendidikan Ayah</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="pendidikan_ibu" render={({ field }) => ( <FormItem><FormLabel>Pendidikan Ibu</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="pekerjaan_ayah" render={({ field }) => ( <FormItem><FormLabel>Pekerjaan Ayah</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="pekerjaan_ibu" render={({ field }) => ( <FormItem><FormLabel>Pekerjaan Ibu</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="email" render={({ field }) => ( <FormItem><FormLabel>Alamat Email (untuk Portal Orang Tua)</FormLabel><FormControl><Input type="email" placeholder="contoh@email.com" {...field} /></FormControl><FormMessage /></FormItem> )}/>
                     </div>
                 </fieldset>
 
                 <fieldset className="border border-gray-200 rounded-lg p-6">
                     <legend className="font-bold text-lg px-2 text-gray-700">C. Wali Anak (diisi jika tinggal bersama wali)</legend>
                     <div className="grid md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="wali_nama" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Nama Wali</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="wali_pendidikan" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Pendidikan Tertinggi Wali</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="wali_hubungan" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Hubungan dengan Wali</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="wali_pekerjaan" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Pekerjaan Wali</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}/>
+                        <FormField control={form.control} name="wali_nama" render={({ field }) => ( <FormItem><FormLabel>Nama Wali</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="wali_pendidikan" render={({ field }) => ( <FormItem><FormLabel>Pendidikan Tertinggi Wali</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="wali_hubungan" render={({ field }) => ( <FormItem><FormLabel>Hubungan dengan Wali</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField control={form.control} name="wali_pekerjaan" render={({ field }) => ( <FormItem><FormLabel>Pekerjaan Wali</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
                     </div>
                 </fieldset>
 
                 <fieldset className="flex flex-col gap-6 border border-gray-200 rounded-lg p-6">
                     <legend className="font-bold text-lg px-2 text-gray-700">D. Kebutuhan Khusus</legend>
-                    <FormField
-                        control={form.control}
-                        name="memiliki_kebutuhan_khusus"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                <div className="space-y-0.5">
-                                    <FormLabel className="text-base">
-                                        Apakah calon siswa memiliki kebutuhan khusus?
-                                    </FormLabel>
-                                    <FormDescription>
-                                        Jika "Ya", mohon lengkapi informasi di bawah ini.
-                                    </FormDescription>
-                                </div>
-                                <FormControl>
-                                    <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-
+                    <FormField control={form.control} name="memiliki_kebutuhan_khusus" render={({ field }) => ( <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4"><div className="space-y-0.5"><FormLabel className="text-base">Apakah calon siswa memiliki kebutuhan khusus?</FormLabel><FormDescription>Jika "Ya", mohon lengkapi informasi di bawah ini.</FormDescription></div><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem> )}/>
                     {hasSpecialNeeds && (
                         <div className="flex flex-col gap-4 pl-4 border-l-2 border-primary/20">
-                            <FormField
-                                control={form.control}
-                                name="jenis_kebutuhan_khusus"
-                                render={() => (
-                                    <FormItem>
-                                        <div className="mb-4">
-                                            <FormLabel className="text-base">Jenis Kebutuhan Khusus</FormLabel>
-                                            <FormDescription>
-                                                Pilih satu atau lebih yang sesuai.
-                                            </FormDescription>
-                                        </div>
-                                        {jenisKebutuhanKhususItems.map((item) => (
-                                            <FormField
-                                                key={item.id}
-                                                control={form.control}
-                                                name="jenis_kebutuhan_khusus"
-                                                render={({ field }) => {
-                                                    return (
-                                                        <FormItem
-                                                            key={item.id}
-                                                            className="flex flex-row items-start space-x-3 space-y-0"
-                                                        >
-                                                            <FormControl>
-                                                                <Checkbox
-                                                                    checked={field.value?.includes(item.id)}
-                                                                    onCheckedChange={(checked) => {
-                                                                        return checked
-                                                                            ? field.onChange([...(field.value || []), item.id])
-                                                                            : field.onChange(
-                                                                                field.value?.filter(
-                                                                                    (value) => value !== item.id
-                                                                                )
-                                                                            )
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormLabel className="font-normal">
-                                                                {item.label}
-                                                            </FormLabel>
-                                                        </FormItem>
-                                                    )
-                                                }}
-                                            />
-                                        ))}
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="deskripsi_kebutuhan_khusus"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Deskripsi Rinci</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                placeholder="Jelaskan secara singkat kebutuhan khusus, riwayat penanganan, atau rekomendasi dari ahli (jika ada)."
-                                                className="resize-y"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            
-                            <FormField
-                                control={form.control}
-                                name="dokumen_pendukung"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Unggah Dokumen Pendukung (Opsional)</FormLabel>
-                                        <FormControl>
-                                            <Input 
-                                                type="file" 
-                                                accept=".pdf,.jpg,.jpeg,.png"
-                                                onChange={(e) => field.onChange(e.target.files)}
-                                            />
-                                        </FormControl>
-                                        <FormDescription>
-                                            Contoh: Surat keterangan psikolog, laporan medis. (Maks. 5MB)
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <FormField control={form.control} name="jenis_kebutuhan_khusus" render={() => ( <FormItem><div className="mb-4"><FormLabel className="text-base">Jenis Kebutuhan Khusus</FormLabel><FormDescription>Pilih satu atau lebih yang sesuai.</FormDescription></div>{jenisKebutuhanKhususItems.map((item) => ( <FormField key={item.id} control={form.control} name="jenis_kebutuhan_khusus" render={({ field }) => { return ( <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0"><FormControl><Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => { return checked ? field.onChange([...(field.value || []), item.id]) : field.onChange( field.value?.filter( (value) => value !== item.id ) ) }} /></FormControl><FormLabel className="font-normal">{item.label}</FormLabel></FormItem> ) }} /> ))}<FormMessage /></FormItem> )}/>
+                            <FormField control={form.control} name="deskripsi_kebutuhan_khusus" render={({ field }) => ( <FormItem><FormLabel>Deskripsi Rinci</FormLabel><FormControl><Textarea placeholder="Jelaskan secara singkat kebutuhan khusus, riwayat penanganan, atau rekomendasi dari ahli (jika ada)." className="resize-y" {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                            <FormField control={form.control} name="dokumen_pendukung" render={({ field }) => ( <FormItem><FormLabel>Unggah Dokumen Pendukung (Opsional)</FormLabel><FormControl><Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => field.onChange(e.target.files)} /></FormControl><FormDescription>Contoh: Surat keterangan psikolog, laporan medis. (Maks. 5MB)</FormDescription><FormMessage /></FormItem> )}/>
                         </div>
                     )}
                 </fieldset>
