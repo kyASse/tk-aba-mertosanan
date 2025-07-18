@@ -1,19 +1,14 @@
-// app/berita/[id]/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { 
     CalendarIcon, 
     UserIcon, 
-    ShareIcon,
-    ArrowLeft,
-    Facebook,
-    Twitter,
-    MessageCircle
+    ArrowLeft
 } from "lucide-react";
 import Link from "next/link";
 import PageHeader from "@/components/shared/PageHeader";
-import { Button } from "@/components/ui/button";
+import ShareSection from "@/components/berita/ShareSection";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -36,6 +31,12 @@ export default async function BeritaDetailPage({ params }: PageProps) {
         notFound();
     }
 
+    const { data: penulis } = await supabase
+        .from('profiles')
+        .select('id, role')
+        .eq('id', berita.penulis_id)
+        .single();
+
     // Format tanggal ke bahasa Indonesia
     const formatTanggal = (tanggal: string) => {
         const date = new Date(tanggal);
@@ -46,10 +47,6 @@ export default async function BeritaDetailPage({ params }: PageProps) {
             day: 'numeric'
         });
     };
-
-    // URL untuk sharing
-    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-    const shareText = `Baca berita: ${berita.judul}`;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -63,11 +60,11 @@ export default async function BeritaDetailPage({ params }: PageProps) {
             {/* Back Button */}
             <div className="container mx-auto px-4 py-6">
                 <Link 
-                    href="/berita" 
+                    href="/" 
                     className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-primary transition-colors"
                 >
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Kembali ke Daftar Berita
+                    Kembali ke Beranda
                 </Link>
             </div>
 
@@ -83,7 +80,6 @@ export default async function BeritaDetailPage({ params }: PageProps) {
                             className="object-cover"
                             priority
                         />
-                        {/* Gradient overlay for better text readability if needed */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                     </div>
 
@@ -106,7 +102,10 @@ export default async function BeritaDetailPage({ params }: PageProps) {
                             <div className="flex items-center text-gray-600">
                                 <UserIcon className="h-5 w-5 mr-2 text-primary" />
                                 <span className="font-medium">
-                                    {berita.penulis_id === 'admin' ? 'Tim Redaksi' : berita.penulis_id}
+                                    {penulis?.role === 'admin'
+                                        ? 'Tim Redaksi'
+                                        : berita.penulis_id
+                                    }
                                 </span>
                             </div>
                             <div className="flex items-center text-gray-600">
@@ -137,67 +136,7 @@ export default async function BeritaDetailPage({ params }: PageProps) {
                         </div>
 
                         {/* Share Section */}
-                        <div className="mt-12 pt-8 border-t border-gray-200">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                <div className="flex items-center">
-                                    <ShareIcon className="h-5 w-5 mr-2 text-primary" />
-                                    <span className="font-semibold text-gray-800">Bagikan Artikel:</span>
-                                </div>
-                                <div className="flex gap-3">
-                                    {/* Facebook Share */}
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-colors"
-                                        onClick={() => {
-                                            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
-                                            window.open(url, '_blank');
-                                        }}
-                                    >
-                                        <Facebook className="h-4 w-4 mr-2" />
-                                        Facebook
-                                    </Button>
-
-                                    {/* Twitter Share */}
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="hover:bg-sky-50 hover:border-sky-300 hover:text-sky-600 transition-colors"
-                                        onClick={() => {
-                                            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(currentUrl)}`;
-                                            window.open(url, '_blank');
-                                        }}
-                                    >
-                                        <Twitter className="h-4 w-4 mr-2" />
-                                        Twitter
-                                    </Button>
-
-                                    {/* WhatsApp Share */}
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="hover:bg-green-50 hover:border-green-300 hover:text-green-600 transition-colors"
-                                        onClick={() => {
-                                            const url = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + currentUrl)}`;
-                                            window.open(url, '_blank');
-                                        }}
-                                    >
-                                        <MessageCircle className="h-4 w-4 mr-2" />
-                                        WhatsApp
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Back to List Button */}
-                        <div className="mt-8 pt-6 border-t border-gray-200">
-                            <Link href="/berita">
-                                <Button className="w-full sm:w-auto">
-                                    <ArrowLeft className="mr-2 h-4 w-4" />
-                                    Kembali ke Daftar Berita
-                                </Button>
-                            </Link>
-                        </div>
+                        <ShareSection title={berita.judul} />
                     </div>
                 </div>
             </div>
