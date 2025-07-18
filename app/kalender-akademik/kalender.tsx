@@ -82,9 +82,9 @@ export default function Kalender({ events }: { events: Event[] }) {
                 components={{
                     CaptionLabel: () => (
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0' }}>
-                           <button onClick={() => setMonth(new Date(month.setMonth(month.getMonth() - 1)))} style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #f0ad4e'}}>{"<"}</button>
+                           <button onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #f0ad4e'}}>{"<"}</button>
                            <h2 style={{ margin: 0 }}>{format(month, 'MMMM yyyy', { locale: id })}</h2>
-                           <button onClick={() => setMonth(new Date(month.setMonth(month.getMonth() + 1)))} style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #f0ad4e'}}>{">"}</button>
+                           <button onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #f0ad4e'}}>{">"}</button>
                         </div>
                     ),
                 }}
