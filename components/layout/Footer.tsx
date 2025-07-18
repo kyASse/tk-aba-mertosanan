@@ -23,7 +23,13 @@ export default function Footer() {
             .from('kontak_sekolah')
             .select('alamat, whatsapp, email_utama, jam_operasional')
             .single()
-            .then(({ data }) => setKontak(data));
+            .then(({ data, error }) => {
+                if (error) {
+                    console.error("Error fetching kontak_sekolah:", error);
+                    return;
+                }
+                setKontak(data);
+            });
     }, []);
     return (
         <footer className="bg-secondary/40 pt-12 pb-6">
