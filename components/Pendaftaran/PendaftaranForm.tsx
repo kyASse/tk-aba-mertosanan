@@ -220,9 +220,56 @@ export default function PendaftaranForm() {
                 <fieldset className="flex flex-col gap-4 border border-gray-200 rounded-lg p-6">
                     <legend className="font-bold text-lg px-2 text-gray-700">A. Keterangan Anak</legend>
                     <div className="grid md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="nama_lengkap" render={({ field }) => ( <FormItem><FormLabel>1. Nama Lengkap</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
-                        <FormField control={form.control} name="nama_panggilan" render={({ field }) => ( <FormItem><FormLabel>2. Nama Panggilan</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
-                        <FormField control={form.control} name="jenis_kelamin" render={({ field }) => ( <FormItem><FormLabel>3. Jenis Kelamin</FormLabel><FormControl><Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Pilih jenis kelamin" /></SelectTrigger><SelectContent><SelectItem value="Laki-laki">Laki-laki</SelectItem><SelectItem value="Perempuan">Perempuan</SelectItem></SelectContent></Select></FormControl><FormMessage /></FormItem> )}/>
+                        <FormField
+                            control={form.control}
+                            name="nama_lengkap"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>1. Nama Lengkap</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="nama_panggilan"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>2. Nama Panggilan</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="jenis_kelamin"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>3. Jenis Kelamin</FormLabel>
+                                    <FormControl>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Pilih jenis kelamin" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Laki-laki">Laki-laki</SelectItem>
+                                                <SelectItem value="Perempuan">Perempuan</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <div className="flex gap-4"><FormField control={form.control} name="tempat_lahir" render={({ field }) => ( <FormItem className="flex-1"><FormLabel>4. Tempat Lahir</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/><FormField control={form.control} name="tanggal_lahir" render={({ field }) => ( <FormItem className="flex-1"><FormLabel>Tanggal Lahir</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem> )}/></div>
                         <FormField control={form.control} name="agama" render={({ field }) => ( <FormItem><FormLabel>5. Agama</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
                         <FormField control={form.control} name="kewarganegaraan" render={({ field }) => ( <FormItem><FormLabel>6. Kewarganegaraan</FormLabel><FormControl><Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Pilih kewarganegaraan" /></SelectTrigger><SelectContent><SelectItem value="WNI">WNI</SelectItem><SelectItem value="WNA">WNA</SelectItem></SelectContent></Select></FormControl><FormMessage /></FormItem> )}/>
