@@ -69,7 +69,7 @@ export default async function AdminDashboard() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="font-semibold text-gray-700">Judul</div>
-              <div className="font-semibold text-gray-700">Ringkasasn</div>
+              <div className="font-semibold text-gray-700">Ringkasan</div>
               <div className="font-semibold text-gray-700">Tanggal</div>
             </div>
             {recentNews && recentNews.length > 0 ? (
