@@ -11,6 +11,24 @@ import PageHeader from '@/components/shared/PageHeader';
 import ContactForm from '@/components/kontak/ContactForm';
 import { createClient } from "@/lib/supabase/server";
 
+// Function to validate trusted domains for Google Maps embed
+function isTrustedDomain(url: string | null | undefined): boolean {
+    if (!url) return false;
+    
+    const trustedDomains = [
+        'maps.google.com',
+        'www.google.com',
+        'google.com'
+    ];
+    
+    try {
+        const urlObj = new URL(url);
+        return trustedDomains.some(domain => urlObj.hostname === domain || urlObj.hostname.endsWith('.' + domain));
+    } catch {
+        return false;
+    }
+}
+
 export default async function ContactPage() {
     const supabase = await createClient();
 
