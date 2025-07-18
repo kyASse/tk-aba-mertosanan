@@ -29,11 +29,12 @@ export default async function AdminDashboard() {
     .single()
 
   // Fetch data untuk dashboard
+  const MAX_RECENT_NEWS = 3
   const { data: recentNews } = await supabase
     .from('berita')
     .select('id, judul, ringkasan, created_at')
     .order('created_at', { ascending: false })
-    .limit(3)
+    .limit(MAX_RECENT_NEWS)
 
   const { data: pendaftarStats } = await supabase
     .from('pendaftar')
@@ -45,19 +46,6 @@ export default async function AdminDashboard() {
   const pendaftarDisetujui = pendaftarStats?.filter(p => p.status === 'diterima').length || 0
   const validasiUlang = pendaftarStats?.filter(p => p.status === 'validasi_ulang').length || 0
   const pendaftarDitolak = pendaftarStats?.filter(p => p.status === 'ditolak').length || 0
-
-  // Debug logging
-  console.log('=== ADMIN DASHBOARD DEBUG ===');
-  console.log('user:', user);
-  console.log('profile:', profile);
-  console.log('recentNews:', recentNews);
-  console.log('pendaftarStats:', pendaftarStats);
-  console.log('totalPendaftar:', totalPendaftar);
-  console.log('menungguPersetujuan:', menungguPersetujuan);
-  console.log('pendaftarDisetujui:', pendaftarDisetujui);
-  console.log('validasiUlang:', validasiUlang);
-  console.log('pendaftarDitolak:', pendaftarDitolak);
-  console.log('==============================');
 
   return (
     <div className="w-full space-y-6">

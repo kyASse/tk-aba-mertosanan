@@ -26,7 +26,7 @@ interface PendaftarTableProps {
 export default function PendaftarTable({ pendaftar }: PendaftarTableProps) {
     const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter data berdasarkan search query
+    // Filter data berdasarkan search query
     const filteredPendaftar = useMemo(() => {
         if (!searchQuery) return pendaftar;
     
@@ -40,7 +40,7 @@ export default function PendaftarTable({ pendaftar }: PendaftarTableProps) {
         });
     }, [pendaftar, searchQuery]);
 
-  // Helper function untuk status badge
+    // Helper function untuk status badge
     const getStatusBadge = (status: string | null) => {
         switch (status) {
         case 'diterima':

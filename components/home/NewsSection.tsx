@@ -14,12 +14,13 @@ type NewsItem = {
 
 async function fetchNewsData(): Promise<NewsItem[]> {
     const supabase = await createClient();
+    const MAX_NEWS_ITEMS = 3;
     const { data, error } = await supabase
         .from('berita')
         .select('id, judul, ringkasan, image_url, tanggal_terbit, penulis_id, created_at')
         .eq('status', 'published')
         .order('tanggal_terbit', { ascending: false })
-        .limit(3);
+        .limit(MAX_NEWS_ITEMS);
 
     if (error) {
         console.error('Error fetching news data:', error);
@@ -33,9 +34,6 @@ async function fetchNewsData(): Promise<NewsItem[]> {
 export default async function NewsSection() {
     const newsData = await fetchNewsData();
     
-    // Debug console untuk mengecek data dari database
-    console.log('News data fetched:', newsData);
-    console.log('Total news items:', newsData?.length || 0);
     // Fallback jika tidak ada data
     if (!newsData || newsData.length === 0) {
         return (
