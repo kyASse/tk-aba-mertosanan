@@ -13,6 +13,7 @@ export default function TambahBeritaPage() {
     const [gambar, setGambar] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [tambahkanKeGaleri, setTambahkanKeGaleri] = useState(false);
     
     const supabase = createClient();
     const router = useRouter();
@@ -58,6 +59,17 @@ export default function TambahBeritaPage() {
                 });
             if (insertError) throw insertError;
 
+            if (tambahkanKeGaleri) {
+                const { error: galeriError } = await supabase
+                    .from('galeri')
+                    .insert({
+                        image_url: publicUrl,
+                        keterangan: judul,
+                        kategori: 'Berita', // atau kategori lain sesuai kebutuhan
+                    });
+                if (galeriError) throw galeriError;
+            }
+
             alert('Berita berhasil ditambahkan!');
             router.push('/admin/berita');
             router.refresh(); 
@@ -95,6 +107,17 @@ export default function TambahBeritaPage() {
                 <div>
                     <label htmlFor="gambar">Gambar Utama</label>
                     <input id="gambar" type="file" onChange={(e) => e.target.files && setGambar(e.target.files[0])} accept="image/png, image/jpeg" required />
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={tambahkanKeGaleri}
+                            onChange={e => setTambahkanKeGaleri(e.target.checked)}
+                            style={{ marginRight: '8px' }}
+                        />
+                        Tambahkan foto dan judul ke galeri
+                    </label>
                 </div>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 <button type="submit" disabled={isLoading} style={{ padding: '10px' }}>

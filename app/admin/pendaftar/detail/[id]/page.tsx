@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import ProcessRegistrationButton from "./ProcessRegistrationButton";
+import StatusSelect from "./StatusSelect";
+import EditPendaftarButton from "./EditPendaftarButton";
+
 
 // ...existing imports...
 
@@ -132,6 +135,8 @@ export default async function DetailPendaftarPage({ params }: DetailPageProps) {
     const canBeProcessed = pendaftar.status_pendaftaran === 'Menunggu Konfirmasi';
     const isProcessed = ['Diterima', 'Akun Dibuat'].includes(pendaftar.status_pendaftaran || '');
     const isRejected = pendaftar.status_pendaftaran === 'Ditolak';
+    const isRevisi = pendaftar.status_pendaftaran === "Revisi";
+
 
     // Helper kebutuhan khusus
     const kebutuhanKhusus = Array.isArray(pendaftar.jenis_kebutuhan_khusus)
@@ -225,8 +230,36 @@ export default async function DetailPendaftarPage({ params }: DetailPageProps) {
 
             <hr className="my-8" />
 
-            {/* ...status dan aksi pendaftaran seperti sebelumnya... */}
+            <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-2">Status & Aksi Pendaftaran</h3>
+                <div className="flex items-center gap-3 mb-4">
+                    <span>Status Saat Ini:</span>
+                    {/* Dropdown status, client component */}
+                    <StatusSelect id={pendaftar.id} value={pendaftar.status_pendaftaran} />
+                </div>
+                {canBeProcessed && (
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
+                        <p className="mb-3">Pendaftar ini sedang menunggu konfirmasi. Klik tombol di bawah untuk menerima siswa dan secara otomatis membuatkan akun portal untuk orang tua.</p>
+                        <ProcessRegistrationButton pendaftar={pendaftar} />
+                    </div>
+                )}
+                {isProcessed && (
+                    <p className="text-green-700 font-bold mt-6">
+                        ✓ Proses penerimaan untuk siswa ini sudah selesai.
+                    </p>
+                )}
+                {isRejected && (
+                    <p className="text-red-700 font-bold mt-6">
+                        Pendaftaran untuk siswa ini telah ditolak.
+                    </p>
+                )}
+                {isRevisi && (
+                        <EditPendaftarButton pendaftar={pendaftar} />
+                )}
+                    
+            </div>
         </div>
+        
     );
 }
 

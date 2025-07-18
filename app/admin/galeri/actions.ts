@@ -30,3 +30,40 @@ export async function deleteGaleriAction(galeriId: number, imageUrl: string) {
     revalidatePath('/admin/galeri');
     return { success: true, message: "Foto berhasil dihapus." };
 }
+
+export async function updateGaleriAction(
+    galeriId: number,
+    { keterangan, kategori, image }: { keterangan: string; kategori: string; image?: File | null }
+) {
+    const supabase = await createClient();
+
+    let image_url: string | undefined;
+
+    // Jika ada file gambar baru, upload ke storage dan dapatkan url baru
+    if (image) {
+        // Ganti 'konten-publik' sesuai bucket Anda
+        const fileName = `galeri/galeri-${galeriId}-${Date.now()}-${image.name}`;
+        const { data, error } = await supabase.storage
+            .from("konten-publik")
+            .upload(fileName, image, { upsert: true });
+        if (error) return { success: false, message: error.message };
+        image_url = data?.path
+            ? supabase.storage.from("konten-publik").getPublicUrl(data.path).data.publicUrl
+            : undefined;
+    }
+
+    // Update data galeri
+    const { error } = await supabase
+        .from("galeri")
+        .update({
+            keterangan,
+            kategori,
+            ...(image_url ? { image_url } : {}),
+        })
+        .eq("id", galeriId);
+
+    if (error) return { success: false, message: error.message };
+
+    revalidatePath('/admin/galeri');
+    return { success: true };
+}

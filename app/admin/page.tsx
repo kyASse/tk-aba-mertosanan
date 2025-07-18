@@ -4,6 +4,15 @@ import { redirect } from "next/navigation"
 import LogoutButton from "@/components/logout-button"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { 
+  BookOpen, 
+  Users, 
+  ImageIcon, 
+  MessageSquare, 
+  TrendingUp,
+  Edit
+} from "lucide-react"
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -19,77 +28,166 @@ export default async function AdminDashboard() {
     .eq('id', user.id)
     .single()
 
-  return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <main className="flex-1 w-full max-w-5xl mx-auto py-10 px-4">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-1 animate-fade-in">
-              Selamat Datang, {profile?.nama_lengkap || user.email}!
-            </h1>
-            <p className="text-gray-600">Peran Anda: <span className="font-semibold">{profile?.role}</span></p>
-          </div>
-          <LogoutButton />
-        </div>
+  // Fetch data untuk dashboard
+  const MAX_RECENT_NEWS = 3
+  const { data: recentNews } = await supabase
+    .from('berita')
+    .select('id, judul, ringkasan, created_at')
+    .order('created_at', { ascending: false })
+    .limit(MAX_RECENT_NEWS)
 
-        <div className="bg-white rounded-xl shadow-lg p-8 animate-fade-in-up">
-          <h2 className="text-xl font-semibold mb-6 text-center">Menu Manajemen Konten</h2>
-          <nav>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <li>
-                <Link href="/admin/berita">
-                  <Button className="w-full transition-transform duration-200 hover:scale-105 hover:bg-orange-500">
-                    Kelola Berita
-                  </Button>
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/pendaftar">
-                  <Button className="w-full transition-transform duration-200 hover:scale-105 hover:bg-orange-500">
-                    Kelola Pendaftar
-                  </Button>
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/galeri">
-                  <Button className="w-full transition-transform duration-200 hover:scale-105 hover:bg-orange-500">
-                    Kelola Galeri
-                  </Button>
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/testimoni">
-                  <Button className="w-full transition-transform duration-200 hover:scale-105 hover:bg-orange-500">
-                    Kelola Testimoni
-                  </Button>
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/konten">
-                  <Button className="w-full transition-transform duration-200 hover:scale-105 hover:bg-orange-500">
-                    Kelola Konten Halaman
-                  </Button>
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/akademik">
-                  <Button className="w-full transition-transform duration-200 hover:scale-105 hover:bg-orange-500">
-                    Kelola Akademik (Biaya & Prestasi)
-                  </Button>
-                </Link>
-              </li>
-              <li style={{ marginBottom: '1rem' }}>
-                  <Link href="/admin/kalender">
-                      <button style={{ width: '200px', padding: '10px' }}>Kelola Kalender Akademik</button>
-                  </Link>
-              </li>
-            </ul>
-          </nav>
+  const { data: pendaftarStats } = await supabase
+    .from('pendaftar')
+    .select('*')
+
+  // Hitung statistik pendaftar
+  const totalPendaftar = pendaftarStats?.length || 0
+  const menungguPersetujuan = pendaftarStats?.filter(p => p.status === 'menunggu_persetujuan').length || 0
+  const pendaftarDisetujui = pendaftarStats?.filter(p => p.status === 'diterima').length || 0
+  const validasiUlang = pendaftarStats?.filter(p => p.status === 'validasi_ulang').length || 0
+  const pendaftarDitolak = pendaftarStats?.filter(p => p.status === 'ditolak').length || 0
+
+  return (
+    <div className="w-full space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-gray-600 mt-1">
+            Selamat datang, {profile?.nama_lengkap || user.email}!
+          </p>
         </div>
-      </main>
-      <footer className="w-full bg-gray-200 text-gray-600 text-center py-4 mt-auto border-t">
-        &copy; {new Date().getFullYear()} TK ABA Mertosanan. All rights reserved.
-      </footer>
+        <LogoutButton />
+      </div>
+
+      {/* Pembaruan Berita Terkini */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Pembaruan Berita Terkini</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="font-semibold text-gray-700">Judul</div>
+              <div className="font-semibold text-gray-700">Ringkasan</div>
+              <div className="font-semibold text-gray-700">Tanggal</div>
+            </div>
+            {recentNews && recentNews.length > 0 ? (
+              recentNews.map((berita) => (
+                <div key={berita.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 py-3 border-b border-gray-100">
+                  <div className="text-gray-900">{berita.judul}</div>
+                  <div className="text-gray-600">
+                    {berita.ringkasan}
+                  </div>
+                  <div className="text-gray-600">
+                    {new Date(berita.created_at).toLocaleDateString('id-ID')}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                Belum ada berita terbaru
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Status Pendaftaran */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Status Pendaftaran</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="bg-orange-100 rounded-lg p-6 text-center">
+              <h3 className="font-semibold text-gray-700 mb-2">Total Pendaftar</h3>
+              <p className="text-3xl font-bold text-orange-600">{totalPendaftar}</p>
+            </div>
+            <div className="bg-blue-100 rounded-lg p-6 text-center">
+              <h3 className="font-semibold text-gray-700 mb-2">Menunggu Persetujuan</h3>
+              <p className="text-3xl font-bold text-blue-600">{menungguPersetujuan}</p>
+            </div>
+            <div className="bg-green-100 rounded-lg p-6 text-center">
+              <h3 className="font-semibold text-gray-700 mb-2">Pendaftaran Yang Disetujui</h3>
+              <p className="text-3xl font-bold text-green-600">{pendaftarDisetujui}</p>
+            </div>
+            <div className="bg-yellow-100 rounded-lg p-6 text-center">
+              <h3 className="font-semibold text-gray-700 mb-2">Validasi Ulang</h3>
+              <p className="text-3xl font-bold text-yellow-600">{validasiUlang}</p>
+            </div>
+            <div className="bg-red-100 rounded-lg p-6 text-center">
+              <h3 className="font-semibold text-gray-700 mb-2">Pendaftar Yang Ditolak</h3>
+              <p className="text-3xl font-bold text-red-600">{pendaftarDitolak}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Akses Cepat */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Akses Cepat</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/admin/pendaftar">
+              <Button 
+                variant="outline" 
+                className="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-yellow-300"
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Kelola Pendaftaran
+              </Button>
+            </Link>
+            <Link href="/admin/berita">
+              <Button 
+                variant="outline" 
+                className="bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300"
+              >
+                <BookOpen className="w-4 h-4 mr-2" />
+                Kelola Berita
+              </Button>
+            </Link>
+            <Link href="/admin/galeri">
+              <Button 
+                variant="outline" 
+                className="bg-green-100 hover:bg-green-200 text-green-800 border-green-300"
+              >
+                <ImageIcon className="w-4 h-4 mr-2" />
+                Kelola Galeri
+              </Button>
+            </Link>
+            <Link href="/admin/testimoni">
+              <Button 
+                variant="outline" 
+                className="bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Kelola Testimoni
+              </Button>
+            </Link>
+            <Link href="/admin/konten">
+              <Button 
+                variant="outline" 
+                className="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 border-indigo-300"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Kelola Konten
+              </Button>
+            </Link>
+            <Link href="/admin/akademik">
+              <Button 
+                variant="outline" 
+                className="bg-pink-100 hover:bg-pink-200 text-pink-800 border-pink-300"
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Kelola Akademik
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

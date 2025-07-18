@@ -5,7 +5,7 @@ import { ThemeProvider } from "next-themes";
 
 export default function LayoutContent({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const hideNavbar = pathname.startsWith("/portal");
+    const hideNavbar = pathname.startsWith("/portal") || pathname.startsWith("/admin");
 
     return (
         <ThemeProvider
@@ -16,7 +16,7 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
         >
             {!hideNavbar && <Navbar />}
             {children}
-            <Footer />
+            {!hideNavbar && <Footer />}
         </ThemeProvider>
     );
 }
