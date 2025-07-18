@@ -41,8 +41,6 @@ export default async function ContactPage() {
     // Gunakan data dari database atau fallback ke default
     const kontak = kontakData;
 
-    console.log("kontak", kontak);
-
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
         console.error("Error fetching kontak sekolah:", error);
     }
