@@ -61,11 +61,11 @@ export default function ContactForm() {
         .from('pesan_masuk')
         .insert([
           {
-            nama: values.nama_pengirim,
-            email: values.email_pengirim,
+            nama_pengirim: values.nama_pengirim,
+            email_pengirim: values.email_pengirim,
             telepon: values.telepon,
             subjek: values.subjek,
-            pesan: values.isi_pesan,
+            isi_pesan: values.isi_pesan,
             status: 'belum_dibaca',
 // Removed the created_at field to let the database handle timestamp generation.
           }

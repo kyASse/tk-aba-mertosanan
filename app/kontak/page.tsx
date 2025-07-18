@@ -11,18 +11,25 @@ import PageHeader from '@/components/shared/PageHeader';
 import ContactForm from '@/components/kontak/ContactForm';
 import { createClient } from "@/lib/supabase/server";
 
+function isTrustedDomain(url?: string) {
+    if (!url) return false;
+    // Ganti domain berikut sesuai kebutuhan Anda
+    return url.startsWith("https://www.google.com/maps") || url.startsWith("https://maps.google.com");
+}
+
 export default async function ContactPage() {
     const supabase = await createClient();
 
     // Fetch kontak sekolah data from Supabase
     const { data: kontakData, error } = await supabase
         .from('kontak_sekolah')
-        .select('*')
+        .select('alamat, whatsapp, email_utama, email_admin, jam_operasional, maps_embed_url')
         .single();
 
     // Gunakan data dari database atau fallback ke default
     const kontak = kontakData;
 
+    console.log("kontak", kontak);
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
         console.error("Error fetching kontak sekolah:", error);
