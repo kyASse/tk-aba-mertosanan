@@ -59,6 +59,8 @@ type UpdateBeritaData = {
     judul: string;
     ringkasan: string;
     isi_lengkap: string;
+    status?: string;
+    tanggal_terbit?: string;
 };
 
 /**
