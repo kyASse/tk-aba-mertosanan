@@ -24,10 +24,10 @@ export default async function KelolaPendaftarPage() {
 
     // Hitung statistik
     const totalPendaftar = pendaftar?.length || 0;
-    const menungguPersetujuan = pendaftar?.filter(p => p.status_pendaftaran === 'menunggu_persetujuan').length || 0;
-    const diterima = pendaftar?.filter(p => p.status_pendaftaran === 'diterima').length || 0;
-    const validasiUlang = pendaftar?.filter(p => p.status_pendaftaran === 'validasi_ulang').length || 0;
-    const pendaftarDitolak = pendaftar?.filter(p => p.status_pendaftaran === 'ditolak').length || 0;
+    const menungguPersetujuan = pendaftar?.filter(p => p.status_pendaftaran === 'Menunggu Persetujuan').length || 0;
+    const diterima = pendaftar?.filter(p => p.status_pendaftaran === 'Diterima').length || 0;
+    const validasiUlang = pendaftar?.filter(p => p.status_pendaftaran === 'Revisi').length || 0;
+    const pendaftarDitolak = pendaftar?.filter(p => p.status_pendaftaran === 'Ditolak').length || 0;
 
     return (
         <div className="max-w-7xl mx-auto py-8 px-4">

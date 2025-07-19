@@ -78,7 +78,7 @@ export default async function DetailPendaftarPage({ params }: DetailPageProps) {
         return redirect('/admin/pendaftar');
     }
 
-    const canBeProcessed = pendaftar.status_pendaftaran === 'Menunggu Konfirmasi';
+    const canBeProcessed = pendaftar.status_pendaftaran === 'Menunggu Persetujuan';
     const isProcessed = ['Diterima', 'Akun Dibuat'].includes(pendaftar.status_pendaftaran || '');
     const isRejected = pendaftar.status_pendaftaran === 'Ditolak';
     const isRevisi = pendaftar.status_pendaftaran === "Revisi";
@@ -101,14 +101,10 @@ export default async function DetailPendaftarPage({ params }: DetailPageProps) {
                     <h1 className="text-2xl font-bold text-gray-900">Detail Pendaftar</h1>
                     <p className="text-gray-600">{pendaftar.nama_lengkap}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">Status:</span>
-                    <StatusSelect id={pendaftar.id} value={pendaftar.status_pendaftaran} />
-                </div>
             </div>
 
             {/* Information Cards */}
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Keterangan Anak */}
                 <Card>
                     <CardHeader>
@@ -276,84 +272,89 @@ export default async function DetailPendaftarPage({ params }: DetailPageProps) {
                         </CardContent>
                     </Card>
                 )}
-            </div>
-
-            {/* Status & Actions */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Settings className="w-5 h-5 text-gray-600" />
-                        Status & Aksi Pendaftaran
-                    </CardTitle>
-                    <CardDescription>
-                        Kelola status pendaftaran dan komunikasi dengan orang tua
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {/* Communication Actions */}
-                    <div className="space-y-4">
-                        <div>
-                            <h4 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                                <Phone className="w-4 h-4" />
-                                Aksi Komunikasi
-                            </h4>
-                            <p className="text-sm text-gray-600 mb-3">
-                                Kirim pesan cepat ke orang tua pendaftar untuk konfirmasi.
-                            </p>
-                            <WhatsAppButton 
-                                namaOrangTua={pendaftar.nama_ayah_kandung || pendaftar.nama_ibu_kandung || pendaftar.wali_nama}
-                                namaAnak={pendaftar.nama_lengkap}
-                                nomorTelepon={pendaftar.nomor_telepon}
-                            />
+                {/* Status & Actions */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Settings className="w-5 h-5 text-gray-600" />
+                            Status & Aksi Pendaftaran
+                        </CardTitle>
+                        <CardDescription>
+                            Kelola status pendaftaran dan komunikasi dengan orang tua
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        {/* Set Status */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">Status:</span>
+                            <StatusSelect id={pendaftar.id} value={pendaftar.status_pendaftaran} />
                         </div>
-                        
-                        {/* Final Action */}
-                        {canBeProcessed && (
-                            <div className="pt-4 border-t border-gray-200">
-                                <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                                    <UserCheck className="w-4 h-4" />
-                                    Aksi Final
+
+                        {/* Communication Actions */}
+                        <div className="space-y-4">
+                            <div>
+                                <h4 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                    <Phone className="w-4 h-4" />
+                                    Aksi Komunikasi
                                 </h4>
-                                <p className="text-sm text-blue-700 mb-3">
-                                    Terima pendaftar dan buatkan akun portal dalam satu klik.
+                                <p className="text-sm text-gray-600 mb-3">
+                                    Kirim pesan cepat ke orang tua pendaftar untuk konfirmasi.
                                 </p>
-                                <ProcessRegistrationButton pendaftar={pendaftar} />
+                                <WhatsAppButton 
+                                    namaOrangTua={pendaftar.nama_ayah_kandung || pendaftar.nama_ibu_kandung || pendaftar.wali_nama}
+                                    namaAnak={pendaftar.nama_lengkap}
+                                    nomorTelepon={pendaftar.nomor_telepon}
+                                />
+                            </div>
+                            
+                            {/* Final Action */}
+                            {canBeProcessed && (
+                                <div className="pt-4 border-t border-gray-200">
+                                    <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                                        <UserCheck className="w-4 h-4" />
+                                        Aksi Final
+                                    </h4>
+                                    <p className="text-sm text-blue-700 mb-3">
+                                        Terima pendaftar dan buatkan akun portal dalam satu klik.
+                                    </p>
+                                    <ProcessRegistrationButton pendaftar={pendaftar} />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Status Messages */}
+                        {isProcessed && (
+                            <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <UserCheck className="w-5 h-5 text-green-600" />
+                                <p className="text-green-700 font-medium">
+                                    ✓ Proses penerimaan untuk siswa ini sudah selesai.
+                                </p>
                             </div>
                         )}
-                    </div>
-
-                    {/* Status Messages */}
-                    {isProcessed && (
-                        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <UserCheck className="w-5 h-5 text-green-600" />
-                            <p className="text-green-700 font-medium">
-                                ✓ Proses penerimaan untuk siswa ini sudah selesai.
-                            </p>
-                        </div>
-                    )}
-                    
-                    {isRejected && (
-                        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                            <User className="w-5 h-5 text-red-600" />
-                            <p className="text-red-700 font-medium">
-                                Pendaftaran untuk siswa ini telah ditolak.
-                            </p>
-                        </div>
-                    )}
-                    
-                    {isRevisi && (
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                <FileText className="w-5 h-5 text-yellow-600" />
-                                <p className="text-yellow-700 font-medium">
-                                    Pendaftaran ini memerlukan revisi data.
+                        
+                        {isRejected && (
+                            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <User className="w-5 h-5 text-red-600" />
+                                <p className="text-red-700 font-medium">
+                                    Pendaftaran untuk siswa ini telah ditolak.
                                 </p>
                             </div>
-                            <EditPendaftarButton pendaftar={pendaftar} />
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                        )}
+                        
+                        {isRevisi && (
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                    <FileText className="w-5 h-5 text-yellow-600" />
+                                    <p className="text-yellow-700 font-medium">
+                                        Pendaftaran ini memerlukan revisi data.
+                                    </p>
+                                </div>
+                                <EditPendaftarButton pendaftar={pendaftar} />
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
