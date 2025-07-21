@@ -39,11 +39,6 @@ export default async function KelolaAkademikPage() {
     if (prestasiError) console.error('Error fetching prestasi:', prestasiError);
     if (sppError) console.error('Error fetching SPP:', sppError);
 
-    // Debug: Log struktur data catatan SPP
-    console.log('Data catatanSpp:', catatanSpp);
-    console.log('Type of catatanSpp.isi:', typeof catatanSpp?.isi);
-    console.log('Content of catatanSpp.isi:', catatanSpp?.isi);
-
     const totalPutra = biaya?.reduce((acc: number, item: BiayaItem) => acc + (item.biaya_putra || 0), 0) || 0;
     const totalPutri = biaya?.reduce((acc: number, item: BiayaItem) => acc + (item.biaya_putri || 0), 0) || 0;
 
