@@ -1,9 +1,13 @@
-// app/admin/akademik/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import DeletePrestasiButton from "./DeletePrestasiButton"
 import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ArrowLeft, Plus, DollarSign, Trophy, Edit, ExternalLink } from "lucide-react";
+import DeletePrestasiButton from "./DeletePrestasiButton";
 
 type BiayaItem = { id: number; komponen_biaya: string | null; biaya_putra: number | null; biaya_putri: number | null; };
 type PrestasiItem = { id: number; tahun: number | null; nama_siswa: string | null; nama_prestasi: string | null; tingkat: string | null; dokumentasi_url: string | null;};
@@ -14,130 +18,214 @@ export default async function KelolaAkademikPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return redirect('/auth/login');
 
-    const biayaPromise = supabase.from('biaya_pendaftaran').select('*').order('id');
-    const prestasiPromise = supabase.from('prestasi').select('*').order('tahun', { ascending: false });
-    const sppPromise = supabase.from('konten_halaman').select('isi').eq('slug', 'catatan-spp').single();
+    const { data: biaya, error: biayaError } = await supabase
+        .from('biaya_pendaftaran')
+        .select('*')
+        .order('id');
 
-    const [{ data: biaya }, { data: prestasi }, { data: catatanSpp }] = await Promise.all([biayaPromise, prestasiPromise, sppPromise]);
+    const { data: prestasi, error: prestasiError } = await supabase
+        .from('prestasi')
+        .select('*')
+        .order('tahun', { ascending: false });
 
-    const totalPutra = biaya?.reduce((acc: number, item: BiayaItem) => acc + (item.biaya_putra || 0), 0);
-    const totalPutri = biaya?.reduce((acc: number, item: BiayaItem) => acc + (item.biaya_putri || 0), 0);
+    const { data: catatanSpp, error: sppError } = await supabase
+        .from('konten_halaman')
+        .select('isi')
+        .eq('slug', 'catatan-spp')
+        .single();
+
+    // Handle errors
+    if (biayaError) console.error('Error fetching biaya:', biayaError);
+    if (prestasiError) console.error('Error fetching prestasi:', prestasiError);
+    if (sppError) console.error('Error fetching SPP:', sppError);
+
+    // Debug: Log struktur data catatan SPP
+    console.log('Data catatanSpp:', catatanSpp);
+    console.log('Type of catatanSpp.isi:', typeof catatanSpp?.isi);
+    console.log('Content of catatanSpp.isi:', catatanSpp?.isi);
+
+    const totalPutra = biaya?.reduce((acc: number, item: BiayaItem) => acc + (item.biaya_putra || 0), 0) || 0;
+    const totalPutri = biaya?.reduce((acc: number, item: BiayaItem) => acc + (item.biaya_putri || 0), 0) || 0;
 
     return (
-        <div>
-            <h1>Manajemen Akademik</h1>
-            <Link href="/admin">Kembali ke Dasbor</Link>
-            <hr />
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center gap-4">
+                <Link href="/admin">
+                    <Button variant="outline" size="sm">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Kembali
+                    </Button>
+                </Link>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Manajemen Akademik</h1>
+                    <p className="text-gray-600">Kelola biaya pendaftaran dan prestasi siswa</p>
+                </div>
+            </div>
 
             {/* Bagian Manajemen Biaya */}
-            <section>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2>Rincian Keuangan Anak Baru</h2>
-                    <Link href="/admin/akademik/edit-biaya">
-                        <button>Edit Tabel Biaya</button>
-                    </Link>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Komponen Biaya</th>
-                            <th>PUTRA (Rp)</th>
-                            <th>PUTRI (Rp)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {biaya?.map((item: BiayaItem) => (
-                            <tr key={item.id}>
-                                <td>{item.komponen_biaya}</td>
-                                <td>{item.biaya_putra?.toLocaleString('id-ID')}</td>
-                                <td>{item.biaya_putri?.toLocaleString('id-ID')}</td>
-                            </tr>
-                        ))}
-                        <tr style={{ fontWeight: 'bold', backgroundColor: '#f2f2f2' }}>
-                            <td>JUMLAH</td>
-                            <td>{totalPutra?.toLocaleString('id-ID')}</td>
-                            <td>{totalPutri?.toLocaleString('id-ID')}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p><strong>{catatanSpp?.isi}</strong></p>
-            </section>
-
-            <hr />
-
-            {/* Bagian Manajemen Prestasi */}
-            <section>
-                <div className="min-h-screen bg-white px-8 py-6">
-                    <div className="flex items-center mb-8">
-                        <h1 className="text-3xl font-bold mr-4">Daftar Prestasi</h1>
-                        <div className="flex-1" />
-                        <Link href="/admin/akademik/prestasi/tambah">
-                            <button
-                                className="flex items-center gap-2 bg-yellow-200 hover:bg-yellow-300 text-yellow-900 font-semibold px-4 py-2 rounded-full shadow transition"
-                            >
-                                Tambah Prestasi Baru
-                                <span className="text-xl font-bold">+</span>
-                            </button>
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                            <DollarSign className="w-5 h-5 text-green-600" />
+                            Rincian Keuangan Anak Baru
+                        </CardTitle>
+                        <Link href="/admin/akademik/edit-biaya">
+                            <Button variant="outline" size="sm">
+                                <Edit className="w-4 h-4 mr-2" />
+                                Edit Tabel Biaya
+                            </Button>
                         </Link>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white rounded-xl shadow border border-gray-200">
-                            <thead>
-                                <tr className="bg-gray-50 text-gray-700">
-                                    <th className="py-3 px-4 border-b">No</th>
-                                    <th className="py-3 px-4 border-b">Tahun</th>
-                                    <th className="py-3 px-4 border-b">Nama Siswa</th>
-                                    <th className="py-3 px-4 border-b">Prestasi</th>
-                                    <th className="py-3 px-4 border-b">Tingkat</th>
-                                    <th className="py-3 px-4 border-b">Dokumentasi</th>
-                                    <th className="py-3 px-4 border-b">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {prestasi && prestasi.length > 0 ? prestasi.map((item: PrestasiItem, idx: number) => (
-                                    <tr key={item.id} className="hover:bg-gray-50">
-                                        <td className="py-2 px-4 text-center">{idx + 1}.</td>
-                                        <td className="py-2 px-4 text-center">{item.tahun}</td>
-                                        <td className="py-2 px-4 text-center">{item.nama_siswa}</td>
-                                        <td className="py-2 px-4">{item.nama_prestasi}</td>
-                                        <td className="py-2 px-4 text-center">{item.tingkat}</td>
-                                        <td className="py-2 px-4 text-center align-middle">
-                                            {item.dokumentasi_url ? (
-                                                <a href={item.dokumentasi_url} target="_blank" rel="noopener noreferrer">
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Komponen Biaya</TableHead>
+                                <TableHead className="text-center">PUTRA (Rp)</TableHead>
+                                <TableHead className="text-center">PUTRI (Rp)</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {biaya && biaya.length > 0 ? biaya.map((item: BiayaItem) => (
+                                <TableRow key={item.id}>
+                                    <TableCell className="font-medium">
+                                        {item.komponen_biaya || 'Tidak tersedia'}
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        {item.biaya_putra ? item.biaya_putra.toLocaleString('id-ID') : '0'}
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        {item.biaya_putri ? item.biaya_putri.toLocaleString('id-ID') : '0'}
+                                    </TableCell>
+                                </TableRow>
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center py-8 text-gray-500">
+                                        {biayaError ? 'Error memuat data biaya' : 'Belum ada data biaya pendaftaran'}
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {biaya && biaya.length > 0 && (
+                                <TableRow className="bg-gray-50 font-semibold">
+                                    <TableCell>JUMLAH</TableCell>
+                                    <TableCell className="text-center">
+                                        {totalPutra ? totalPutra.toLocaleString('id-ID') : '0'}
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        {totalPutri ? totalPutri.toLocaleString('id-ID') : '0'}
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                    {catatanSpp?.isi && (
+                        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p className="text-sm text-blue-800 font-medium">
+                                {(() => {
+                                    if (typeof catatanSpp.isi === 'string') {
+                                        return catatanSpp.isi;
+                                    } else if (typeof catatanSpp.isi === 'object' && catatanSpp.isi !== null) {
+                                        // Handle JSONB object
+                                        if ('catatan' in catatanSpp.isi) {
+                                            return catatanSpp.isi.catatan;
+                                        }
+                                        // If it's an object but no 'catatan' property, stringify it
+                                        return JSON.stringify(catatanSpp.isi);
+                                    }
+                                    return 'Data catatan tidak tersedia';
+                                })()}
+                            </p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Bagian Manajemen Prestasi */}
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                            <Trophy className="w-5 h-5 text-yellow-600" />
+                            Daftar Prestasi
+                        </CardTitle>
+                        <Link href="/admin/akademik/prestasi/tambah">
+                            <Button>
+                                <Plus className="w-4 h-4 mr-2" />
+                                Tambah Prestasi Baru
+                            </Button>
+                        </Link>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-12">No</TableHead>
+                                <TableHead>Tahun</TableHead>
+                                <TableHead>Nama Siswa</TableHead>
+                                <TableHead>Prestasi</TableHead>
+                                <TableHead>Tingkat</TableHead>
+                                <TableHead>Dokumentasi</TableHead>
+                                <TableHead className="text-center">Aksi</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {prestasi && prestasi.length > 0 ? prestasi.map((item: PrestasiItem, idx: number) => (
+                                <TableRow key={item.id}>
+                                    <TableCell className="text-center">{idx + 1}.</TableCell>
+                                    <TableCell className="text-center">{item.tahun || 'N/A'}</TableCell>
+                                    <TableCell>{item.nama_siswa || 'Tidak tersedia'}</TableCell>
+                                    <TableCell>{item.nama_prestasi || 'Tidak tersedia'}</TableCell>
+                                    <TableCell className="text-center">
+                                        <Badge variant="outline">{item.tingkat || 'N/A'}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        {item.dokumentasi_url ? (
+                                            <a 
+                                                href={item.dokumentasi_url} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="inline-block"
+                                            >
+                                                <div className="relative w-10 h-10 mx-auto">
                                                     <Image
                                                         src={item.dokumentasi_url}
                                                         alt="Dokumentasi"
-                                                        width={40}
-                                                        height={40}
-                                                        className="rounded object-cover border mx-auto"
+                                                        fill
+                                                        className="rounded-md object-cover border hover:scale-110 transition-transform"
                                                     />
-                                                </a>
-                                            ) : (
-                                                <span className="text-gray-400">-</span>
-                                            )}
-                                        </td>
-                                        <td className="py-2 px-4 flex gap-2 justify-center">
+                                                    <ExternalLink className="absolute -top-1 -right-1 w-3 h-3 text-blue-600 bg-white rounded-full p-0.5" />
+                                                </div>
+                                            </a>
+                                        ) : (
+                                            <span className="text-gray-400">-</span>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2 justify-center">
                                             <Link href={`/admin/akademik/prestasi/edit/${item.id}`}>
-                                                <button
-                                                    className="bg-yellow-300 hover:bg-yellow-400 text-yellow-900 rounded p-2"
-                                                    title="Edit"
-                                                >
-                                                    <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path stroke="#b45309" strokeWidth="2" d="M16.475 5.408a2.5 2.5 0 1 1 3.536 3.536l-9.193 9.193a4 4 0 0 1-1.414.943l-3.07 1.228a.5.5 0 0 1-.65-.65l1.228-3.07a4 4 0 0 1 .943-1.414l9.193-9.193Z"/></svg>
-                                                </button>
+                                                <Button variant="outline" size="sm">
+                                                    <Edit className="w-4 h-4" />
+                                                </Button>
                                             </Link>
                                             <DeletePrestasiButton prestasiId={item.id} />
-                                        </td>
-                                    </tr>
-                                )) : (
-                                    <tr>
-                                        <td colSpan={7} className="py-6 text-center text-gray-400">Belum ada data prestasi.</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                                        {prestasiError ? 'Error memuat data prestasi' : 'Belum ada data prestasi.'}
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         </div>
     );
 }
