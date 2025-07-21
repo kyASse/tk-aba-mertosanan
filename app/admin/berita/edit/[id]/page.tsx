@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import EditForm from "../EditForm";
 
 export default async function EditBeritaPage({ params }: { params: Promise<{ id: string }> }) {
@@ -27,31 +29,23 @@ export default async function EditBeritaPage({ params }: { params: Promise<{ id:
   }
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-bold mb-2 text-center">Edit Berita: {berita.judul}</h1>
-      <Link
-        href="/admin/berita"
-        className="text-blue-600 hover:underline inline-block mb-4 text-center w-full"
-      >
-        &larr; Kembali ke Daftar Berita
-      </Link>
-      <hr className="my-4" />
-
-      {berita.image_url && (
-        <div className="flex justify-center mb-6">
-          <img
-            src={berita.image_url}
-            alt={berita.judul}
-            className="rounded-lg shadow-md max-h-64 object-contain"
-          />
-        </div>
-      )}
-
-      <div className="bg-white rounded-xl shadow-lg p-6 flex justify-center">
-        <div className="w-full max-w-lg">
-          <EditForm berita={berita} />
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Link href="/admin/berita">
+          <Button variant="outline" size="sm">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Kembali
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Edit Berita</h1>
+          <p className="text-gray-600">Perbarui informasi berita: {berita.judul}</p>
         </div>
       </div>
+
+      {/* Form */}
+      <EditForm berita={berita} />
     </div>
   );
 }
