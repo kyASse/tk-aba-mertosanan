@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
+import { categoryColors } from '@/lib/constants/calendar';
 
 type KalenderEvent = {
   id: number;
@@ -73,7 +74,7 @@ export default function KalenderAkademik() {
 
     return days;
   };
-
+  
   const getEventsForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
     return events.filter(event => event.tanggal === dateStr);
@@ -131,7 +132,7 @@ export default function KalenderAkademik() {
           <div className="grid grid-cols-7 gap-1">
             {days.map((day, index) => {
               if (!day) {
-                return <div key={index} className="p-2 h-20"></div>;
+                return <div key={`empty-${index}`} className="p-2 h-20"></div>;
               }
 
               const dayEvents = getEventsForDate(day);
@@ -140,7 +141,7 @@ export default function KalenderAkademik() {
 
               return (
                 <div
-                  key={day.getDate()}
+                  key={`${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`}
                   onClick={() => setSelectedDate(day)}
                   className={`p-2 h-20 border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors relative ${
                     isToday ? 'bg-blue-50 border-blue-300' : ''
@@ -150,15 +151,18 @@ export default function KalenderAkademik() {
                     {day.getDate()}
                   </div>
                   <div className="mt-1 space-y-1">
-                    {dayEvents.slice(0, 2).map(event => (
-                      <div
-                        key={event.id}
-                        className="text-xs px-1 py-0.5 rounded truncate"
-                        style={{ backgroundColor: event.warna + '20', color: event.warna }}
-                      >
-                        {event.judul}
-                      </div>
-                    ))}
+                    {dayEvents.slice(0, 2).map(event => {
+                      const categoryColor = categoryColors[event.kategori] || '#6B7280';
+                      return (
+                        <div
+                          key={event.id}
+                          className="text-xs px-1 py-0.5 rounded truncate"
+                          style={{ backgroundColor: categoryColor + '20', color: categoryColor }}
+                        >
+                          {event.judul}
+                        </div>
+                      );
+                    })}
                     {dayEvents.length > 2 && (
                       <div className="text-xs text-gray-500">+{dayEvents.length - 2} lainnya</div>
                     )}
@@ -184,26 +188,29 @@ export default function KalenderAkademik() {
           {selectedDate ? (
             selectedEvents.length > 0 ? (
               <div className="space-y-4">
-                {selectedEvents.map(event => (
-                  <div key={event.id} className="border-l-4 pl-4 py-2" style={{ borderColor: event.warna }}>
-                    <h4 className="font-medium text-gray-900">{event.judul}</h4>
-                    {event.waktu && (
-                      <div className="flex items-center mt-1 text-sm text-gray-600">
-                        <Clock className="w-4 h-4 mr-1" />
-                        {event.waktu}
+                {selectedEvents.map(event => {
+                  const categoryColor = categoryColors[event.kategori] || '#6B7280';
+                  return (
+                    <div key={event.id} className="border-l-4 pl-4 py-2" style={{ borderColor: categoryColor }}>
+                      <h4 className="font-medium text-gray-900">{event.judul}</h4>
+                      {event.waktu && (
+                        <div className="flex items-center mt-1 text-sm text-gray-600">
+                          <Clock className="w-4 h-4 mr-1" />
+                          {event.waktu}
+                        </div>
+                      )}
+                      <div className="text-sm text-gray-600 mt-1">
+                        <span className="inline-block px-2 py-1 rounded-full text-xs" 
+                              style={{ backgroundColor: categoryColor + '20', color: categoryColor }}>
+                          {event.kategori}
+                        </span>
                       </div>
-                    )}
-                    <div className="text-sm text-gray-600 mt-1">
-                      <span className="inline-block px-2 py-1 rounded-full text-xs" 
-                            style={{ backgroundColor: event.warna + '20', color: event.warna }}>
-                        {event.kategori}
-                      </span>
+                      {event.deskripsi && (
+                        <p className="text-sm text-gray-700 mt-2">{event.deskripsi}</p>
+                      )}
                     </div>
-                    {event.deskripsi && (
-                      <p className="text-sm text-gray-700 mt-2">{event.deskripsi}</p>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <p className="text-gray-500 text-center py-8">Tidak ada kegiatan pada tanggal ini</p>
@@ -214,7 +221,21 @@ export default function KalenderAkademik() {
         </div>
 
         {/* Legenda Kategori */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+            {/* 'Libur Umum': '#fecaca', // Merah muda
+    'Masa Pengenalan Lingkungan Sekolah': '#fcd34d', //Kuning
+    'Parenting': '#bbf7d0', // Hijau Muda
+    'Lomba HUT RI': '#e5e7eb', // Abu-abu
+    'Kegiatan Sekolah': '#8d4d44', // Coklat
+    'Libur Khusus Hari Guru': '#96a090', // Cream
+    'Market Day': '#1e3a8a', // Biru Dongker
+    'Hari Raya Nasional': '#a855f7', // Ungu
+    'Libur Semester': '#bfdbfe', // Biru Muda
+    'Libur Ramadhan': '#f9a8d4', // Pink
+    'Libur Hari Raya': '#d8b4fe', // Ungu Muda
+    'Penyerahan Siswa': '#065f46', // Hijau Tua
+    'Penerimaan LHB': '#f97316', // Orange Muda */}
+
+        {/* <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
           <h3 className="text-lg font-semibold mb-4">Legenda</h3>
           <div className="space-y-2">
             <div className="flex items-center">
@@ -234,8 +255,23 @@ export default function KalenderAkademik() {
               <span className="text-sm">Acara Khusus</span>
             </div>
           </div>
-        </div>
+        </div> */}
+        
+        <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+          <h3 className="text-lg font-semibold mb-4">Legenda Kategori</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {Object.entries(categoryColors).map(([kategori, warna]) => (
+              <div key={kategori} className="flex items-center">
+                <div
+                  className="w-4 h-4 rounded mr-2"
+                  style={{ backgroundColor: warna }}
+                ></div>
+                <span className="text-sm">{kategori}</span>
+              </div>
+            ))}
+          </div>
       </div>
     </div>
+      </div>
   );
 }

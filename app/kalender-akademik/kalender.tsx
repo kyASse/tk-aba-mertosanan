@@ -6,6 +6,7 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { id } from 'date-fns/locale';
 import { format, isWithinInterval } from 'date-fns';
+import { categoryColors } from '@/lib/constants/calendar';
 
 type Event = {
     id: number;
@@ -15,15 +16,6 @@ type Event = {
     deskripsi?: string;
     kategori: string;
     warna: string;
-};
-
-// Definisikan warna untuk setiap kategori
-const categoryColors: { [key: string]: string } = {
-    'Libur': '#fecaca', // Merah muda
-    'Acara Sekolah': '#bbf7d0', // Hijau muda
-    'Peringatan': '#bfdbfe', // Biru muda
-    'Ujian': '#fed7aa', // Oranye muda
-    'Umum': '#e5e7eb', // Abu-abu
 };
 
 export default function Kalender({ events }: { events: Event[] }) {
@@ -56,8 +48,8 @@ export default function Kalender({ events }: { events: Event[] }) {
         new Date(event.tanggal).getMonth() === month.getMonth() &&
         new Date(event.tanggal).getFullYear() === month.getFullYear()
     );
-    // Buat daftar legenda yang unik
-    const legendItems = [...new Map(eventsInCurrentMonth.map(item => [item.kategori, item])).values()];
+    // Buat daftar kategori yang unik untuk legenda
+    const uniqueCategories = [...new Set(eventsInCurrentMonth.map(item => item.kategori))];
 
     return (
         <div style={{ border: '1px solid #e5e7eb', padding: '1rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
@@ -87,10 +79,11 @@ export default function Kalender({ events }: { events: Event[] }) {
 
             {/* Legenda */}
             <div style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
-                {legendItems.map(item => (
-                    <div key={item.kategori} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                        <span style={{ width: '16px', height: '16px', backgroundColor: categoryColors[item.kategori || 'Umum'], marginRight: '8px', borderRadius: '4px' }}></span>
-                        <span>{item.judul}</span>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: 'bold' }}>Kategori:</h4>
+                {uniqueCategories.map(category => (
+                    <div key={category} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ width: '16px', height: '16px', backgroundColor: categoryColors[category || 'Umum'], marginRight: '8px', borderRadius: '4px' }}></span>
+                        <span>{category}</span>
                     </div>
                 ))}
             </div>

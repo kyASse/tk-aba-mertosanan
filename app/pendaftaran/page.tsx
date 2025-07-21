@@ -87,7 +87,18 @@ export default async function PendaftaranPage() {
                                                     Persyaratan Dokumen
                                                 </h3>
                                                 <ul className="ml-7 space-y-2 list-disc text-muted-foreground">
-                                                    <li>{persyaratan?.isi}</li>
+                                                    {persyaratan?.isi && typeof persyaratan.isi === 'object' && persyaratan.isi.persyaratan?.items ? (
+                                                        persyaratan.isi.persyaratan.items.map((item: string, index: number) => (
+                                                            <li key={index}>{item}</li>
+                                                        ))
+                                                    ) : (
+                                                        <>
+                                                            <li>Fotokopi Kartu Keluarga (KK)</li>
+                                                            <li>Fotokopi Akta Kelahiran Anak</li>
+                                                            <li>Pas foto berwarna ukuran 3x4 (2 lembar)</li>
+                                                            <li>Surat Keterangan Sehat (jika diperlukan)</li>
+                                                        </>
+                                                    )}
                                                 </ul>
                                             </div>
 
@@ -97,16 +108,27 @@ export default async function PendaftaranPage() {
                                                     Jadwal Pendaftaran
                                                 </h3>
                                                 <div className="bg-muted rounded-lg p-4">
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <div>
-                                                            <h4 className="font-medium">Gelombang I</h4>
-                                                            <p className="text-muted-foreground">{jadwal?.isi}</p>
+                                                    {jadwal?.isi && Array.isArray(jadwal.isi) ? (
+                                                        <div className="space-y-3">
+                                                            {jadwal.isi.map((item: any, index: number) => (
+                                                                <div key={index} className="flex justify-between items-center border-b border-gray-200 pb-2 last:border-b-0">
+                                                                    <span className="font-medium">{item.tanggal}</span>
+                                                                    <span className="text-muted-foreground">{item.kegiatan}</span>
+                                                                </div>
+                                                            ))}
                                                         </div>
-                                                        <div>
-                                                            <h4 className="font-medium">Gelombang II</h4>
-                                                            <p className="text-muted-foreground">{jadwal?.isi}</p>
+                                                    ) : (
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div>
+                                                                <h4 className="font-medium">Gelombang I</h4>
+                                                                <p className="text-muted-foreground">1 Februari - 31 Maret 2025</p>
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="font-medium">Gelombang II</h4>
+                                                                <p className="text-muted-foreground">1 April - 30 Juni 2025</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    )}
                                                 </div>
                                                 <p className="text-sm text-muted-foreground mt-2">
                                                     Jadwal pendaftaran dapat berubah sewaktu-waktu. Jika sudah melewati jadwal pendaftaran, silakan hubungi pihak sekolah.
@@ -151,7 +173,13 @@ export default async function PendaftaranPage() {
                                                     Catatan SPP
                                                 </h3>
                                                 <div className="bg-muted rounded-lg p-4">
-                                                    <p className="text-muted-foreground">{catatanSpp?.isi}</p>
+                                                    <p className="text-muted-foreground">
+                                                        {catatanSpp?.isi && typeof catatanSpp.isi === 'object' ? (
+                                                            JSON.stringify(catatanSpp.isi)
+                                                        ) : (
+                                                            catatanSpp?.isi || 'Informasi SPP akan disampaikan saat daftar ulang'
+                                                        )}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </CardContent>
