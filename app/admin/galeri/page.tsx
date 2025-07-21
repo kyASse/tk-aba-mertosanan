@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, ArrowLeft, ImageIcon } from "lucide-react";
@@ -36,25 +36,25 @@ export default async function KelolaGaleriPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Manajemen Galeri</h1>
                     <p className="text-gray-600">Kelola foto dan gambar untuk website sekolah</p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <Link href="/admin">
-                        <Button variant="outline" size="sm">
-                            <ArrowLeft className="w-4 h-4 mr-2" />
-                            Kembali
-                        </Button>
-                    </Link>
-                    <Link href="/admin/galeri/tambah">
-                        <Button>
-                            <Plus className="w-4 h-4 mr-2" />
-                            Tambah Foto
-                        </Button>
-                    </Link>
-                </div>
+            </div>
+            <div className="flex items-center justify-between mt-4">
+                <Link href="/admin">
+                    <Button variant="outline" size="sm">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Kembali
+                    </Button>
+                </Link>
+                <Link href="/admin/galeri/tambah">
+                    <Button>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Tambah Foto
+                    </Button>
+                </Link>
             </div>
 
             {/* Gallery Grid */}
