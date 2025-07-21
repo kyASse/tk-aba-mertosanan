@@ -164,7 +164,10 @@ export default async function PendaftaranPage() {
                                             </div>
 
                                             <div>
-                                                <h3 className="text-lg font-semibold mb-3 flex items-center"><Info className="mr-2 h-5 w-5 text-primary" />Catatan SPP</h3>
+                                                <h3 className="text-lg font-semibold mb-3 flex items-center">
+                                                    <Info className="mr-2 h-5 w-5 text-primary" />
+                                                    Catatan SPP
+                                                </h3>
                                                 <div className="bg-muted rounded-lg p-4">
                                                     <p className="text-muted-foreground">{catatanSpp?.catatan}</p>
                                                 </div>
