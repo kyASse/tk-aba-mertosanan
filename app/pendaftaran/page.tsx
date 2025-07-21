@@ -94,7 +94,12 @@ export default async function PendaftaranPage() {
                                         </CardHeader>
                                         <CardContent className="space-y-8">
                                             <div>
-                                                <h3 className="text-lg font-semibold mb-3 flex items-center"><Info className="mr-2 h-5 w-5 text-accent" />{persyaratan?.persyaratan.judul || 'Persyaratan Dokumen'}</h3>
+                                                <h3 
+                                                    className="text-lg font-semibold mb-3 flex items-center"
+                                                >
+                                                    <Info className="mr-2 h-5 w-5 text-accent" />
+                                                    {persyaratan?.persyaratan.judul || 'Persyaratan Dokumen'}
+                                                </h3>
                                                 <ul className="ml-7 space-y-2 list-disc text-muted-foreground">
                                                     {persyaratan?.persyaratan.items.map((item, index) => (
                                                         <li key={`syarat-${index}`}>{item}</li>
