@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { ArrowLeft, Upload, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Upload, ImageIcon, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const kategoriPilihan = [
@@ -25,33 +25,47 @@ const kategoriPilihan = [
     "Acara Khusus"
 ];
 
-export default function TambahGaleriPage() {
-    const [keterangan, setKeterangan] = useState('');
-    const [kategori, setKategori] = useState(kategoriPilihan[0]);
-    const [gambar, setGambar] = useState<File | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+const formSchema = z.object({
+    keterangan: z.string().min(1, "Keterangan harus diisi"),
+    kategori: z.string().min(1, "Kategori harus dipilih"),
+    gambar: z.any().refine((file) => file instanceof File, "File gambar harus dipilih")
+        .refine((file) => file && file.size <= 5000000, "Ukuran file maksimal 5MB")
+        .refine((file) => file && ['image/jpeg', 'image/png', 'image/webp'].includes(file.type), "Format file harus JPG, PNG, atau WebP")
+        .optional()
+});
 
+export default function TambahGaleriPage() {
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    
     const supabase = createClient();
     const router = useRouter();
+    
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            keterangan: '',
+            kategori: kategoriPilihan[0],
+            gambar: undefined
+        }
+    });
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError(null);
-
-        if (!gambar) {
-            setError('Silakan pilih file gambar.');
-            setIsLoading(false);
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        if (!values.gambar) {
+            toast.error('Silakan pilih gambar untuk galeri');
             return;
         }
 
+        setIsLoading(true);
+
         try {
-            const fileName = `${Date.now()}-${gambar.name.replace(/\s/g, '_')}`;
+            const fileName = `${Date.now()}-${values.gambar.name.replace(/\s/g, '_')}`;
             const filePath = `galeri/${fileName}`;
+            
             const { error: uploadError } = await supabase.storage
                 .from('konten-publik')
-                .upload(filePath, gambar);
+                .upload(filePath, values.gambar);
+            
             if (uploadError) throw uploadError;
 
             const { data: { publicUrl } } = supabase.storage
@@ -61,96 +75,211 @@ export default function TambahGaleriPage() {
             const { error: insertError } = await supabase
                 .from('galeri')
                 .insert({
-                    keterangan,
-                    kategori,
+                    keterangan: values.keterangan,
+                    kategori: values.kategori,
                     image_url: publicUrl
                 });
+            
             if (insertError) throw insertError;
 
-            alert('Foto berhasil ditambahkan ke galeri!');
+            toast.success('Foto berhasil ditambahkan ke galeri!');
             router.push('/admin/galeri');
             router.refresh();
-        } catch (err: any) {
-            setError('Gagal menambahkan foto: ' + err.message);
+        } catch (error) {
+            console.error('Upload error:', error);
+            toast.error('Gagal menambahkan foto: ' + (error as Error).message);
         } finally {
             setIsLoading(false);
         }
     };
 
+    const handleFileChange = (file: File | undefined) => {
+        if (file) {
+            const url = URL.createObjectURL(file);
+            setImagePreview(url);
+            form.setValue('gambar', file);
+        } else {
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+            setImagePreview(null);
+            form.setValue('gambar', undefined);
+        }
+    };
+
+    const removeImage = () => {
+        if (imagePreview) {
+            URL.revokeObjectURL(imagePreview);
+        }
+        setImagePreview(null);
+        form.setValue('gambar', undefined);
+    };
+
     return (
-        <div className="max-w-2xl mx-auto py-8 px-4">
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                <h1 className="text-2xl font-bold">Tambah Foto Galeri</h1>
-                <Link href="/admin/galeri" className="text-blue-600 hover:underline">
-                    &larr; Kembali ke Galeri
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Tambah Foto Galeri</h1>
+                    <p className="text-gray-600">Upload foto baru untuk galeri sekolah</p>
+                </div>
+            </div>
+            <div>
+                <Link href="/admin/galeri">
+                    <Button variant="outline" size="sm">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Kembali
+                    </Button>
                 </Link>
             </div>
-            <hr className="my-4" />
 
-            <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
-                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                    <div>
-                        <label htmlFor="keterangan" className="font-medium block mb-1">Keterangan/Judul Foto</label>
-                        <input
-                            id="keterangan"
-                            type="text"
-                            value={keterangan}
-                            onChange={(e) => setKeterangan(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-400"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="kategori" className="font-medium block mb-1">Kategori</label>
-                        <select
-                            id="kategori"
-                            value={kategori}
-                            onChange={(e) => setKategori(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-400"
-                        >
-                            {kategoriPilihan.map(kat => (
-                                <option key={kat} value={kat}>{kat}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="gambar" className="font-medium block mb-1">Pilih File Gambar</label>
-                        <input
-                            id="gambar"
-                            type="file"
-                            onChange={(e) => {
-                                if (e.target.files) {
-                                    const file = e.target.files[0];
-                                    if (objectURL) {
-                                        URL.revokeObjectURL(objectURL);
-                                    }
-                                    setObjectURL(URL.createObjectURL(file));
-                                    setGambar(file);
-                                }
-                            }}
-                            accept="image/png, image/jpeg"
-                            required
-                            className="block"
-                        />
-                        {gambar && (
-                            <img
-                                src={objectURL}
-                                alt="Preview"
-                                className="mt-3 max-w-xs max-h-48 rounded shadow border"
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Upload className="w-5 h-5" />
+                        Informasi Foto
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                            <FormField
+                                control={form.control}
+                                name="keterangan"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Keterangan/Judul Foto</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Masukkan keterangan foto" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
-                        )}
-                    </div>
-                    {error && <p className="text-red-600">{error}</p>}
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full py-3 rounded font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow hover:from-blue-600 hover:to-cyan-500 transition"
-                    >
-                        {isLoading ? 'Mengupload...' : 'Simpan Foto'}
-                    </button>
-                </form>
-            </div>
+
+                            <FormField
+                                control={form.control}
+                                name="kategori"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Kategori</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Pilih kategori foto" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {kategoriPilihan.map((kat) => (
+                                                    <SelectItem key={kat} value={kat}>
+                                                        {kat}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="gambar"
+                                render={() => (
+                                    <FormItem>
+                                        <FormLabel>File Gambar *</FormLabel>
+                                        <FormControl>
+                                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                                                {imagePreview ? (
+                                                    <div className="relative">
+                                                        <Image
+                                                            src={imagePreview}
+                                                            alt="Preview"
+                                                            width={500}
+                                                            height={192}
+                                                            className="w-full h-auto object-cover rounded-lg"
+                                                            unoptimized={true}
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            variant="destructive"
+                                                            size="sm"
+                                                            className="absolute top-2 right-2"
+                                                            onClick={removeImage}
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <div 
+                                                        className="text-center"
+                                                        onDrop={(e) => {
+                                                            e.preventDefault();
+                                                            const file = e.dataTransfer.files?.[0];
+                                                            if (file && file.type.startsWith('image/')) {
+                                                                handleFileChange(file);
+                                                            }
+                                                        }}
+                                                        onDragOver={(e) => {
+                                                            e.preventDefault();
+                                                        }}
+                                                        onDragEnter={(e) => {
+                                                            e.preventDefault();
+                                                        }}
+                                                    >
+                                                        <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                                                        <div className="mt-4">
+                                                            <Label htmlFor="image-upload" className="cursor-pointer">
+                                                                <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                                                                    <Upload className="w-4 h-4" />
+                                                                    Pilih gambar atau drag & drop
+                                                                </div>
+                                                            </Label>
+                                                            <Input
+                                                                id="image-upload"
+                                                                type="file"
+                                                                accept="image/jpeg,image/png,image/webp"
+                                                                onChange={(e) => {
+                                                                    const file = e.target.files?.[0];
+                                                                    handleFileChange(file);
+                                                                }}
+                                                                className="hidden"
+                                                            />
+                                                        </div>
+                                                        <p className="text-xs text-gray-500 mt-2">JPG, PNG, WebP maksimal 5MB</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="flex gap-3">
+                                <Button type="submit" disabled={isLoading} className="flex-1">
+                                    {isLoading ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                            Mengupload...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Upload className="w-4 h-4 mr-2" />
+                                            Simpan Foto
+                                        </>
+                                    )}
+                                </Button>
+                                <Link href="/admin/galeri">
+                                    <Button type="button" variant="outline">
+                                        Batal
+                                    </Button>
+                                </Link>
+                            </div>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
         </div>
     );
 }
