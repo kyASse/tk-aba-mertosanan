@@ -5,6 +5,8 @@ import LogoutButton from "@/components/logout-button"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { 
   BookOpen, 
   Users, 
@@ -16,6 +18,11 @@ import {
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
+  
+  // Debug environment variables
+  console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+  console.log('Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
@@ -28,11 +35,16 @@ export default async function AdminDashboard() {
     .eq('id', user.id)
     .single()
 
-  // Fetch data untuk dashboard
-  const MAX_RECENT_NEWS = 3
-  const { data: recentNews } = await supabase
+  // Test koneksi sederhana terlebih dahulu
+  const { data: testData, error: testError } = await supabase
     .from('berita')
-    .select('id, judul, ringkasan, created_at')
+    .select('*')
+
+  // Fetch data untuk dashboard - simplified query first
+  const MAX_RECENT_NEWS = 5
+  const { data: recentNews, error: newsError } = await supabase
+    .from('berita')
+    .select('*')
     .order('created_at', { ascending: false })
     .limit(MAX_RECENT_NEWS)
 
@@ -46,6 +58,25 @@ export default async function AdminDashboard() {
   const pendaftarDisetujui = pendaftarStats?.filter(p => p.status === 'diterima').length || 0
   const validasiUlang = pendaftarStats?.filter(p => p.status === 'validasi_ulang').length || 0
   const pendaftarDitolak = pendaftarStats?.filter(p => p.status === 'ditolak').length || 0
+
+      // Debug logs untuk memastikan data berhasil diambil
+      console.log('=== Admin Dashboard Debug Logs ===')
+      console.log('User:', user?.id)
+      console.log('Profile:', profile)
+      console.log('Test Data:', testData)
+      console.log('Test Error:', testError)
+      console.log('News Error:', newsError)
+      console.log('Recent News Count:', recentNews?.length || 0)
+      console.log('Recent News Data:', recentNews)
+      console.log('Pendaftar Stats Count:', pendaftarStats?.length || 0)
+      console.log('Statistics:', {
+        totalPendaftar,
+        menungguPersetujuan,
+        pendaftarDisetujui,
+        validasiUlang,
+        pendaftarDitolak
+      })
+      console.log('=====================================')
 
   return (
     <div className="w-full space-y-6">
@@ -66,30 +97,68 @@ export default async function AdminDashboard() {
           <CardTitle className="text-xl">Pembaruan Berita Terkini</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-semibold text-gray-700">Judul</div>
-              <div className="font-semibold text-gray-700">Ringkasan</div>
-              <div className="font-semibold text-gray-700">Tanggal</div>
+          {recentNews && recentNews.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Judul</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Tanggal Dibuat</TableHead>
+                  <TableHead className="w-[100px]">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentNews.map((berita) => {
+                  
+                  // Status badge dengan warna yang tepat
+                  const getStatusColor = (status: string | null) => {
+                    switch (status) {
+                      case 'published': return 'default'
+                      case 'draft': return 'secondary'  
+                      case 'archived': return 'outline'
+                      default: return 'secondary' // default untuk null/undefined
+                    }
+                  }
+                  
+                  const getStatusText = (status: string | null) => {
+                    switch (status) {
+                      case 'published': return 'Terpublikasi'
+                      case 'draft': return 'Draf'
+                      case 'archived': return 'Diarsipkan' 
+                      default: return 'Draf'
+                    }
+                  }
+                  
+                  return (
+                    <TableRow key={berita.id}>
+                      <TableCell className="font-medium">
+                        {berita.judul}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={getStatusColor(berita.status)}>
+                          {getStatusText(berita.status)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(berita.created_at).toLocaleDateString('id-ID')}
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link href={`/admin/berita/edit/${berita.id}`}>
+                            <Edit className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              Belum ada berita terbaru
             </div>
-            {recentNews && recentNews.length > 0 ? (
-              recentNews.map((berita) => (
-                <div key={berita.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 py-3 border-b border-gray-100">
-                  <div className="text-gray-900">{berita.judul}</div>
-                  <div className="text-gray-600">
-                    {berita.ringkasan}
-                  </div>
-                  <div className="text-gray-600">
-                    {new Date(berita.created_at).toLocaleDateString('id-ID')}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                Belum ada berita terbaru
-              </div>
-            )}
-          </div>
+          )}
         </CardContent>
       </Card>
 
@@ -183,6 +252,15 @@ export default async function AdminDashboard() {
               >
                 <TrendingUp className="w-4 h-4 mr-2" />
                 Kelola Akademik
+              </Button>
+            </Link>
+            <Link href="/admin/kalender">
+              <Button 
+                variant="outline" 
+                className="bg-orange-100 hover:bg-orange-200 text-orange-800 border-orange-300"
+              >
+                <BookOpen className="w-4 h-4 mr-2" />
+                Kelola Kalender
               </Button>
             </Link>
           </div>
