@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye } from "lucide-react";
 import PendaftarSearch from "./PendaftarSearch";
 
@@ -40,19 +41,28 @@ export default function PendaftarTable({ pendaftar }: PendaftarTableProps) {
         });
     }, [pendaftar, searchQuery]);
 
-    // Helper function untuk status badge
+    // Helper function untuk status badge dengan variant yang konsisten
     const getStatusBadge = (status: string | null) => {
         switch (status) {
+        case 'diterima':
+            return <Badge variant="default" className="bg-green-100 text-green-800 border-green-300">Diterima</Badge>;
+        case 'menunggu_persetujuan':
+            return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-300">Menunggu Persetujuan</Badge>;
+        case 'validasi_ulang':
+            return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">Validasi Ulang</Badge>;
+        case 'ditolak':
+            return <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-300">Ditolak</Badge>;
+        // Legacy status support (jika ada yang masih menggunakan format lama)
         case 'Diterima':
-            return <Badge className="bg-green-100 text-green-800 border-green-300">Diterima</Badge>;
+            return <Badge variant="default" className="bg-green-100 text-green-800 border-green-300">Diterima</Badge>;
         case 'Menunggu Persetujuan':
-            return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">Menunggu Persetujuan</Badge>;
+            return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-300">Menunggu Persetujuan</Badge>;
         case 'Validasi Ulang':
-            return <Badge className="bg-blue-100 text-blue-800 border-blue-300">Validasi Ulang</Badge>;
+            return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">Validasi Ulang</Badge>;
         case 'Ditolak':
-            return <Badge className="bg-red-100 text-red-800 border-red-300">Ditolak</Badge>;
+            return <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-300">Ditolak</Badge>;
         default:
-            return <Badge className="bg-gray-100 text-gray-800 border-gray-300">Belum Divalidasi</Badge>;
+            return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">Belum Divalidasi</Badge>;
         }
     };
 
@@ -70,57 +80,55 @@ export default function PendaftarTable({ pendaftar }: PendaftarTableProps) {
                     <CardTitle>Daftar Siswa</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b">
-                                <th className="text-left py-3 px-4 font-medium text-gray-700">Id</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-700">Nama Anak</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-700">Nama Orang Tua</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-700">Jenis Kelamin</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-700">Tanggal Daftar</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-700">Status Pendaftaran</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-700">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredPendaftar && filteredPendaftar.length > 0 ? (
-                                    filteredPendaftar.map((item: Pendaftar, index: number) => (
-                                        <tr key={item.id} className="border-b hover:bg-gray-50">
-                                            <td className="py-3 px-4">TK25-{String(index + 1).padStart(2, '0')}</td>
-                                            <td className="py-3 px-4 font-medium">{item.nama_lengkap || 'Nama tidak tersedia'}</td>
-                                            <td className="py-3 px-4">
-                                                {item.nama_ayah_kandung || 'Tidak tersedia'} / {item.nama_ibu_kandung || 'Tidak tersedia'}
-                                            </td>
-                                            <td className="py-3 px-4">
-                                                {item.jenis_kelamin === 'L' ? 'Laki-laki' : 
-                                                item.jenis_kelamin === 'P' ? 'Perempuan' : 
-                                                item.jenis_kelamin || 'Tidak tersedia'}
-                                            </td>
-                                            <td className="py-3 px-4">{new Date(item.created_at).toLocaleDateString('id-ID')}</td>
-                                            <td className="py-3 px-4">
-                                                {getStatusBadge(item.status_pendaftaran)}
-                                            </td>
-                                            <td className="py-3 px-4">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Id</TableHead>
+                                <TableHead>Nama Anak</TableHead>
+                                <TableHead>Nama Orang Tua</TableHead>
+                                <TableHead>Jenis Kelamin</TableHead>
+                                <TableHead>Tanggal Daftar</TableHead>
+                                <TableHead>Status Pendaftaran</TableHead>
+                                <TableHead className="w-[100px]">Aksi</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredPendaftar && filteredPendaftar.length > 0 ? (
+                                filteredPendaftar.map((item: Pendaftar, index: number) => (
+                                    <TableRow key={item.id}>
+                                        <TableCell>TK25-{String(index + 1).padStart(2, '0')}</TableCell>
+                                        <TableCell className="font-medium">{item.nama_lengkap || 'Nama tidak tersedia'}</TableCell>
+                                        <TableCell>
+                                            {item.nama_ayah_kandung || 'Tidak tersedia'} / {item.nama_ibu_kandung || 'Tidak tersedia'}
+                                        </TableCell>
+                                        <TableCell>
+                                            {item.jenis_kelamin === 'L' ? 'Laki-laki' : 
+                                            item.jenis_kelamin === 'P' ? 'Perempuan' : 
+                                            item.jenis_kelamin || 'Tidak tersedia'}
+                                        </TableCell>
+                                        <TableCell>{new Date(item.created_at).toLocaleDateString('id-ID')}</TableCell>
+                                        <TableCell>
+                                            {getStatusBadge(item.status_pendaftaran)}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button variant="outline" size="sm" asChild>
                                                 <Link href={`/admin/pendaftar/detail/${item.id}`}>
-                                                <Button variant="outline" size="sm">
                                                     <Eye className="h-4 w-4 mr-1" />
                                                     Lihat Detail
-                                                </Button>
                                                 </Link>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan={7} className="text-center py-8 text-gray-500">
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                                         {searchQuery ? 'Tidak ada hasil yang ditemukan.' : 'Belum ada pendaftar baru.'}
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
                 </CardContent>
             </Card>
         </div>
