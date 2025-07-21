@@ -9,10 +9,12 @@ import { format, isWithinInterval } from 'date-fns';
 
 type Event = {
     id: number;
-    nama_kegiatan: string;
-    tanggal_mulai: string;
-    tanggal_selesai: string | null;
-    kategori: string | null;
+    judul: string;
+    tanggal: string;
+    waktu?: string;
+    deskripsi?: string;
+    kategori: string;
+    warna: string;
 };
 
 // Definisikan warna untuk setiap kategori
@@ -36,15 +38,8 @@ export default function Kalender({ events }: { events: Event[] }) {
             modifiers[category] = [];
         }
 
-        if (event.tanggal_selesai) {
-            // Jika ada rentang tanggal
-            const start = new Date(event.tanggal_mulai);
-            const end = new Date(event.tanggal_selesai);
-            modifiers[category].push({ from: start, to: end });
-        } else {
-            // Jika hanya satu tanggal
-            modifiers[category].push(new Date(event.tanggal_mulai));
-        }
+        // Gunakan tanggal tunggal (tidak ada rentang tanggal di schema baru)
+        modifiers[category].push(new Date(event.tanggal));
     });
 
     // Buat objek style dinamis dari kategori
@@ -58,8 +53,8 @@ export default function Kalender({ events }: { events: Event[] }) {
     
     // Ambil event yang ada di bulan yang sedang ditampilkan untuk legenda
     const eventsInCurrentMonth = events.filter(event => 
-        new Date(event.tanggal_mulai).getMonth() === month.getMonth() &&
-        new Date(event.tanggal_mulai).getFullYear() === month.getFullYear()
+        new Date(event.tanggal).getMonth() === month.getMonth() &&
+        new Date(event.tanggal).getFullYear() === month.getFullYear()
     );
     // Buat daftar legenda yang unik
     const legendItems = [...new Map(eventsInCurrentMonth.map(item => [item.kategori, item])).values()];
@@ -95,7 +90,7 @@ export default function Kalender({ events }: { events: Event[] }) {
                 {legendItems.map(item => (
                     <div key={item.kategori} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                         <span style={{ width: '16px', height: '16px', backgroundColor: categoryColors[item.kategori || 'Umum'], marginRight: '8px', borderRadius: '4px' }}></span>
-                        <span>{item.nama_kegiatan}</span>
+                        <span>{item.judul}</span>
                     </div>
                 ))}
             </div>

@@ -4,6 +4,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import ProgramDetails from "@/components/program/ProgramDetails";
 import ActivityCard from "@/components/program/ActivityCard";
 import ExtraActivity from "@/components/program/ExtraActivity";
+import KalenderAkademik from "@/components/kalender/KalenderAkademik";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Award, BookOpen, Calendar, ChevronRight, Phone } from "lucide-react";
@@ -378,6 +379,18 @@ export default function Program() {
                             </Button>
                         </Link>
                     </div>
+                </div>
+            </section>
+
+            {/* Interactive Calendar */}
+            <section className="py-16 bg-gray-50">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-3xl font-bold text-center mb-4">Kalender Interaktif</h2>
+                    <p className="text-lg text-muted-foreground text-center max-w-3xl mx-auto mb-12">
+                        Lihat dan jelajahi kalender akademik secara interaktif untuk informasi kegiatan yang lebih detail
+                    </p>
+                    
+                    <KalenderAkademik />
                 </div>
             </section>
 

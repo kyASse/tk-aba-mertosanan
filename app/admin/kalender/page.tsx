@@ -12,7 +12,7 @@ export default async function KelolaKalenderPage() {
     const { data: kegiatan } = await supabase
         .from('kalender_akademik')
         .select('*')
-        .order('tanggal_mulai', { ascending: true });
+        .order('tanggal', { ascending: true });
 
     return (
         <div>
@@ -22,9 +22,9 @@ export default async function KelolaKalenderPage() {
             <table>
                 <thead>
                     <tr>
-                        <th>Nama Kegiatan</th>
-                        <th>Tanggal Mulai</th>
-                        <th>Tanggal Selesai</th>
+                        <th>Judul</th>
+                        <th>Tanggal</th>
+                        <th>Waktu</th>
                         <th>Kategori</th>
                         <th>Aksi</th>
                     </tr>
@@ -32,9 +32,9 @@ export default async function KelolaKalenderPage() {
                 <tbody>
                     {kegiatan?.map(item => (
                         <tr key={item.id}>
-                            <td>{item.nama_kegiatan}</td>
-                            <td>{new Date(item.tanggal_mulai).toLocaleDateString('id-ID')}</td>
-                            <td>{item.tanggal_selesai ? new Date(item.tanggal_selesai).toLocaleDateString('id-ID') : '-'}</td>
+                            <td>{item.judul}</td>
+                            <td>{new Date(item.tanggal).toLocaleDateString('id-ID')}</td>
+                            <td>{item.waktu || '-'}</td>
                             <td>{item.kategori}</td>
                             <td>
                                 <DeleteKegiatanButton kegiatanId={item.id} />

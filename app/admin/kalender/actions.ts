@@ -7,11 +7,12 @@ import { redirect } from "next/navigation";
 export async function createKegiatanAction(prevState: any, formData: FormData) {
     const supabase = await createClient();
     const data = {
-        nama_kegiatan: formData.get('nama_kegiatan') as string,
-        tanggal_mulai: formData.get('tanggal_mulai') as string,
-        tanggal_selesai: (formData.get('tanggal_selesai') as string) || null,
+        judul: formData.get('judul') as string,
+        tanggal: formData.get('tanggal') as string,
+        waktu: (formData.get('waktu') as string) || null,
         kategori: formData.get('kategori') as string,
-        keterangan: formData.get('keterangan') as string,
+        deskripsi: formData.get('deskripsi') as string,
+        warna: formData.get('warna') as string || '#3b82f6',
     };
     const { error } = await supabase.from('kalender_akademik').insert(data);
     if (error) { return { success: false, message: error.message }; }

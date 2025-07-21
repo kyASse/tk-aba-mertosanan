@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+
 const kategoriPilihan = [
     "Kegiatan Belajar",
     "Bermain",
