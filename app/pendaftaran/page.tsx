@@ -86,7 +86,10 @@ export default async function PendaftaranPage() {
                                 <TabsContent value="requirements">
                                     <Card>
                                         <CardHeader>
-                                            <CardTitle className="flex items-center"><FileText className="mr-2 h-5 w-5 text-primary" />Persyaratan Pendaftaran</CardTitle>
+                                            <CardTitle className="flex items-center">
+                                                <FileText className="mr-2 h-5 w-5 text-primary" />
+                                                Persyaratan Pendaftaran
+                                            </CardTitle>
                                             <CardDescription>Informasi tentang persyaratan, jadwal, dan biaya pendaftaran siswa baru</CardDescription>
                                         </CardHeader>
                                         <CardContent className="space-y-8">
