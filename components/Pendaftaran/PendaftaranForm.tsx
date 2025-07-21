@@ -182,7 +182,13 @@ export default function PendaftaranForm() {
                 tinggi_badan: values.tinggi_badan ? parseInt(values.tinggi_badan) : null,
                 jalur_pendaftaran: "Online",
                 memiliki_kebutuhan_khusus: values.memiliki_kebutuhan_khusus,
-                jenis_kebutuhan_khusus: values.memiliki_kebutuhan_khusus ? values.jenis_kebutuhan_khusus : [],
+                jenis_kebutuhan_khusus: values.memiliki_kebutuhan_khusus
+                    ? (Array.isArray(values.jenis_kebutuhan_khusus)
+                        ? values.jenis_kebutuhan_khusus
+                        : (typeof values.jenis_kebutuhan_khusus === "string"
+                            ? JSON.parse(values.jenis_kebutuhan_khusus)
+                            : []))
+                    : [],
                 deskripsi_kebutuhan_khusus: values.memiliki_kebutuhan_khusus ? values.deskripsi_kebutuhan_khusus : "",
                 dokumen_pendukung_url: dokumen_pendukung_url,
             };

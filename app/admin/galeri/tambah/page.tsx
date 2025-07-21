@@ -25,13 +25,14 @@ const kategoriPilihan = [
     "Acara Khusus"
 ];
 
+const fileSchema = z.instanceof(File)
+    .refine((file) => file.size <= 5000000, "Ukuran file maksimal 5MB")
+    .refine((file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type), "Format file harus JPG, PNG, atau WebP");
+
 const formSchema = z.object({
     keterangan: z.string().min(1, "Keterangan harus diisi"),
     kategori: z.string().min(1, "Kategori harus dipilih"),
-    gambar: z.any().refine((file) => file instanceof File, "File gambar harus dipilih")
-        .refine((file) => file && file.size <= 5000000, "Ukuran file maksimal 5MB")
-        .refine((file) => file && ['image/jpeg', 'image/png', 'image/webp'].includes(file.type), "Format file harus JPG, PNG, atau WebP")
-        .optional()
+    gambar: fileSchema.optional()
 });
 
 export default function TambahGaleriPage() {
