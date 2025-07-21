@@ -1,9 +1,11 @@
-// app/admin/galeri/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Image from 'next/image';
-// Kita akan buat komponen DeleteImageButton selanjutnya
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Plus, ArrowLeft, ImageIcon } from "lucide-react";
 import DeleteImageButton from "./DeleteImageButton"; 
 import EditImageButton from "./EditImageButton";
 
@@ -32,37 +34,83 @@ export default async function KelolaGaleriPage() {
     }
 
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h1>Manajemen Galeri</h1>
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Manajemen Galeri</h1>
+                    <p className="text-gray-600">Kelola foto dan gambar untuk website sekolah</p>
+                </div>
+            </div>
+            <div className="flex items-center justify-between mt-4">
+                <Link href="/admin">
+                    <Button variant="outline" size="sm">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Kembali
+                    </Button>
+                </Link>
                 <Link href="/admin/galeri/tambah">
-                    <button>+ Tambah Foto Baru</button>
+                    <Button>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Tambah Foto
+                    </Button>
                 </Link>
             </div>
-            <Link href="/admin">Kembali ke Dasbor</Link>
-            <hr style={{ margin: '1rem 0' }} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
-                {galeri && galeri.length > 0 ? (
-                    galeri.map((item: GaleriItem) => (
-                        <div key={item.id} style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '1rem', textAlign: 'center' }}>
-                            <Image src={item.image_url} alt={item.keterangan || 'Gambar Galeri'} width={250} height={250} style={{ objectFit: 'cover', width: '100%', height: '200px', marginBottom: '1rem' }} />
-                            <p><strong>{item.keterangan}</strong></p>
-                            <p><small>Kategori: {item.kategori}</small></p>
-                            <EditImageButton
-                                galeriId={item.id}
-                                imageUrl={item.image_url}
-                                keterangan={item.keterangan}
-                                kategori={item.kategori}
-                                // onUpdated={() => refreshData()} // opsional, jika ingin refresh data setelah edit
-                            />
-                            <DeleteImageButton galeriId={item.id} imageUrl={item.image_url} /> 
+            {/* Gallery Grid */}
+            {galeri && galeri.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {galeri.map((item: GaleriItem) => (
+                        <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                            <div className="relative aspect-square">
+                                <Image 
+                                    src={item.image_url} 
+                                    alt={item.keterangan || 'Gambar Galeri'} 
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <CardContent className="p-4">
+                                <div className="space-y-2">
+                                    <h3 className="font-semibold text-sm line-clamp-2">
+                                        {item.keterangan || 'Tanpa Keterangan'}
+                                    </h3>
+                                    {item.kategori && (
+                                        <Badge variant="secondary" className="text-xs">
+                                            {item.kategori}
+                                        </Badge>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-2 mt-4">
+                                    <EditImageButton
+                                        galeriId={item.id}
+                                        imageUrl={item.image_url}
+                                        keterangan={item.keterangan}
+                                        kategori={item.kategori}
+                                    />
+                                    <DeleteImageButton galeriId={item.id} imageUrl={item.image_url} /> 
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            ) : (
+                <Card className="p-12 text-center">
+                    <div className="flex flex-col items-center gap-4">
+                        <ImageIcon className="w-12 h-12 text-gray-400" />
+                        <div>
+                            <h3 className="font-semibold text-gray-900">Galeri masih kosong</h3>
+                            <p className="text-gray-600">Tambahkan foto pertama untuk memulai galeri</p>
                         </div>
-                    ))
-                ) : (
-                    <p>Galeri masih kosong. Silakan tambahkan foto baru.</p>
-                )}
-            </div>
+                        <Link href="/admin/galeri/tambah">
+                            <Button>
+                                <Plus className="w-4 h-4 mr-2" />
+                                Tambah Foto Pertama
+                            </Button>
+                        </Link>
+                    </div>
+                </Card>
+            )}
         </div>
     );
 }

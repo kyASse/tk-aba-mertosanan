@@ -1,7 +1,21 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 import { deleteGaleriAction } from './actions';
+import { Button } from '@/components/ui/button';
+import { 
+    AlertDialog, 
+    AlertDialogAction, 
+    AlertDialogCancel, 
+    AlertDialogContent, 
+    AlertDialogDescription, 
+    AlertDialogFooter, 
+    AlertDialogHeader, 
+    AlertDialogTitle, 
+    AlertDialogTrigger 
+} from '@/components/ui/alert-dialog';
+import { Trash2, Loader2, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 
 type Props = {
     galeriId: number;
@@ -10,105 +24,80 @@ type Props = {
 
 export default function DeleteImageButton({ galeriId, imageUrl }: Props) {
     const [isPending, startTransition] = useTransition();
-    const [showConfirm, setShowConfirm] = useState(false);
-
-    const handleDelete = () => {
-        setShowConfirm(true);
-    };
 
     const handleConfirm = () => {
-        setShowConfirm(false);
         startTransition(async () => {
-            const result = await deleteGaleriAction(galeriId, imageUrl);
-            if (!result.success) alert(result.message);
+            try {
+                const result = await deleteGaleriAction(galeriId, imageUrl);
+                if (result.success) {
+                    toast.success("Berhasil!", {
+                        description: "Gambar berhasil dihapus dari galeri",
+                    });
+                } else {
+                    toast.error("Gagal menghapus gambar", {
+                        description: result.message || "Terjadi kesalahan saat menghapus gambar",
+                    });
+                }
+            } catch {
+                toast.error("Terjadi kesalahan", {
+                    description: "Silakan coba lagi atau hubungi administrator",
+                });
+            }
         });
     };
 
     return (
-        <>
-            <button
-                onClick={handleDelete}
-                disabled={isPending}
-                style={{
-                    background: "linear-gradient(90deg, #ff5858 0%, #ff7e5f 100%)",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 6,
-                    padding: "8px 18px",
-                    fontWeight: 600,
-                    cursor: isPending ? "not-allowed" : "pointer",
-                    opacity: isPending ? 0.7 : 1,
-                    boxShadow: "0 2px 8px 0 rgba(255, 87, 34, 0.08)",
-                    transition: "background 0.2s, box-shadow 0.2s",
-                    marginLeft: 8,
-                }}
-                onMouseOver={e => (e.currentTarget.style.background = "#ff1744")}
-                onMouseOut={e => (e.currentTarget.style.background = "linear-gradient(90deg, #ff5858 0%, #ff7e5f 100%)")}
-            >
-                {isPending ? "Menghapus..." : "🗑️ Hapus"}
-            </button>
-            {showConfirm && (
-                <div style={{
-                    position: "fixed",
-                    top: 0, left: 0, width: "100vw", height: "100vh",
-                    background: "rgba(0,0,0,0.35)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    zIndex: 200,
-                }}>
-                    <div style={{
-                        background: "#fff",
-                        padding: 28,
-                        borderRadius: 12,
-                        minWidth: 320,
-                        boxShadow: "0 8px 32px 0 rgba(0,0,0,0.18)",
-                        textAlign: "center",
-                        position: "relative"
-                    }}>
-                        <div style={{ fontSize: 32, marginBottom: 12 }}>⚠️</div>
-                        <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>
-                            Hapus Gambar?
-                        </div>
-                        <div style={{ color: "#555", marginBottom: 18 }}>
-                            Apakah Anda yakin ingin menghapus gambar ini dari galeri?<br />
-                            Tindakan ini tidak dapat dibatalkan.
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
-                            <button
-                                onClick={() => setShowConfirm(false)}
-                                style={{
-                                    background: "#eee",
-                                    color: "#333",
-                                    border: "none",
-                                    borderRadius: 6,
-                                    padding: "8px 18px",
-                                    fontWeight: 600,
-                                    cursor: "pointer",
-                                }}
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={handleConfirm}
-                                disabled={isPending}
-                                style={{
-                                    background: "linear-gradient(90deg, #ff5858 0%, #ff7e5f 100%)",
-                                    color: "#fff",
-                                    border: "none",
-                                    borderRadius: 6,
-                                    padding: "8px 18px",
-                                    fontWeight: 600,
-                                    cursor: isPending ? "not-allowed" : "pointer",
-                                    opacity: isPending ? 0.7 : 1,
-                                }}
-                            >
-                                {isPending ? "Menghapus..." : "Ya, Hapus"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    disabled={isPending}
+                >
+                    {isPending ? (
+                        <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Menghapus...
+                        </>
+                    ) : (
+                        <>
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Hapus
+                        </>
+                    )}
+                </Button>
+            </AlertDialogTrigger>
+            
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle className="flex items-center gap-2">
+                        <AlertTriangle className="w-5 h-5 text-red-600" />
+                        Hapus Gambar?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Apakah Anda yakin ingin menghapus gambar ini dari galeri? 
+                        Tindakan ini tidak dapat dibatalkan.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogAction 
+                        onClick={handleConfirm}
+                        disabled={isPending}
+                        className="bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isPending ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Menghapus...
+                            </>
+                        ) : (
+                            "Ya, Hapus"
+                        )}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     );
 }
