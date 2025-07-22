@@ -41,11 +41,11 @@ export default async function AdminDashboard() {
     .select('*')
 
   // Hitung statistik pendaftar
-  const totalPendaftar = pendaftarStats?.length || 0
-  const menungguPersetujuan = pendaftarStats?.filter(p => p.status === 'menunggu_persetujuan').length || 0
-  const pendaftarDisetujui = pendaftarStats?.filter(p => p.status === 'diterima').length || 0
-  const validasiUlang = pendaftarStats?.filter(p => p.status === 'validasi_ulang').length || 0
-  const pendaftarDitolak = pendaftarStats?.filter(p => p.status === 'ditolak').length || 0
+  const totalPendaftar = pendaftarStats?.length || 0;
+  const menungguPersetujuan = pendaftarStats?.filter(p => p.status_pendaftaran != 'Diterima' && p.status_pendaftaran != 'Revisi' && p.status_pendaftaran != 'Ditolak').length || 0;
+  const pendaftarDisetujui = pendaftarStats?.filter(p => p.status_pendaftaran === 'Diterima').length || 0;
+  const validasiUlang = pendaftarStats?.filter(p => p.status_pendaftaran === 'Revisi').length || 0;
+  const pendaftarDitolak = pendaftarStats?.filter(p => p.status_pendaftaran === 'Ditolak').length || 0;
 
   return (
     <div className="w-full space-y-6">
