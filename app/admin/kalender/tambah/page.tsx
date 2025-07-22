@@ -1,51 +1,47 @@
 // app/admin/kalender/tambah/page.tsx
-'use client';
-import { createKegiatanAction } from '../actions';
 import Link from 'next/link';
-import { useFormState, useFormStatus } from 'react-dom';
-
-function SubmitButton() {
-    const { pending } = useFormStatus();
-    return <button type="submit" disabled={pending}>{pending ? 'Menyimpan...' : 'Simpan Kegiatan'}</button>
-}
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar, ArrowLeft } from "lucide-react";
+import TambahKegiatanForm from "./TambahKegiatanForm";
 
 export default function TambahKegiatanPage() {
-    const [state, formAction] = useFormState(createKegiatanAction, { success: false, message: "" });
     return (
-        <div>
-            <h1>Tambah Kegiatan Baru</h1>
-            <Link href="/admin/kalender">Kembali</Link>
-            <hr />
-            <form action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '500px' }}>
-                <div>
-                    <label>Nama Kegiatan</label>
-                    <input name="nama_kegiatan" required />
+        <div className="max-w-4xl mx-auto py-8 px-4">
+            {/* Header Section */}
+            <div className="mb-8">
+                <div className="flex items-center gap-4 mb-4">
+                    <Button variant="ghost" size="sm" asChild className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                        <Link href="/admin/kalender" className="flex items-center gap-2">
+                            <ArrowLeft className="w-4 h-4" />
+                            Kembali ke Kalender
+                        </Link>
+                    </Button>
                 </div>
-                <div>
-                    <label>Tanggal Mulai</label>
-                    <input name="tanggal_mulai" type="date" required />
+                
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Calendar className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">Tambah Kegiatan Akademik</h1>
+                        <p className="text-gray-600 mt-1">Buat kegiatan baru untuk kalender akademik</p>
+                    </div>
                 </div>
-                <div>
-                    <label>Tanggal Selesai (kosongkan jika hanya 1 hari)</label>
-                    <input name="tanggal_selesai" type="date" />
-                </div>
-                <div>
-                    <label>Kategori (untuk warna di kalender)</label>
-                    <select name="kategori" required>
-                        <option>Libur</option>
-                        <option>Acara Sekolah</option>
-                        <option>Peringatan</option>
-                        <option>Ujian</option>
-                        <option>Umum</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Keterangan (Opsional)</label>
-                    <textarea name="keterangan" rows={3}></textarea>
-                </div>
-                {state && !state.success && <p style={{ color: 'red' }}>{state.message}</p>}
-                <SubmitButton />
-            </form>
+            </div>
+
+            {/* Form Section */}
+            <Card className="border border-gray-200">
+                <CardHeader>
+                    <CardTitle>Informasi Kegiatan</CardTitle>
+                    <CardDescription>
+                        Lengkapi formulir di bawah ini untuk menambahkan kegiatan baru ke kalender akademik
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <TambahKegiatanForm />
+                </CardContent>
+            </Card>
         </div>
     );
 }

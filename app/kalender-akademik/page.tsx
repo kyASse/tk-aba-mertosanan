@@ -1,23 +1,14 @@
-// app/kalender-akademik/page.tsx
-import { createClient } from "@/lib/supabase/server";
-import Kalender from "./kalender"; // Komponen kalender interaktif
+import KalenderAkademik from '@/components/kalender/KalenderAkademik';
 
-export default async function KalenderAkademikPage() {
-    const supabase = await createClient();
-    
-    // Ambil semua data kegiatan dari database
-    const { data: events } = await supabase
-        .from('kalender_akademik')
-        .select('*');
+export default function KalenderAkademikPage() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold mb-2">Kalender Akademik</h1>
+        <p className="text-gray-600">TK ABA Mertosanan Tahun Ajaran 2024/2025</p>
+      </div>
 
-    return (
-        <div style={{ fontFamily: 'sans-serif', maxWidth: '700px', margin: '2rem auto' }}>
-            <h1 style={{ textAlign: 'center' }}>Kalender Akademik</h1>
-            <p style={{ textAlign: 'center', color: '#666' }}>
-                Jadwal kegiatan akademik dan acara penting di TK ABA Mertosanan sepanjang tahun ajaran
-            </p>
-            {/* Teruskan data event ke komponen klien */}
-            <Kalender events={events || []} />
-        </div>
-    );
+      <KalenderAkademik />
+    </div>
+  );
 }

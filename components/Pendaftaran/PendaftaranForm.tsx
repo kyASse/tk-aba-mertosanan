@@ -90,6 +90,7 @@ export default function PendaftaranForm() {
 
     const form = useForm<FormSchema>({
         resolver: zodResolver(formSchema),
+        mode: "onSubmit",
         defaultValues: {
             nama_lengkap: "",
             nama_panggilan: "",
@@ -150,6 +151,17 @@ export default function PendaftaranForm() {
     }, [isSuccess, form]);
 
     async function onSubmit(values: FormSchema) {
+        // Notify developers about form submission in non-production environments
+        if (process.env.NODE_ENV !== 'production') {
+            console.debug('=== FORM SUBMIT STARTED ===');
+            console.debug('Form values:', values);
+        }
+        
+        // Tampilkan notifikasi bahwa form sedang diproses
+        toast.info("Memproses pendaftaran...", {
+            description: "Mohon tunggu, data sedang disimpan"
+        });
+        
         setIsUploading(false);
         try {
             let dokumen_pendukung_url: string | null = null;
@@ -195,16 +207,29 @@ export default function PendaftaranForm() {
                 dokumen_pendukung_url: dokumen_pendukung_url,
             };
             
+            // Hapus field yang tidak ada di database atau tidak diperlukan
             delete (dataToSubmit as any).dokumen_pendukung;
+            delete (dataToSubmit as any).email; // Email tidak ada di schema database pendaftar
 
-            const { error: insertError } = await supabase.from("pendaftar").insert([dataToSubmit]);
-            if (insertError) throw insertError;
+            // Data preparation complete, ready to insert into the database.
+
+            const { data: insertData, error: insertError } = await supabase.from("pendaftar").insert([dataToSubmit]);
+            if (insertError) {
+                console.error('Database insert error:', insertError);
+                throw insertError;
+            }
+            
+            console.log('Data berhasil disimpan:', insertData);
+            
+            // Jangan tampilkan toast sukses di sini, biarkan useEffect yang handle
+            // karena useEffect akan menampilkan toast dengan WhatsApp link
             
             setIsSuccess(true);
             form.reset();
 
         } catch (err) {
             if (err instanceof Error) {
+                console.error('Submit error:', err);
                 toast.error("Gagal mengirim pendaftaran", {
                     description: err.message
                 });
@@ -603,7 +628,11 @@ export default function PendaftaranForm() {
                     )}
                 </fieldset>
 
-                <Button type="submit" className="w-full mt-4" disabled={form.formState.isSubmitting || isUploading}>
+                <Button 
+                    type="submit" 
+                    className="w-full mt-4" 
+                    disabled={form.formState.isSubmitting || isUploading}
+                >
                     {(form.formState.isSubmitting || isUploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {(form.formState.isSubmitting || isUploading) ? "Mengirim..." : "Daftar Sekarang"}
                 </Button>

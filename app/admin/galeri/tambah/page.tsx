@@ -17,6 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { ArrowLeft, Upload, ImageIcon, X } from 'lucide-react';
 import { toast } from 'sonner';
 
+
 const kategoriPilihan = [
     "Kegiatan Belajar",
     "Bermain",
