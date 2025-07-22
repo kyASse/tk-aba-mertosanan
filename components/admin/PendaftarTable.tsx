@@ -45,10 +45,12 @@ export default function PendaftarTable({ pendaftar }: PendaftarTableProps) {
         switch (status) {
         case 'Diterima':
             return <Badge className="bg-green-100 text-green-800 border-green-300">Diterima</Badge>;
+        case 'Akun Dibuat':
+            return <Badge className="bg-green-100 text-green-800 border-green-300">Akun Dibuat</Badge>;
         case 'Menunggu Persetujuan':
             return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">Menunggu Persetujuan</Badge>;
-        case 'Validasi Ulang':
-            return <Badge className="bg-blue-100 text-blue-800 border-blue-300">Validasi Ulang</Badge>;
+        case 'Revisi':
+            return <Badge className="bg-orange-100 text-orange-800 border-orange-300">Revisi</Badge>;
         case 'Ditolak':
             return <Badge className="bg-red-100 text-red-800 border-red-300">Ditolak</Badge>;
         default:
