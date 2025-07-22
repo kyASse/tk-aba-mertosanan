@@ -153,12 +153,12 @@ export default function KalenderAkademik() {
                   <div className="mt-1 space-y-1">
                     {dayEvents.slice(0, 2).map(event => {
                       const categoryColor = categoryColors[event.kategori] || '#6B7280';
+                      const categoryColorWithOpacity = addOpacityToHex(categoryColor, 0.125);
                       return (
                         <div
                           key={event.id}
                           className="text-xs px-1 py-0.5 rounded truncate"
-                          style={{ backgroundColor: categoryColor + '20', color: categoryColor }}
-                        >
+                          style={{ backgroundColor: categoryColorWithOpacity, color: categoryColor }}
                           {event.judul}
                         </div>
                       );
