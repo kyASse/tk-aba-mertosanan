@@ -1,7 +1,6 @@
 "use client"
 
 import {
-    Settings,
     User,
     LogOut,
 } from "lucide-react"
@@ -78,20 +77,6 @@ export function NavUser({
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem asChild>
-                                <Link href="/admin/profile">
-                                    <User />
-                                    Profil
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/admin/settings">
-                                    <Settings />
-                                    Pengaturan
-                                </Link>
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
                             <LogoutButton className="w-full justify-start p-0 h-auto font-normal">
