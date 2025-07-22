@@ -58,8 +58,12 @@ export default function EditTestimoniPage() {
                     toast.error("Testimoni tidak ditemukan");
                     router.push('/admin/testimoni');
                 }
-            } catch {
-                toast.error("Gagal memuat data testimoni");
+            } catch (err: unknown) {
+                const errorMessage = err instanceof Error ? err.message : 'Terjadi kesalahan yang tidak diketahui';
+                console.error("Error loading testimoni:", errorMessage);
+                toast.error("Gagal memuat data testimoni", {
+                    description: errorMessage,
+                });
                 router.push('/admin/testimoni');
             } finally {
                 setIsLoadingData(false);
