@@ -54,11 +54,13 @@ export default function PendaftarTable({ pendaftar }: PendaftarTableProps) {
             return <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-300">Ditolak</Badge>;
         // Legacy status support (jika ada yang masih menggunakan format lama)
         case 'Diterima':
-            return <Badge variant="default" className="bg-green-100 text-green-800 border-green-300">Diterima</Badge>;
+            return <Badge className="bg-green-100 text-green-800 border-green-300">Diterima</Badge>;
+        case 'Akun Dibuat':
+            return <Badge className="bg-green-100 text-green-800 border-green-300">Akun Dibuat</Badge>;
         case 'Menunggu Persetujuan':
-            return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-300">Menunggu Persetujuan</Badge>;
-        case 'Validasi Ulang':
-            return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">Validasi Ulang</Badge>;
+            return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">Menunggu Persetujuan</Badge>;
+        case 'Revisi':
+            return <Badge className="bg-orange-100 text-orange-800 border-orange-300">Revisi</Badge>;
         case 'Ditolak':
             return <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-300">Ditolak</Badge>;
         default:
