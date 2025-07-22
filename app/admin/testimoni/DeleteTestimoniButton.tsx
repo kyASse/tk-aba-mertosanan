@@ -33,9 +33,10 @@ export default function DeleteTestimoniButton({ testimoniId }: { testimoniId: nu
                         description: result.message,
                     });
                 }
-            } catch {
+            } catch (error) {
+                console.error("Error deleting testimoni:", error);
                 toast.error("Terjadi kesalahan", {
-                    description: "Gagal menghapus testimoni. Silakan coba lagi.",
+                    description: error instanceof Error ? error.message : "Gagal menghapus testimoni. Silakan coba lagi.",
                 });
             }
         });
