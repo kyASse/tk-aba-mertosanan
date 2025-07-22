@@ -1,49 +1,55 @@
-// app/admin/akademik/prestasi/edit/[id]/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { updatePrestasiAction } from "../../../actions";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import EditPrestasiForm from "./EditPrestasiForm";
 
-type EditPageProps = { params: { id: string } };
+type EditPageProps = {
+    params: Promise<{
+        id: string;
+    }>;
+};
 
 export default async function EditPrestasiPage({ params }: EditPageProps) {
+    const { id } = await params;
     const supabase = await createClient();
-    const prestasiId = parseInt(params.id, 10);
+    const prestasiId = parseInt(id, 10);
 
-    const { data: prestasi } = await supabase
+    if (isNaN(prestasiId)) {
+        console.error("ID Prestasi tidak valid:", id);
+        return redirect('/admin/akademik');
+    }
+
+    const { data: prestasi, error } = await supabase
         .from('prestasi')
         .select('*')
         .eq('id', prestasiId)
         .single();
     
-    if (!prestasi) return redirect('/admin/akademik');
+    if (error || !prestasi) {
+        console.error('Error fetching prestasi:', error);
+        return redirect('/admin/akademik');
+    }
 
-    const actionWithId = updatePrestasiAction.bind(null, prestasi.id);
+    let imageUrl: string | null = null;
+    if (prestasi.dokumentasi_url) {
+        const { data } = supabase.storage
+            .from('dokumentasi-prestasi') // NAMA BUCKET YANG BENAR
+            .getPublicUrl(prestasi.dokumentasi_url);
+        imageUrl = data.publicUrl;
+    }
 
     return (
-        <div>
-            <h1>Edit Prestasi</h1>
-            <Link href="/admin/akademik">Kembali</Link>
-            <hr />
-            <form action={actionWithId} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '500px' }}>
-                <div>
-                    <label htmlFor="tahun">Tahun</label>
-                    <input id="tahun" name="tahun" type="number" defaultValue={prestasi.tahun || ''} required />
-                </div>
-                <div>
-                    <label htmlFor="nama_prestasi">Nama Prestasi/Lomba</label>
-                    <input id="nama_prestasi" name="nama_prestasi" type="text" defaultValue={prestasi.nama_prestasi || ''} required />
-                </div>
-                <div>
-                    <label htmlFor="tingkat">Tingkat</label>
-                    <input id="tingkat" name="tingkat" type="text" defaultValue={prestasi.tingkat || ''} required />
-                </div>
-                <div>
-                    <label htmlFor="deskripsi">Deskripsi (Opsional)</label>
-                    <textarea id="deskripsi" name="deskripsi" rows={4} defaultValue={prestasi.deskripsi || ''} />
-                </div>
-                <button type="submit">Simpan Perubahan</button>
-            </form>
+        <div className="container mx-auto py-6">
+            <div className="mb-6">
+                <Button variant="ghost" asChild>
+                    <Link href="/admin/akademik"><ArrowLeft size={16} className="mr-2" />Kembali</Link>
+                </Button>
+                <h1 className="text-3xl font-bold tracking-tight">Edit Prestasi</h1>
+            </div>
+
+            <EditPrestasiForm prestasi={prestasi} imageUrl={imageUrl} />
         </div>
     );
 }
