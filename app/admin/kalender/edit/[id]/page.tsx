@@ -16,6 +16,7 @@ type KegiatanAkademik = {
     id: number;
     judul: string;
     tanggal: string;
+    tanggal_berakhir: string | null;
     waktu: string | null;
     kategori: string;
     deskripsi: string | null;

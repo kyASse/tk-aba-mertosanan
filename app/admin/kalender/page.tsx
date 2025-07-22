@@ -12,6 +12,7 @@ type KegiatanAkademik = {
     id: number;
     judul: string;
     tanggal: string;
+    tanggal_berakhir: string | null;
     waktu: string | null;
     kategori: string;
     deskripsi: string | null;
@@ -67,7 +68,8 @@ export default async function KelolaKalenderPage() {
                             <tr className="bg-gray-50 border-b border-gray-200">
                                 <th className="text-left px-6 py-4 font-semibold text-gray-900">No</th>
                                 <th className="text-left px-6 py-4 font-semibold text-gray-900">Judul Kegiatan</th>
-                                <th className="text-left px-6 py-4 font-semibold text-gray-900">Tanggal</th>
+                                <th className="text-left px-6 py-4 font-semibold text-gray-900">Tanggal Mulai</th>
+                                <th className="text-left px-6 py-4 font-semibold text-gray-900">Tanggal Berakhir</th>
                                 <th className="text-left px-6 py-4 font-semibold text-gray-900">Waktu</th>
                                 <th className="text-left px-6 py-4 font-semibold text-gray-900">Kategori</th>
                                 <th className="text-left px-6 py-4 font-semibold text-gray-900">Aksi</th>
@@ -104,6 +106,18 @@ export default async function KelolaKalenderPage() {
                                                 month: 'short',
                                                 day: 'numeric'
                                             })}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600">
+                                            {item.tanggal_berakhir ? (
+                                                new Date(item.tanggal_berakhir).toLocaleDateString('id-ID', {
+                                                    weekday: 'short',
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric'
+                                                })
+                                            ) : (
+                                                <span className="text-gray-400 italic">-</span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
                                             {item.waktu || (
@@ -161,7 +175,7 @@ export default async function KelolaKalenderPage() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="text-center py-12 text-gray-500">
+                                    <td colSpan={7} className="text-center py-12 text-gray-500">
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                                                 <Calendar className="w-8 h-8 text-gray-400" />

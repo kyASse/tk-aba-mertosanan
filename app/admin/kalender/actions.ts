@@ -9,6 +9,7 @@ export async function createKegiatanAction(prevState: any, formData: FormData) {
     const data = {
         judul: formData.get('judul') as string,
         tanggal: formData.get('tanggal') as string,
+        tanggal_berakhir: (formData.get('tanggal_berakhir') as string) || null,
         waktu: (formData.get('waktu') as string) || null,
         kategori: formData.get('kategori') as string,
         deskripsi: formData.get('deskripsi') as string,
@@ -25,6 +26,7 @@ export async function updateKegiatanAction(kegiatanId: number, prevState: any, f
     const data = {
         judul: formData.get('judul') as string,
         tanggal: formData.get('tanggal') as string,
+        tanggal_berakhir: (formData.get('tanggal_berakhir') as string) || null,
         waktu: (formData.get('waktu') as string) || null,
         kategori: formData.get('kategori') as string,
         deskripsi: formData.get('deskripsi') as string,
