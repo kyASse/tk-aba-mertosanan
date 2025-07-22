@@ -257,7 +257,7 @@ export default function PendaftaranForm() {
                             </FormItem>
                         )}/>
                         <FormField
-                            control={form.control as any}
+                            control={form.control}
                             name="jenis_kelamin"
                             render={({ field }) => (
                                 <FormItem>
