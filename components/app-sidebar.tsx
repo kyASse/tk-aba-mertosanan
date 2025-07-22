@@ -130,6 +130,10 @@ const navMainData = [
     icon: GraduationCap,
     items: [
       {
+        title: "Manajemen Akademik",
+        url: "/admin/akademik/",
+      },
+      {
         title: "Edit Biaya",
         url: "/admin/akademik/edit-biaya",
       },
