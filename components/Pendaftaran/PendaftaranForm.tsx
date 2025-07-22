@@ -151,8 +151,11 @@ export default function PendaftaranForm() {
     }, [isSuccess, form]);
 
     async function onSubmit(values: FormSchema) {
-        console.log('=== FORM SUBMIT STARTED ===');
-        console.log('Form values:', values);
+        // Notify developers about form submission in non-production environments
+        if (process.env.NODE_ENV !== 'production') {
+            console.debug('=== FORM SUBMIT STARTED ===');
+            console.debug('Form values:', values);
+        }
         
         // Tampilkan notifikasi bahwa form sedang diproses
         toast.info("Memproses pendaftaran...", {
