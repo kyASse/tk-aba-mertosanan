@@ -132,7 +132,7 @@ const navMainData = [
     items: [
       {
         title: "Manajemen Akademik",
-        url: "/admin/akademik/",
+        url: "/admin/akademik",
       },
       {
         title: "Edit Biaya",
