@@ -302,7 +302,14 @@ export default function EditKontenPage({ params }: EditPageProps) {
                                                     <div className="bg-gray-50 border rounded p-4">
                                                         <p className="text-green-600 text-sm mb-2">✅ JSON valid</p>
                                                         <pre className="text-gray-700 text-sm overflow-x-auto">
-                                                            {JSON.stringify(JSON.parse(formData.isi), null, 2)}
+                                                            {(() => {
+                                                                try {
+                                                                    const parsed = JSON.parse(formData.isi);
+                                                                    return JSON.stringify(parsed, null, 2);
+                                                                } catch {
+                                                                    return formData.isi;
+                                                                }
+                                                            })()}
                                                         </pre>
                                                     </div>
                                                 )}
