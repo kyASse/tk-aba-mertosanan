@@ -22,6 +22,15 @@ const bulanIndonesia = [
 
 const hariIndonesia = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
+// Fungsi helper untuk menambahkan opacity ke warna hex
+const addOpacityToHex = (hex: string, opacity: number) => {
+  const cleanHex = hex.replace('#', '');
+  const r = parseInt(cleanHex.substring(0, 2), 16);
+  const g = parseInt(cleanHex.substring(2, 4), 16);
+  const b = parseInt(cleanHex.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
+
 export default function KalenderAkademik() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<KalenderEvent[]>([]);
@@ -159,6 +168,7 @@ export default function KalenderAkademik() {
                           key={event.id}
                           className="text-xs px-1 py-0.5 rounded truncate"
                           style={{ backgroundColor: categoryColorWithOpacity, color: categoryColor }}
+                        >
                           {event.judul}
                         </div>
                       );
@@ -257,8 +267,8 @@ export default function KalenderAkademik() {
               </div>
             ))}
           </div>
+        </div>
       </div>
     </div>
-      </div>
   );
 }
