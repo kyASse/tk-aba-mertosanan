@@ -211,7 +211,7 @@ export default function PendaftaranForm() {
             delete (dataToSubmit as any).dokumen_pendukung;
             delete (dataToSubmit as any).email; // Email tidak ada di schema database pendaftar
 
-            console.log('Data yang akan dikirim ke database:', dataToSubmit);
+            // Data preparation complete, ready to insert into the database.
 
             const { data: insertData, error: insertError } = await supabase.from("pendaftar").insert([dataToSubmit]);
             if (insertError) {
