@@ -4,7 +4,7 @@ import * as React from "react"
 import {
   BookOpen,
   Users,
-  Image,
+  Image as ImageIcon,
   MessageSquare,
   FileText,
   GraduationCap,
@@ -25,6 +25,7 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import { useEffect, useState } from "react"
 import { User } from "@supabase/supabase-js"
+import Image from "next/image"
 
 // Data menu admin yang sesuai dengan aplikasi TK ABA
 const navMainData = [
@@ -67,7 +68,7 @@ const navMainData = [
   {
     title: "Kelola Galeri",
     url: "/admin/galeri",
-    icon: Image,
+    icon: ImageIcon,
     items: [
       {
         title: "Daftar Galeri",
@@ -129,6 +130,10 @@ const navMainData = [
     url: "/admin/akademik",
     icon: GraduationCap,
     items: [
+      {
+        title: "Manajemen Akademik",
+        url: "/admin/akademik",
+      },
       {
         title: "Edit Biaya",
         url: "/admin/akademik/edit-biaya",
@@ -239,8 +244,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
           <div className="flex items-center gap-2 px-2 py-2">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <GraduationCap className="size-4" />
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white overflow-hidden">
+              <Image
+                src="/Logo-TK-ABA.png"
+                alt="TK ABA Mertosanan"
+                width={32}
+                height={32}
+                className="object-contain"
+              />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">TK ABA Mertosanan</span>
@@ -264,8 +275,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
           <div className="flex items-center gap-2 px-2 py-2">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <GraduationCap className="size-4" />
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white overflow-hidden">
+              <Image
+                src="/Logo-TK-ABA.png"
+                alt="TK ABA Mertosanan"
+                width={32}
+                height={32}
+                className="object-contain"
+              />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">TK ABA Mertosanan</span>
@@ -294,8 +311,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <GraduationCap className="size-4" />
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white overflow-hidden">
+            <Image
+              src="/Logo-TK-ABA.png"
+              alt="TK ABA Mertosanan"
+              width={32}
+              height={32}
+              className="object-contain"
+            />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold">TK ABA Mertosanan</span>
