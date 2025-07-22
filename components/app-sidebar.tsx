@@ -10,6 +10,7 @@ import {
   GraduationCap,
   Home,
   Settings2,
+  Calendar,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -75,6 +76,21 @@ const navMainData = [
       {
         title: "Tambah Galeri",
         url: "/admin/galeri/tambah",
+      },
+    ],
+  },
+  {
+    title: "Kelola Kalender Akademik",
+    url: "/admin/kalender",
+    icon: Calendar,
+    items: [
+      {
+        title: "Daftar Kalender",
+        url: "/admin/kalender",
+      },
+      {
+        title: "Tambah Event",
+        url: "/admin/kalender/tambah",
       },
     ],
   },

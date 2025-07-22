@@ -2,14 +2,14 @@
 
 import { LoginForm } from '@/components/login-form'
 import PageHeader from '@/components/shared/PageHeader'
-import { User, FileText, Calendar } from 'lucide-react'
+import { Settings, Users, FileText, BarChart3 } from 'lucide-react'
 
 export default function LoginPage() {
   return (
     <div className="min-h-screen">
       <PageHeader
-        title="Login Orang tua"
-        description="Akses informasi perkembangan anak Anda"
+        title="Login Admin"
+        description="Akses panel administrasi TK ABA Mertosanan"
         background="bg-accent/20"
       />
 
@@ -21,21 +21,21 @@ export default function LoginPage() {
               <LoginForm className="w-full max-w-md" />
               
               <div className='bg-highlight/10 rounded-xl p-6'>
-                <h3 className='text-xl font-bold mb-4'>Portal Orang Tua</h3>
+                <h3 className='text-xl font-bold mb-4'>Panel Admin</h3>
                 <p className='text-muted-foreground mb-6'>
-                  Portal Orang Tua TK ABA Mertosanan memberikan akses untuk memantau perkembangan anak Anda.
-                  Dapatkan informasi terbaru mengenai aktifitas sekolah, laporan perkembangan, dan hasil karya anak.
+                  Panel administrasi TK ABA Mertosanan untuk mengelola data sekolah, 
+                  siswa, konten website, dan berbagai aspek operasional sekolah.
                 </p>
                 
                 <div className='space-y-4'>
                   <div className='flex items-start bg-background p-4 rounded-lg'>
                     <div className='bg-primary/20 p-2 rounded-full mr-3'>
-                      <User className='h-5 w-5 text-primary-foreground' />
+                      <Users className='h-5 w-5 text-primary-foreground' />
                     </div>
                     <div>
-                      <h4 className='font-semibold'>Laporan Perkembangan</h4>
+                      <h4 className='font-semibold'>Manajemen Siswa</h4>
                       <p className='text-sm text-muted-foreground'>
-                        Akses laporan perkembangan anak Anda secara berkala.
+                        Kelola data pendaftar, siswa aktif, dan laporan perkembangan.
                       </p>
                     </div>
                   </div>
@@ -45,21 +45,21 @@ export default function LoginPage() {
                       <FileText className='h-5 w-5 text-accent-foreground' />
                     </div>
                     <div>
-                      <h4 className='font-semibold'>Hasil Karya</h4>
+                      <h4 className='font-semibold'>Konten Website</h4>
                       <p className='text-sm text-muted-foreground'>
-                        Lihat dan unduh hasil karya anak di sekolah.
+                        Kelola berita, galeri, dan konten informasi sekolah.
                       </p>
                     </div>
                   </div>
                   
                   <div className='flex items-start bg-background p-4 rounded-lg'>
                     <div className='bg-attention/20 p-2 rounded-full mr-3'>
-                      <Calendar className='h-5 w-5 text-accent-foreground' />
+                      <BarChart3 className='h-5 w-5 text-accent-foreground' />
                     </div>
                     <div>
-                      <h4 className='font-semibold'>Jadwal &amp; Kegiatan </h4>
+                      <h4 className='font-semibold'>Laporan & Statistik</h4>
                       <p className='text-sm text-muted-foreground'>
-                        Informasi jadwal kegiatan dan acara sekolah.
+                        Akses laporan pendaftaran dan statistik sekolah.
                       </p>
                     </div>
                   </div>
