@@ -221,19 +221,6 @@ export default function KalenderAkademik() {
         </div>
 
         {/* Legenda Kategori */}
-            {/* 'Libur Umum': '#fecaca', // Merah muda
-    'Masa Pengenalan Lingkungan Sekolah': '#fcd34d', //Kuning
-    'Parenting': '#bbf7d0', // Hijau Muda
-    'Lomba HUT RI': '#e5e7eb', // Abu-abu
-    'Kegiatan Sekolah': '#8d4d44', // Coklat
-    'Libur Khusus Hari Guru': '#96a090', // Cream
-    'Market Day': '#1e3a8a', // Biru Dongker
-    'Hari Raya Nasional': '#a855f7', // Ungu
-    'Libur Semester': '#bfdbfe', // Biru Muda
-    'Libur Ramadhan': '#f9a8d4', // Pink
-    'Libur Hari Raya': '#d8b4fe', // Ungu Muda
-    'Penyerahan Siswa': '#065f46', // Hijau Tua
-    'Penerimaan LHB': '#f97316', // Orange Muda */}
 
         {/* <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
           <h3 className="text-lg font-semibold mb-4">Legenda</h3>
