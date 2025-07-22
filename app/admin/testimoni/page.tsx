@@ -14,10 +14,6 @@ export default async function KelolaTestimoniPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return redirect('/auth/login');
 
-    // Debug environment
-    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.log('Has Anon Key:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-
     const { data: testimoni, error } = await supabase
         .from('testimoni')
         .select('id, nama_orang_tua, status_orang_tua, is_featured, isi_testimoni, created_at')
@@ -39,12 +35,6 @@ export default async function KelolaTestimoniPage() {
             </div>
         );
     }
-
-    // Debug logging
-    console.log('=== Testimoni Debug ===');
-    console.log('Testimoni data:', testimoni);
-    console.log('Total count:', testimoni?.length);
-    console.log('====================');
 
     // Hitung statistik
     const totalTestimoni = testimoni?.length || 0;
