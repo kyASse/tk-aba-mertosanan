@@ -130,7 +130,6 @@ export default function PendaftaranForm() {
     const hasSpecialNeeds = form.watch("memiliki_kebutuhan_khusus");
 
     useEffect(() => {
-        console.log('useEffect triggered, isSuccess:', isSuccess);
         if (isSuccess) {
             toast.success("Pendaftaran Berhasil", {
                 description: (
