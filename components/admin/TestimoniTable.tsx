@@ -189,7 +189,7 @@ export default function TestimoniTable({ testimoni }: TestimoniTableProps) {
                                 name={selectedTestimoni.nama_orang_tua || 'Nama tidak tersedia'}
                                 role={selectedTestimoni.status_orang_tua || 'Status tidak tersedia'}
                                 testimonial={selectedTestimoni.isi_testimoni || 'Testimoni tidak tersedia'}
-                                avatarUrl={undefined} // Tidak ada avatar di database testimoni
+                                avatarUrl={null} // Tidak ada avatar di database testimoni
                             />
                             <div className="mt-4 text-center">
                                 <div className="text-xs text-gray-500">
