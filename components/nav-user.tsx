@@ -1,10 +1,8 @@
 "use client"
 
 import {
-    User,
     LogOut,
 } from "lucide-react"
-import Link from "next/link"
 
 import {
     Avatar,
@@ -14,7 +12,6 @@ import {
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
