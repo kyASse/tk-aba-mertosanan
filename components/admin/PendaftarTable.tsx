@@ -43,13 +43,13 @@ export default function PendaftarTable({ pendaftar }: PendaftarTableProps) {
     // Helper function untuk status badge
     const getStatusBadge = (status: string | null) => {
         switch (status) {
-        case 'diterima':
+        case 'Diterima':
             return <Badge className="bg-green-100 text-green-800 border-green-300">Diterima</Badge>;
-        case 'menunggu_persetujuan':
+        case 'Menunggu Persetujuan':
             return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">Menunggu Persetujuan</Badge>;
-        case 'validasi_ulang':
+        case 'Validasi Ulang':
             return <Badge className="bg-blue-100 text-blue-800 border-blue-300">Validasi Ulang</Badge>;
-        case 'ditolak':
+        case 'Ditolak':
             return <Badge className="bg-red-100 text-red-800 border-red-300">Ditolak</Badge>;
         default:
             return <Badge className="bg-gray-100 text-gray-800 border-gray-300">Belum Divalidasi</Badge>;

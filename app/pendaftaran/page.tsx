@@ -1,4 +1,3 @@
-// app/pendaftaran/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import PendaftaranForm from "@/components/Pendaftaran/PendaftaranForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,30 +23,45 @@ import {
 } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 
-// Tipe untuk data biaya
 type BiayaItem = {
     komponen_biaya: string | null;
     biaya_putra: number | null;
     biaya_putri: number | null;
 };
 
+type PersyaratanIsi = {
+    persyaratan: { judul: string; items: string[] };
+    jadwal: { judul: string; items: { tahap: string; periode: string }[] };
+};
+
+type CatatanSppIsi = {
+    catatan: string;
+};
+
+type JadwalIsi = {
+    kegiatan: string;
+    tanggal: string;
+}[];
+
 export default async function PendaftaranPage() {
     const supabase = await createClient();
-
-    // Ambil semua data yang dibutuhkan secara paralel
     const persyaratanPromise = supabase.from('konten_halaman').select('judul, isi').eq('slug', 'persyaratan-pendaftaran').single();
     const biayaPromise = supabase.from('biaya_pendaftaran').select('*').order('id');
     const sppPromise = supabase.from('konten_halaman').select('isi').eq('slug', 'catatan-spp').single();
     const jadwalPromise = supabase.from('konten_halaman').select('isi').eq('slug', 'jadwal-pendaftaran').single();
 
     const [
-        { data: persyaratan }, 
+        { data: persyaratanData }, 
         { data: biaya }, 
-        { data: catatanSpp },
-        { data: jadwal }
+        { data: catatanSppData },
+        { data: jadwalData }
     ] = await Promise.all([persyaratanPromise, biayaPromise, sppPromise, jadwalPromise]);
 
-    // Hitung total biaya
+    
+    const persyaratan = persyaratanData?.isi as PersyaratanIsi | null;
+    const catatanSpp = catatanSppData?.isi as CatatanSppIsi | null;
+    const jadwal = jadwalData?.isi as JadwalIsi | null;
+
     const totalPutra = biaya?.reduce((acc, item) => acc + (item.biaya_putra || 0), 0);
     const totalPutri = biaya?.reduce((acc, item) => acc + (item.biaya_putri || 0), 0);
 
@@ -76,68 +90,50 @@ export default async function PendaftaranPage() {
                                                 <FileText className="mr-2 h-5 w-5 text-primary" />
                                                 Persyaratan Pendaftaran
                                             </CardTitle>
-                                            <CardDescription>
-                                                Informasi tentang persyaratan, jadwal, dan biaya pendaftaran siswa baru
-                                            </CardDescription>
+                                            <CardDescription>Informasi tentang persyaratan, jadwal, dan biaya pendaftaran siswa baru</CardDescription>
                                         </CardHeader>
                                         <CardContent className="space-y-8">
                                             <div>
-                                                <h3 className="text-lg font-semibold mb-3 flex items-center">
+                                                <h3 
+                                                    className="text-lg font-semibold mb-3 flex items-center"
+                                                >
                                                     <Info className="mr-2 h-5 w-5 text-accent" />
-                                                    Persyaratan Dokumen
+                                                    {persyaratan?.persyaratan.judul || 'Persyaratan Dokumen'}
                                                 </h3>
                                                 <ul className="ml-7 space-y-2 list-disc text-muted-foreground">
-                                                    {persyaratan?.isi && typeof persyaratan.isi === 'object' && persyaratan.isi.persyaratan?.items ? (
-                                                        persyaratan.isi.persyaratan.items.map((item: string, index: number) => (
-                                                            <li key={index}>{item}</li>
-                                                        ))
-                                                    ) : (
-                                                        <>
-                                                            <li>Fotokopi Kartu Keluarga (KK)</li>
-                                                            <li>Fotokopi Akta Kelahiran Anak</li>
-                                                            <li>Pas foto berwarna ukuran 3x4 (2 lembar)</li>
-                                                            <li>Surat Keterangan Sehat (jika diperlukan)</li>
-                                                        </>
-                                                    )}
+                                                    {persyaratan?.persyaratan.items.map((item, index) => (
+                                                        <li key={`syarat-${index}`}>{item}</li>
+                                                    ))}
                                                 </ul>
                                             </div>
 
                                             <div>
-                                                <h3 className="text-lg font-semibold mb-3 flex items-center">
+                                                <h3 
+                                                    className="text-lg font-semibold mb-3 flex items-center"
+                                                >
                                                     <CalendarIcon className="mr-2 h-5 w-5 text-highlight" />
-                                                    Jadwal Pendaftaran
+                                                    {persyaratan?.jadwal.judul || 'Jadwal Pendaftaran'}
                                                 </h3>
                                                 <div className="bg-muted rounded-lg p-4">
-                                                    {jadwal?.isi && Array.isArray(jadwal.isi) ? (
-                                                        <div className="space-y-3">
-                                                            {jadwal.isi.map((item: any, index: number) => (
-                                                                <div key={index} className="flex justify-between items-center border-b border-gray-200 pb-2 last:border-b-0">
-                                                                    <span className="font-medium">{item.tanggal}</span>
-                                                                    <span className="text-muted-foreground">{item.kegiatan}</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                            <div>
-                                                                <h4 className="font-medium">Gelombang I</h4>
-                                                                <p className="text-muted-foreground">1 Februari - 31 Maret 2025</p>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        {persyaratan?.jadwal.items.map((item, index) => (
+                                                            <div key={`jadwal-${index}`}>
+                                                                <h4 className="font-medium">{item.tahap}</h4>
+                                                                <p className="text-muted-foreground">{item.periode}</p>
                                                             </div>
-                                                            <div>
-                                                                <h4 className="font-medium">Gelombang II</h4>
-                                                                <p className="text-muted-foreground">1 April - 30 Juni 2025</p>
-                                                            </div>
-                                                        </div>
-                                                    )}
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                                <p className="text-sm text-muted-foreground mt-2">
-                                                    Jadwal pendaftaran dapat berubah sewaktu-waktu. Jika sudah melewati jadwal pendaftaran, silakan hubungi pihak sekolah.
-                                                </p>
+                                                <p className="text-sm text-muted-foreground mt-2">Jadwal pendaftaran dapat berubah sewaktu-waktu. Jika sudah melewati jadwal pendaftaran, silakan hubungi pihak sekolah.</p>
                                             </div>
 
                                             <div>
-                                                <h3 className="text-lg font-semibold mb-3 flex items-center">
-                                                    <School className="mr-2 h-5 w-5 text-primary" />
+                                                <h3 
+                                                    className="text-lg font-semibold mb-3 flex items-center"
+                                                >
+                                                    <School 
+                                                        className="mr-2 h-5 w-5 text-primary" 
+                                                    />
                                                     Biaya Pendaftaran
                                                 </h3>
                                                 <div className="overflow-x-auto">
@@ -157,10 +153,10 @@ export default async function PendaftaranPage() {
                                                                     <td className="border px-4 py-2">{item.biaya_putri?.toLocaleString('id-ID')}</td>
                                                                 </tr>
                                                             ))}
-                                                            <tr>
+                                                            <tr className="font-semibold bg-muted/50">
                                                                 <td className="border px-4 py-2 font-bold">Total Biaya</td>
-                                                                <td className="border px-4 py-2 font-semibold">{totalPutra?.toLocaleString('id-ID')}</td>
-                                                                <td className="border px-4 py-2 font-semibold">{totalPutri?.toLocaleString('id-ID')}</td>
+                                                                <td className="border px-4 py-2">{totalPutra?.toLocaleString('id-ID')}</td>
+                                                                <td className="border px-4 py-2">{totalPutri?.toLocaleString('id-ID')}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -173,19 +169,12 @@ export default async function PendaftaranPage() {
                                                     Catatan SPP
                                                 </h3>
                                                 <div className="bg-muted rounded-lg p-4">
-                                                    <p className="text-muted-foreground">
-                                                        {catatanSpp?.isi && typeof catatanSpp.isi === 'object' ? (
-                                                            JSON.stringify(catatanSpp.isi)
-                                                        ) : (
-                                                            catatanSpp?.isi || 'Informasi SPP akan disampaikan saat daftar ulang'
-                                                        )}
-                                                    </p>
+                                                    <p className="text-muted-foreground">{catatanSpp?.catatan}</p>
                                                 </div>
                                             </div>
                                         </CardContent>
                                     </Card>
                                 </TabsContent>
-
                                 <TabsContent value="flow">
                                     <Card>
                                         <CardHeader>
