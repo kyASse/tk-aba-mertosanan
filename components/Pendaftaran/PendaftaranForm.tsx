@@ -89,7 +89,7 @@ export default function PendaftaranForm() {
     const [isUploading, setIsUploading] = useState(false);
 
     const form = useForm<FormSchema>({
-        resolver: zodResolver(formSchema) as any,
+        resolver: zodResolver(formSchema),
         mode: "onSubmit",
         defaultValues: {
             nama_lengkap: "",
