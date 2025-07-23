@@ -154,7 +154,7 @@ export default function KalenderAkademik() {
 
           {/* Header Hari */}
           <div className="grid grid-cols-7 gap-1 mb-2">
-            {['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].map(hari => (
+            {hariIndonesia.map(hari => (
               <div key={hari} className="p-2 text-center font-medium text-gray-700 text-sm bg-orange-100 rounded">
                 {hari}
               </div>
