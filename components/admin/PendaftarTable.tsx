@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye } from "lucide-react";
 import PendaftarSearch from "./PendaftarSearch";
+import { getStatusBadgeVariant, getStatusDisplayText } from "@/lib/utils/pendaftar-stats";
 
 type Pendaftar = {
     id: string;
@@ -41,31 +42,30 @@ export default function PendaftarTable({ pendaftar }: PendaftarTableProps) {
         });
     }, [pendaftar, searchQuery]);
 
-    // Helper function untuk status badge dengan variant yang konsisten
+    // Helper function untuk status badge menggunakan utility function
     const getStatusBadge = (status: string | null) => {
-        switch (status) {
-        case 'diterima':
-            return <Badge variant="default" className="bg-green-100 text-green-800 border-green-300">Diterima</Badge>;
-        case 'menunggu_persetujuan':
-            return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-300">Menunggu Persetujuan</Badge>;
-        case 'validasi_ulang':
-            return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">Validasi Ulang</Badge>;
-        case 'ditolak':
-            return <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-300">Ditolak</Badge>;
-        // Legacy status support (jika ada yang masih menggunakan format lama)
-        case 'Diterima':
-            return <Badge className="bg-green-100 text-green-800 border-green-300">Diterima</Badge>;
-        case 'Akun Dibuat':
-            return <Badge className="bg-green-100 text-green-800 border-green-300">Akun Dibuat</Badge>;
-        case 'Menunggu Persetujuan':
-            return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">Menunggu Persetujuan</Badge>;
-        case 'Revisi':
-            return <Badge className="bg-orange-100 text-orange-800 border-orange-300">Revisi</Badge>;
-        case 'Ditolak':
-            return <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-300">Ditolak</Badge>;
-        default:
-            return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">Belum Divalidasi</Badge>;
-        }
+        const variant = getStatusBadgeVariant(status || '');
+        const displayText = getStatusDisplayText(status || '');
+        
+        // Custom styling berdasarkan status untuk konsistensi visual
+        const getCustomClass = (status: string | null) => {
+            switch (status) {
+                case 'Diterima':
+                    return "bg-green-100 text-green-800 border-green-300";
+                case 'Revisi':
+                    return "bg-orange-100 text-orange-800 border-orange-300";
+                case 'Ditolak':
+                    return "bg-red-100 text-red-800 border-red-300";
+                default:
+                    return "bg-gray-100 text-gray-800 border-gray-300";
+            }
+        };
+
+        return (
+            <Badge variant={variant} className={getCustomClass(status)}>
+                {displayText}
+            </Badge>
+        );
     };
 
     return (

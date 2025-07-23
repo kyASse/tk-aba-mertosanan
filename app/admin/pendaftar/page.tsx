@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import PendaftarTable from "@/components/admin/PendaftarTable";
+import { calculatePendaftarStats } from "@/lib/utils/pendaftar-stats";
 
 export default async function KelolaPendaftarPage() {
     const supabase = await createClient();
@@ -22,12 +23,14 @@ export default async function KelolaPendaftarPage() {
         return <p>Gagal memuat data pendaftar.</p>;
     }
 
-    // Hitung statistik
-    const totalPendaftar = pendaftar?.length || 0;
-    const menungguPersetujuan = pendaftar?.filter(p => p.status_pendaftaran != 'Diterima' && p.status_pendaftaran != 'Revisi' && p.status_pendaftaran != 'Ditolak').length || 0;
-    const diterima = pendaftar?.filter(p => p.status_pendaftaran === 'Diterima').length || 0;
-    const validasiUlang = pendaftar?.filter(p => p.status_pendaftaran === 'Revisi').length || 0;
-    const pendaftarDitolak = pendaftar?.filter(p => p.status_pendaftaran === 'Ditolak').length || 0;
+    // Hitung statistik menggunakan utility function
+    const {
+        totalPendaftar,
+        menungguPersetujuan,
+        pendaftarDisetujui: diterima,
+        validasiUlang,
+        pendaftarDitolak
+    } = calculatePendaftarStats(pendaftar);
 
     return (
         <div className="max-w-7xl mx-auto py-8 px-4">
