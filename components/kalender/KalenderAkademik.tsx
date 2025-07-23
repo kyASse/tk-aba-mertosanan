@@ -4,17 +4,9 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
 import { categoryColors } from '@/lib/constants/calendar';
+import { fetchCalendarEvents, type CalendarEvent } from '@/lib/utils/calendar-query';
 
-type KalenderEvent = {
-  id: number;
-  judul: string;
-  tanggal: string;
-  tanggal_berakhir?: string;
-  waktu?: string;
-  deskripsi?: string;
-  kategori: string;
-  warna: string;
-};
+type KalenderEvent = CalendarEvent;
 
 const bulanIndonesia = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -38,27 +30,20 @@ export default function KalenderAkademik() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClient();
-
   useEffect(() => {
     fetchEvents();
   }, [currentDate]);
 
   const fetchEvents = async () => {
     setLoading(true);
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-
-    const { data, error } = await supabase
-      .from('kalender_akademik')
-      .select('*')
-      .or(`and(tanggal.gte.${startOfMonth.toISOString().split('T')[0]},tanggal.lte.${endOfMonth.toISOString().split('T')[0]}),and(tanggal_berakhir.gte.${startOfMonth.toISOString().split('T')[0]},tanggal_berakhir.lte.${endOfMonth.toISOString().split('T')[0]}),and(tanggal.lte.${startOfMonth.toISOString().split('T')[0]},tanggal_berakhir.gte.${endOfMonth.toISOString().split('T')[0]})`)
-      .order('tanggal', { ascending: true });
-
-    if (!error && data) {
-      setEvents(data);
+    try {
+      const eventData = await fetchCalendarEvents(currentDate);
+      setEvents(eventData);
+    } catch (error) {
+      console.error('Error loading calendar events:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const getDaysInMonth = () => {
