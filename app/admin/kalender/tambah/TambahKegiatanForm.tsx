@@ -52,10 +52,10 @@ export default function TambahKegiatanForm() {
                     />
                 </div>
 
-                {/* Tanggal */}
+                {/* Tanggal Mulai */}
                 <div>
                     <Label htmlFor="tanggal" className="text-sm font-medium text-gray-700">
-                        Tanggal *
+                        Tanggal Mulai *
                     </Label>
                     <Input
                         id="tanggal"
@@ -64,6 +64,23 @@ export default function TambahKegiatanForm() {
                         required
                         className="mt-1"
                     />
+                </div>
+
+                {/* Tanggal Berakhir */}
+                <div>
+                    <Label htmlFor="tanggal_berakhir" className="text-sm font-medium text-gray-700">
+                        Tanggal Berakhir (Opsional)
+                    </Label>
+                    <Input
+                        id="tanggal_berakhir"
+                        name="tanggal_berakhir"
+                        type="date"
+                        className="mt-1"
+                        placeholder="Kosongkan untuk kegiatan 1 hari"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                        Kosongkan jika kegiatan hanya berlangsung 1 hari
+                    </p>
                 </div>
 
                 {/* Waktu */}

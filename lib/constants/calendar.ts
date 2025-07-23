@@ -4,7 +4,7 @@ export const categoryColors: { [key: string]: string } = {
     'Libur Umum': '#fecaca', // Merah muda
     'Masa Pengenalan Lingkungan Sekolah': '#fcd34d', //Kuning
     'Parenting': '#bbf7d0', // Hijau Muda
-    'Lomba HUT RI': '#e5e7eb', // Abu-abu
+    'Lomba HUT RI': '#ff6b6b', // Merah cerah
     'Kegiatan Sekolah': '#8d4d44', // Coklat
     'Libur Khusus Hari Guru': '#96a090', // Cream
     'Market Day': '#1e3a8a', // Biru Dongker

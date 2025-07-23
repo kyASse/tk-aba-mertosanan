@@ -16,6 +16,7 @@ type KegiatanAkademik = {
     id: number;
     judul: string;
     tanggal: string;
+    tanggal_berakhir: string | null;
     waktu: string | null;
     kategori: string;
     deskripsi: string | null;
@@ -64,10 +65,10 @@ export default function EditKegiatanForm({ kegiatan }: { kegiatan: KegiatanAkade
                     />
                 </div>
 
-                {/* Tanggal */}
+                {/* Tanggal Mulai */}
                 <div>
                     <Label htmlFor="tanggal" className="text-sm font-medium text-gray-700">
-                        Tanggal *
+                        Tanggal Mulai *
                     </Label>
                     <Input
                         id="tanggal"
@@ -77,6 +78,24 @@ export default function EditKegiatanForm({ kegiatan }: { kegiatan: KegiatanAkade
                         defaultValue={kegiatan.tanggal}
                         className="mt-1"
                     />
+                </div>
+
+                {/* Tanggal Berakhir */}
+                <div>
+                    <Label htmlFor="tanggal_berakhir" className="text-sm font-medium text-gray-700">
+                        Tanggal Berakhir (Opsional)
+                    </Label>
+                    <Input
+                        id="tanggal_berakhir"
+                        name="tanggal_berakhir"
+                        type="date"
+                        defaultValue={kegiatan.tanggal_berakhir || ''}
+                        className="mt-1"
+                        placeholder="Kosongkan untuk kegiatan 1 hari"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                        Kosongkan jika kegiatan hanya berlangsung 1 hari
+                    </p>
                 </div>
 
                 {/* Waktu */}

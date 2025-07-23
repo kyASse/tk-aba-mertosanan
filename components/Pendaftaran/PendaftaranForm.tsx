@@ -88,9 +88,9 @@ export default function PendaftaranForm() {
     const supabase = createClient();
     const [isUploading, setIsUploading] = useState(false);
 
-    const form = useForm<FormSchema>({
+    const form = useForm({
         resolver: zodResolver(formSchema),
-        mode: "onSubmit",
+        mode: "onSubmit" as const,
         defaultValues: {
             nama_lengkap: "",
             nama_panggilan: "",
@@ -150,7 +150,7 @@ export default function PendaftaranForm() {
         }
     }, [isSuccess, form]);
 
-    async function onSubmit(values: FormSchema) {
+    async function onSubmit(values: z.infer<typeof formSchema>): Promise<void> {
         // Notify developers about form submission in non-production environments
         if (process.env.NODE_ENV !== 'production') {
             console.debug('=== FORM SUBMIT STARTED ===');

@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Edit
 } from "lucide-react"
+import { calculatePendaftarStats } from "@/lib/utils/pendaftar-stats"
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -43,12 +44,14 @@ export default async function AdminDashboard() {
     .from('pendaftar')
     .select('*')
 
-  // Hitung statistik pendaftar
-  const totalPendaftar = pendaftarStats?.length || 0
-  const menungguPersetujuan = pendaftarStats?.filter(p => p.status === 'menunggu_persetujuan').length || 0
-  const pendaftarDisetujui = pendaftarStats?.filter(p => p.status === 'diterima').length || 0
-  const validasiUlang = pendaftarStats?.filter(p => p.status === 'validasi_ulang').length || 0
-  const pendaftarDitolak = pendaftarStats?.filter(p => p.status === 'ditolak').length || 0
+  // Hitung statistik pendaftar menggunakan utility function
+  const {
+    totalPendaftar,
+    menungguPersetujuan,
+    pendaftarDisetujui,
+    validasiUlang,
+    pendaftarDitolak
+  } = calculatePendaftarStats(pendaftarStats);
 
   return (
     <div className="w-full space-y-6">

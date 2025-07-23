@@ -9,7 +9,6 @@ import {
   FileText,
   GraduationCap,
   Home,
-  Settings2,
   Calendar,
 } from "lucide-react"
 
@@ -147,11 +146,6 @@ const navMainData = [
         url: "/admin/akademik/prestasi/tambah",
       },
     ],
-  },
-  {
-    title: "Pengaturan",
-    url: "/admin/settings",
-    icon: Settings2,
   },
 ]
 
