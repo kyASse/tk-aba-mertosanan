@@ -150,7 +150,7 @@ export default function PendaftaranForm() {
         }
     }, [isSuccess, form]);
 
-    async function onSubmit(values: any): Promise<void> {
+    async function onSubmit(values: z.infer<typeof formSchema>): Promise<void> {
         // Notify developers about form submission in non-production environments
         if (process.env.NODE_ENV !== 'production') {
             console.debug('=== FORM SUBMIT STARTED ===');

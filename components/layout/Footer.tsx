@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
+import { motion } from "motion/react";
 import {
-    School, Phone, Mail, MapPin,
+    Phone, Mail, MapPin,
     Facebook, Instagram, Youtube,
     Clock, Calendar, BookOpen
 } from "lucide-react";
@@ -38,9 +40,19 @@ export default function Footer() {
                     {/* About */}
                     <div>
                         <div className="flex items-center space-x-2 mb-4">
-                            <div className="bg-primary p-2 rounded-full">
-                                <School className="text-primary-foreground w-6 h-6" />
-                            </div>
+                            <motion.div
+                                className="bg-white p-2 rounded-full overflow-hidden shadow-lg"
+                                whileHover={{rotate: 5}}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <Image
+                                    src="/Logo-TK-ABA.png"
+                                    alt="TK ABA Mertosanan"
+                                    width={32}
+                                    height={32}
+                                    className="object-contain"
+                                />
+                            </motion.div>
                             <div>
                                 <h3 className="text-lg font-bold">TK ABA Mertosanan</h3>
                                 <p className="text-sm">Pendidikan Anak Islami</p>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
     Menu,
@@ -62,11 +63,17 @@ export default function Navbar() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
                     <motion.div
-                    className="bg-primary p-2 rounded-full"
-                    whileHover={{rotate: 5}}
-                    whileTap={{ scale: 0.95 }}
+                        className="bg-white p-2 rounded-full overflow-hidden shadow-lg"
+                        whileHover={{rotate: 5}}
+                        whileTap={{ scale: 0.95 }}
                     >
-                        <School className="w-8 h-8 text-primary-foreground" />
+                        <Image
+                            src="/Logo-TK-ABA.png"
+                            alt="TK ABA Mertosanan"
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                        />
                     </motion.div>
                     <div>
                         <h1 className="text-xl font-bold text-primary-foreground">TK ABA</h1>
