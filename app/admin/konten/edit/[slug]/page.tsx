@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -36,7 +36,7 @@ function JSONRenderer({ data }: { data: string }) {
     }
 }
 
-type EditPageProps = { params: { slug: string } };
+type EditPageProps = { params: Promise<{ slug: string }> };
 
 interface KontenItem {
     id: number;
@@ -48,6 +48,7 @@ interface KontenItem {
 }
 
 export default function EditKontenPage({ params }: EditPageProps) {
+    const { slug } = use(params);
     const [konten, setKonten] = useState<KontenItem | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
