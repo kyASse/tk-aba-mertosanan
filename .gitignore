@@ -40,3 +40,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#debug log
+debug.log
+
+#mcp json
+/.vscode
+mcp.json

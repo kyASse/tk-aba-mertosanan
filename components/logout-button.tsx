@@ -3,8 +3,15 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { Button } from './ui/button'
+import { cn } from '@/lib/utils'
 
-export default function LogoutButton() {
+interface LogoutButtonProps {
+    className?: string;
+    children?: React.ReactNode;
+}
+
+export default function LogoutButton({ className, children }: LogoutButtonProps) {
     const router = useRouter()
     const supabase = createClient()
 
@@ -14,5 +21,11 @@ export default function LogoutButton() {
         router.push('/') 
     }
 
-    return <button onClick={handleSignOut}>Logout</button>
+    return <Button
+        variant="outline"
+        onClick={handleSignOut}
+        className={cn("rounded-full hover:bg-highlight/80 text-highlight-foreground hover:text-highlight-foreground", className)}
+    >
+        {children || "Logout"}
+    </Button>
 }

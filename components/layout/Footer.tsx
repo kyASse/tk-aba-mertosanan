@@ -1,11 +1,38 @@
+"use client";
 import Link from "next/link";
+import Image from "next/image";
+import { motion } from "motion/react";
 import {
-    School, Phone, Mail, MapPin,
+    Phone, Mail, MapPin,
     Facebook, Instagram, Youtube,
     Clock, Calendar, BookOpen
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
 
 export default function Footer() {
+    const [kontak, setKontak] = useState<{
+        alamat?: string;
+        whatsapp?: string;
+        email_utama?: string;
+        jam_operasional?: string;
+    } | null>(null);
+
+    useEffect(() => {
+        const supabase = createClient();
+        supabase
+            .from('kontak_sekolah')
+            .select('alamat, whatsapp, email_utama, jam_operasional')
+            .single()
+            .then(({ data, error }) => {
+                if (error) {
+                    console.error("Error fetching kontak_sekolah:", error);
+                    return;
+                }
+                setKontak(data);
+            });
+    }, []);
     return (
         <footer className="bg-secondary/40 pt-12 pb-6">
             <div className="container mx-auto px-4">
@@ -13,9 +40,19 @@ export default function Footer() {
                     {/* About */}
                     <div>
                         <div className="flex items-center space-x-2 mb-4">
-                            <div className="bg-primary p-2 rounded-full">
-                                <School className="text-primary-foreground w-6 h-6" />
-                            </div>
+                            <motion.div
+                                className="bg-white p-2 rounded-full overflow-hidden shadow-lg"
+                                whileHover={{rotate: 5}}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <Image
+                                    src="/Logo-TK-ABA.png"
+                                    alt="TK ABA Mertosanan"
+                                    width={32}
+                                    height={32}
+                                    className="object-contain"
+                                />
+                            </motion.div>
                             <div>
                                 <h3 className="text-lg font-bold">TK ABA Mertosanan</h3>
                                 <p className="text-sm">Pendidikan Anak Islami</p>
@@ -75,15 +112,15 @@ export default function Footer() {
                         <ul className="space-y-3">
                             <li className="flex items-start">
                                 <MapPin className="w-5 h-5 mr-2 mt-0.5 text-attention" />
-                                <span>Jl. Mertosanan, Potonoro, Banguntapan, Bantul, DIY</span>
+                                <span>{kontak?.alamat || "Alamat tidak tersedia"}</span>
                             </li>
                             <li className="flex items-center">
                                 <Phone className="w-5 h-5 mr-2 text-primary" />
-                                <span>+62 xxx-xxxx-xxxx</span>
+                                <span>{kontak?.whatsapp || "Nomor tidak tersedia"}</span>
                             </li >
                             <li className="flex items-center">
                                 <Mail className="w-5 h-5 mr-2 text-accent" />
-                                <span>example@mail.sch.id</span>
+                                <span>{kontak?.email_utama || "Email tidak tersedia"}</span>
                             </li>
                         </ul>
                     </div>
@@ -98,14 +135,14 @@ export default function Footer() {
                             <li className="flex items-start">
                                 <Calendar className="w-5 h-5 mr-2 mt-0.5 text-secondary-foreground" />
                                 <div>
-                                    <p className="font-medium">Senin - Jumat</p>
+                                    <p className="font-medium">Senin - Kamis</p>
                                     <p className="text-muted-foreground">07:30 - 11:00 WIB</p>
                                 </div>
                             </li>
                             <li className="flex items-start">
                                 <Calendar className="w-5 h-5 mr-2 mt-0.5 text-secondary-foreground" />
                                 <div>
-                                    <p className="font-medium">Sabtu</p>
+                                    <p className="font-medium">Jumat</p>
                                     <p className="text-muted-foreground">07:30 - 10:30 WIB</p>
                                 </div>
                             </li>

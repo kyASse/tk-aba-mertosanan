@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
     Menu,
@@ -16,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 import { ThemeSwitcher } from "../theme-switcher";
+import { Button } from "../ui/button";
 
 const navLinks = [
     { name: 'Beranda', href: '/', icon: <School className="w-5 h-5" /> },
@@ -54,18 +56,24 @@ export default function Navbar() {
         <header className={cn(
             "sticky top-0 z-50 w-full transition-all duration-300",
             scrolled
-                ? "bg-white/95 backdrop-blur-md shadow-md py-2"
+                ? "bg-white/95 dark:bg-gray-900/45 backdrop-blur-md shadow-md py-2"
                 : "bg-transparent py-4"
         )}>
             <div className="container mx-auto px-4 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
                     <motion.div
-                    className="bg-primary p-2 rounded-full"
-                    whileHover={{rotate: 5}}
-                    whileTap={{ scale: 0.95 }}
+                        className="bg-white p-2 rounded-full overflow-hidden shadow-lg"
+                        whileHover={{rotate: 5}}
+                        whileTap={{ scale: 0.95 }}
                     >
-                        <School className="w-8 h-8 text-primary-foreground" />
+                        <Image
+                            src="/Logo-TK-ABA.png"
+                            alt="TK ABA Mertosanan"
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                        />
                     </motion.div>
                     <div>
                         <h1 className="text-xl font-bold text-primary-foreground">TK ABA</h1>
@@ -80,8 +88,9 @@ export default function Navbar() {
                             key={link.href}
                             href={link.href}
                             className={cn(
-                                "nav-link",
-                                pathname === link.href && "active text-primary font-semibold"
+                                "flex items-center space-x-2 px-3 py-2 transition-colors",
+                                "text-primary-foreground hover:text-primary",
+                                pathname === link.href && "active text-primary font-bold"
                             )}
                         >
                             {link.name}
@@ -93,14 +102,13 @@ export default function Navbar() {
                     <Link
                         href="/auth/login"
                         className={cn(
-                            "ml-2 button-child bg-primary text-primary-foreground hover:bg-primary/90",
                             pathname === "/auth/login" && "active text-primary font-semibold"
                         )}
                     >
-                        <span className="flex items-center space-x-1">
+                        <Button className="ml-2 flex items-center space-x-1 rounded-full">
                             <LogIn className="w-4 h-4" />
                             <span>Masuk</span>
-                        </span>
+                        </Button>
                     </Link>
                 </nav>
 
