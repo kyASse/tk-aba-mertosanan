@@ -174,7 +174,7 @@ export default async function ContactPage() {
                 </div>
                 
                 <div className="text-center mt-8">
-                    <Link href="/pendaftaran">
+                    <Link href="/kontak">
                     <Button variant="outline" className="rounded-full border-accent text-accent-foreground hover:bg-accent/20">
                         <MessageSquare className="mr-2 h-5 w-5" /> Pertanyaan Lainnya? Hubungi Kami
                     </Button>

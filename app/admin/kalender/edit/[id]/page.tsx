@@ -3,27 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, ArrowLeft } from "lucide-react";
-import { categoryColors, availableCategories } from '@/lib/constants/calendar';
 import EditKegiatanForm from "./EditKegiatanForm";
 
-type KegiatanAkademik = {
-    id: number;
-    judul: string;
-    tanggal: string;
-    tanggal_berakhir: string | null;
-    waktu: string | null;
-    kategori: string;
-    deskripsi: string | null;
-    warna: string;
-};
-
-export default async function EditKegiatanPage({ params }: { params: { id: string } }) {
+export default async function EditKegiatanPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -31,7 +16,7 @@ export default async function EditKegiatanPage({ params }: { params: { id: strin
         return redirect('/auth/login');
     }
 
-    const kegiatanId = parseInt(params.id);
+    const kegiatanId = parseInt(id);
     if (isNaN(kegiatanId)) {
         return notFound();
     }
