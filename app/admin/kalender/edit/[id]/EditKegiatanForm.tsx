@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Save } from "lucide-react";
 import { categoryColors, availableCategories } from '@/lib/constants/calendar';
 import { updateKegiatanAction } from '../../actions';
+import { useRouter } from 'next/navigation';
 
 type KegiatanAkademik = {
     id: number;
@@ -46,6 +47,13 @@ export default function EditKegiatanForm({ kegiatan }: { kegiatan: KegiatanAkade
     const [selectedKategori, setSelectedKategori] = useState(kegiatan.kategori);
     const updateKegiatanWithId = updateKegiatanAction.bind(null, kegiatan.id);
     const [state, formAction] = useActionState(updateKegiatanWithId, { success: false, message: "" });
+    const router = useRouter();
+
+    useEffect(() => {
+        if (state?.success) {
+            router.push('/admin/kalender');
+        }
+    }, [state?.success, router]);
 
     return (
         <form action={formAction} className="space-y-6">

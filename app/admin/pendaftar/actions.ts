@@ -4,6 +4,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import { sendCustomRecoveryEmail } from "@/lib/auth/recovery";
 import type { User } from '@supabase/supabase-js';
 
 type PendaftarData = {
@@ -67,9 +68,7 @@ export async function acceptAndCreatePortalAccountAction(pendaftar: PendaftarDat
             pendaftar_asli_id: pendaftar.id,
         }).throwOnError();
 
-        await supabaseAdmin.auth.resetPasswordForEmail(pendaftar.email, {
-            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/update-password`,
-        }).then(({ error }) => { if (error) throw error; });
+    await sendCustomRecoveryEmail(pendaftar.email);
         
         await supabase.from('pendaftar').update({ status_pendaftaran: 'Akun Dibuat' }).eq('id', pendaftar.id).throwOnError();
         

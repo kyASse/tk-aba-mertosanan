@@ -34,7 +34,9 @@ export default function PortalLayout({
             >
                 <PortalNavbar />
                 <div className="min-h-screen pt-16 md:pt-20 bg-background dark:bg-background">
-                    {children}
+                    <main className="container mx-auto px-4 py-6">
+                        {children}
+                    </main>
                 </div>
             </ThemeProvider>
         </div>
