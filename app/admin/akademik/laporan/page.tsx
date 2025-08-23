@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { deleteLaporanAction } from "./actions";
 import CreateLaporanForm from "./CreateLaporanForm";
 
-export default async function KelolaLaporanPage({ searchParams }: { searchParams?: Record<string, string> }) {
+export default async function KelolaLaporanPage({ searchParams }: { searchParams?: Promise<Record<string, string>> }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return redirect('/auth/login');
@@ -22,7 +22,7 @@ export default async function KelolaLaporanPage({ searchParams }: { searchParams
     .select('id, siswa_id, semester, tahun_ajaran, catatan_guru, dokumen_rapor_url')
     .order('tahun_ajaran', { ascending: false });
 
-  const params = searchParams || ({} as Record<string, string>);
+  const params = (await searchParams) || ({} as Record<string, string>);
   const status = params.status;
   const msg = params.msg ? decodeURIComponent(params.msg) : '';
 
