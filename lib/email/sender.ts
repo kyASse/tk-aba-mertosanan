@@ -20,13 +20,13 @@ export async function sendEmail({ to, subject, html, text, from }: SendEmailArgs
     throw new Error('EMAIL_FROM belum dikonfigurasi.');
   }
 
-  const body = {
+  const body: ResendEmailRequestBody = {
     from: FROM_EMAIL,
     to: [to],
     subject,
     ...(html ? { html } : {}),
     ...(text ? { text } : {}),
-  } as Record<string, unknown>;
+  };
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',

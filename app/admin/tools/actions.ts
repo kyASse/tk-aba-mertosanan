@@ -20,7 +20,7 @@ export async function createStaticParentRendieAction(_prev: any, _formData: Form
 
   const admin = await createAdminClient();
 
-  const SISWA_ID = '93e73140-e9e0-4c80-8ee7-dc4cadd2c781';
+  const SISWA_ID = process.env.SISWA_ID || '93e73140-e9e0-4c80-8ee7-dc4cadd2c781';
   const EMAIL = process.env.PARENT_TEST_EMAIL || 'orangtua.rendie@example.com';
   const PASSWORD = process.env.PARENT_TEST_PASSWORD || 'RendieTest123!';
 

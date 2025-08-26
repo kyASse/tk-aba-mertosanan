@@ -34,7 +34,7 @@ export default async function PortalKeuanganPage() {
       <section>
         <h2 className="font-semibold mb-2">Catatan SPP</h2>
         <div className="p-3 border rounded bg-muted/30">
-          <p className="text-sm whitespace-pre-wrap">{(catatan?.isi as any)?.catatan || 'Belum ada catatan.'}</p>
+          <p className="text-sm whitespace-pre-wrap">{catatan?.isi?.catatan || 'Belum ada catatan.'}</p>
         </div>
       </section>
       <section>

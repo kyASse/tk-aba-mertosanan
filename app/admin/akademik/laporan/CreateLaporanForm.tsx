@@ -12,13 +12,7 @@ type Siswa = { id: number; nama_lengkap: string };
 export default function CreateLaporanForm({ siswa }: { siswa: Siswa[] }) {
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState<string>("");
-  const action = async (
-    prevState: { success: boolean; message?: string },
-    formData: FormData
-  ) => {
-    return await createLaporanAction(prevState, formData);
-  };
-  const [state, formAction] = useActionState(action, { success: false, message: "" });
+  const [state, formAction] = useActionState(createLaporanAction, { success: false, message: "" });
 
   useEffect(() => {
     if (state?.success) {
