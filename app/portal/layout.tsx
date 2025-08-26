@@ -33,8 +33,8 @@ export default function PortalLayout({
                 disableTransitionOnChange
             >
                 <PortalNavbar />
-                <div className="min-h-screen pt-16 md:pt-20 bg-background dark:bg-background">
-                    <main className="container mx-auto px-4 py-6">
+                <div className="min-h-screen">
+                    <main>
                         {children}
                     </main>
                 </div>
