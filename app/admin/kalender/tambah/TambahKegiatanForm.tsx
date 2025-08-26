@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Plus } from "lucide-react";
 import { categoryColors, availableCategories } from '@/lib/constants/calendar';
 import { createKegiatanAction } from '../actions';
+import { useRouter } from 'next/navigation';
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -34,9 +35,16 @@ function SubmitButton() {
 export default function TambahKegiatanForm() {
     const [selectedKategori, setSelectedKategori] = useState(availableCategories[0] || 'Libur Umum');
     const [state, formAction] = useActionState(createKegiatanAction, { success: false, message: "" });
+    const router = useRouter();
+
+    useEffect(() => {
+        if (state?.success) {
+            router.push('/admin/kalender');
+        }
+    }, [state?.success, router]);
 
     return (
-        <form action={formAction} className="space-y-6">
+    <form action={formAction} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Judul Kegiatan */}
                 <div className="md:col-span-2">

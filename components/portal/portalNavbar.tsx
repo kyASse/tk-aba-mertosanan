@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import LogoutButton from "@/components/logout-button";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { use } from "react";
 
@@ -44,7 +45,17 @@ export default function PortalNavbar(){
                         <h1 className="text-3xl font-bold">Portal TK ABA</h1>
                         <h2 className="text-2xl text-muted-foreground font-semibold">Mertosanan</h2>
                     </div>
-                    <LogoutButton />
+                    <div className="flex items-center gap-4">
+                        <nav className="hidden md:flex items-center gap-4 text-sm">
+                            <Link href="/portal" className={cn("hover:underline", pathname === "/portal" && "font-semibold")}>Beranda</Link>
+                            <Link href="/portal/akademik" className={cn("hover:underline", pathname?.startsWith('/portal/akademik') && "font-semibold")}>Akademik</Link>
+                            <Link href="/portal/laporan" className={cn("hover:underline", pathname?.startsWith('/portal/laporan') && "font-semibold")}>Laporan</Link>
+                            <Link href="/portal/pengumuman" className={cn("hover:underline", pathname?.startsWith('/portal/pengumuman') && "font-semibold")}>Pengumuman</Link>
+                            <Link href="/portal/keuangan" className={cn("hover:underline", pathname?.startsWith('/portal/keuangan') && "font-semibold")}>Keuangan</Link>
+                            <Link href="/portal/testimoni" className={cn("hover:underline", pathname?.startsWith('/portal/testimoni') && "font-semibold")}>Testimoni</Link>
+                        </nav>
+                        <LogoutButton />
+                    </div>
                 </div>
             </div>
         </header>
