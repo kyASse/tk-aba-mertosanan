@@ -1,6 +1,15 @@
 // lib/email/sender.ts
 'use server';
 
+// Minimal request body type for Resend email API
+type ResendEmailRequestBody = {
+  from: string;
+  to: string[];
+  subject: string;
+  html?: string;
+  text?: string;
+};
+
 type SendEmailArgs = {
   to: string;
   subject: string;
