@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CalendarDays, FileText, Megaphone, HandCoins, MessageSquareQuote } from "lucide-react";
 
 type Siswa = { id: string; nama_lengkap: string; kelompok: string | null };
-type Laporan = { semester: string; tahun_ajaran: string; catatan_guru: string | null; dokumen_rapor_url: string | null };
+type Laporan = { id: number; semester: string; tahun_ajaran: string; catatan_guru: string | null; dokumen_rapor_url: string | null };
 
 export default async function PortalPage() {
     const supabase = await createClient();
@@ -22,7 +22,7 @@ export default async function PortalPage() {
 
     const { data: laporan } = await supabase
         .from('laporan_perkembangan')
-        .select('semester, tahun_ajaran, catatan_guru, dokumen_rapor_url')
+        .select('id, semester, tahun_ajaran, catatan_guru, dokumen_rapor_url')
         .in('siswa_id', siswaIds.length ? siswaIds : ['__none__'])
         .order('tahun_ajaran', { ascending: false });
 
@@ -73,20 +73,29 @@ export default async function PortalPage() {
                 </div>
 
                 {/* Lihat Laporan Terbaru */}
-                <Link href="/portal/laporan" className="flex items-center justify-between p-4 rounded-xl border bg-card hover:bg-accent/50 transition">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-blue-600" />
-                        </div>
-                        <div>
-                            <div className="font-medium">Lihat Laporan Terbaru</div>
-                            <div className="text-xs text-muted-foreground">
-                                {laporanTerbaru ? `Terakhir Diperbarui: ${laporanTerbaru.tahun_ajaran}` : 'Belum ada laporan.'}
-                            </div>
-                        </div>
-                    </div>
-                    <button className="px-3 py-1.5 rounded-md border text-sm">Lihat Laporan</button>
-                </Link>
+                                <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
+                                        <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                                                        <FileText className="w-5 h-5 text-blue-600" />
+                                                </div>
+                                                <div>
+                                                        <div className="font-medium">Lihat Laporan Terbaru</div>
+                                                        <div className="text-xs text-muted-foreground">
+                                                                {laporanTerbaru ? `Terakhir Diperbarui: ${laporanTerbaru.tahun_ajaran}` : 'Belum ada laporan.'}
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                                <Link href="/portal/laporan" className="px-3 py-1.5 rounded-md border text-sm hover:bg-accent/50 transition">
+                                                    Lihat Laporan
+                                                </Link>
+                                                {laporanTerbaru?.dokumen_rapor_url && (
+                                                    <a href={`/api/rapor/${laporan?.[0]?.id}/download`} className="px-3 py-1.5 rounded-md border text-sm hover:bg-accent/50 transition" target="_blank" rel="noopener noreferrer">
+                                                        Unduh Terbaru
+                                                    </a>
+                                                )}
+                                        </div>
+                                </div>
 
                 {/* Pengumuman Terbaru */}
                 <Link href="/portal/pengumuman" className="flex items-center justify-between p-4 rounded-xl border bg-card hover:bg-accent/50 transition">
