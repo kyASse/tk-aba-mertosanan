@@ -35,7 +35,7 @@ export async function createLaporanAction(prevState: any, formData: FormData): P
   if (!siswaIdRaw || !semester || !tahun_ajaran) {
     return { success: false, message: 'Form tidak lengkap' };
   }
-  const siswa_id = /^\d+$/.test(siswaIdRaw) ? Number(siswaIdRaw) : siswaIdRaw;
+  const siswa_id = siswaIdRaw;
 
   const v = validatePdf(rapor);
   if (!v.ok) {
