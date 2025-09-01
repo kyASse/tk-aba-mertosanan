@@ -31,8 +31,8 @@ export default async function PortalAkademikPage() {
 
   const catatanGuru = [
     "Sudah lancar berhitung 1-10 secara berurutan.",
-    "Mulai belajar berhitung saat diel bersenda.",
-    "Perlu bimbingan meningkatkan patient saat menulis."
+    "Mulai belajar berhitung saat bermain.",
+    "Perlu bimbingan meningkatkan kesabaran saat menulis."
   ];
 
   const jadwalHarian = [
