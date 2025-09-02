@@ -7,7 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Calendar, ArrowLeft } from "lucide-react";
 import EditKegiatanForm from "./EditKegiatanForm";
 
-export default async function EditKegiatanPage({ params }: { params: Promise<{ id: string }> }) {
+interface PageProps {
+    params: Promise<{ id: string }>;
+}
+
+export default async function EditKegiatanPage({ params }: PageProps) {
     const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
