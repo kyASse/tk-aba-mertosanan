@@ -5,6 +5,12 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { sendEmail } from '@/lib/email/sender';
 
 export async function sendCustomRecoveryEmail(email: string) {
+  // If email sending isn't configured, skip silently
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('sendCustomRecoveryEmail: RESEND_API_KEY not set, skipping email send.');
+    return;
+  }
+
   const site = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const admin = await createAdminClient();
 

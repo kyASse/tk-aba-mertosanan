@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CalendarDays, FileText, Megaphone, HandCoins, MessageSquareQuote } from "lucide-react";
 
 type Siswa = { id: string; nama_lengkap: string; kelompok: string | null };
-type Laporan = { semester: string; tahun_ajaran: string; catatan_guru: string | null; dokumen_rapor_url: string | null };
+type Laporan = { id: number; semester: string; tahun_ajaran: string; catatan_guru: string | null; dokumen_rapor_url: string | null };
 
 export default async function PortalPage() {
     const supabase = await createClient();
@@ -22,7 +22,7 @@ export default async function PortalPage() {
 
     const { data: laporan } = await supabase
         .from('laporan_perkembangan')
-        .select('semester, tahun_ajaran, catatan_guru, dokumen_rapor_url')
+        .select('id, semester, tahun_ajaran, catatan_guru, dokumen_rapor_url')
         .in('siswa_id', siswaIds.length ? siswaIds : ['__none__'])
         .order('tahun_ajaran', { ascending: false });
 

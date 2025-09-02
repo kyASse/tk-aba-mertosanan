@@ -12,10 +12,14 @@ export default async function PortalLaporanPage() {
     .eq('profile_orang_tua_id', user.id);
 
   const siswaIds = siswa?.map(s => s.id) || [];
+  const siswaNameMap = new Map<string, string>();
+  for (const s of siswa || []) siswaNameMap.set(String(s.id), s.nama_lengkap);
   const { data: laporan } = await supabase
     .from('laporan_perkembangan')
     .select('id, siswa_id, semester, tahun_ajaran, catatan_guru, dokumen_rapor_url')
-    .in('siswa_id', siswaIds);
+    .in('siswa_id', siswaIds.length ? siswaIds : ['__none__']);
+
+  // Link unduh dipusatkan ke endpoint API agar akses & logging terkendali
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
@@ -25,9 +29,10 @@ export default async function PortalLaporanPage() {
           {laporan.map((l) => (
             <li key={l.id} className="border rounded p-4">
               <div className="font-medium">{l.semester} {l.tahun_ajaran}</div>
+              <div className="text-xs text-muted-foreground">Nama Anak: {siswaNameMap.get(String(l.siswa_id)) || '-'}</div>
               {l.catatan_guru && <p className="text-sm mt-1">Catatan Guru: {l.catatan_guru}</p>}
               {l.dokumen_rapor_url && (
-                <a className="text-blue-600 underline" href={l.dokumen_rapor_url} target="_blank" rel="noopener noreferrer">Unduh Rapor (PDF)</a>
+                <a className="text-blue-600 underline" href={`/api/rapor/${l.id}/download`} target="_blank" rel="noopener noreferrer">Unduh Rapor (PDF)</a>
               )}
             </li>
           ))}

@@ -10,7 +10,7 @@ export default async function PortalAkademikPage() {
 
   const { data: siswa } = await supabase
     .from('siswa')
-    .select('id, nama_lengkap, kelompok')
+    .select('id, nama_lengkap, kelompok, tanggal_lahir, wali_kelas, tahun_ajaran')
     .eq('profile_orang_tua_id', user.id);
 
   // Jadwal kegiatan memakai kalender_akademik umum (bisa dikembangkan per siswa/ekstra di masa depan)
@@ -19,14 +19,24 @@ export default async function PortalAkademikPage() {
     .select('*')
     .order('tanggal', { ascending: true });
 
-  // Data dummy untuk development
-  const siswaData = siswa?.[0] || {
-    id: 'dummy-1',
-    nama_lengkap: 'Putri Aulia',
-    kelompok: 'Bu Asjar',
-    umur: '5 Tahun',
-    wali_kelas: 'Bu Asjar',
-    tahun_ajaran: '2024/2025'
+  // Normalisasi agar properti selalu ada saat render (hindari error saat data DB tidak memiliki field opsional)
+  const s = siswa?.[0];
+  const birth = s?.tanggal_lahir ? new Date(s.tanggal_lahir) : null;
+  const now = new Date();
+  let umur = '-';
+  if (birth && !Number.isNaN(birth.getTime())) {
+    let years = now.getFullYear() - birth.getFullYear();
+    const m = now.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) years--;
+    umur = `${years} Tahun`;
+  }
+  const siswaData = {
+    id: s?.id ?? '-',
+    nama_lengkap: s?.nama_lengkap ?? '-',
+    kelompok: s?.kelompok ?? '-',
+    umur,
+    wali_kelas: s?.wali_kelas ?? '-',
+    tahun_ajaran: s?.tahun_ajaran ?? '-',
   };
 
   const catatanGuru = [

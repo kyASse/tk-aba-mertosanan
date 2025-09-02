@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { z } from "zod";
 
 // Helper to ensure only pdf and limited size
 function validatePdf(file: File | null, maxMB = 10) {
@@ -11,6 +12,18 @@ function validatePdf(file: File | null, maxMB = 10) {
   if (file.size > maxMB * 1024 * 1024) return { ok: false, message: `Ukuran file maksimal ${maxMB}MB.` };
   return { ok: true };
 }
+
+// Validasi payload (kecuali file) dengan Zod
+const laporanSchema = z.object({
+  siswa_id: z.string().min(1, "Siswa wajib dipilih"),
+  semester: z.string().min(1, "Semester wajib diisi"),
+  tahun_ajaran: z
+    .string()
+    .min(1, "Tahun ajaran wajib diisi")
+    // contoh format fleksibel, cukup panjang minimal dan berisi angka/huruf
+    .regex(/^[\w\s\-/]+$/i, "Format tahun ajaran tidak valid"),
+  catatan_guru: z.string().optional().nullable(),
+});
 
 export async function createLaporanAction(prevState: any, formData: FormData): Promise<{ success: boolean; message?: string }> {
   const supabase = await createClient();
@@ -26,16 +39,21 @@ export async function createLaporanAction(prevState: any, formData: FormData): P
 
   // Gunakan klien admin untuk melewati RLS pada operasi tulis
   const admin = await createAdminClient();
-  const siswaIdRaw = (formData.get('siswa_id') as string) || '';
-  const semester = (formData.get('semester') as string) || '';
-  const tahun_ajaran = (formData.get('tahun_ajaran') as string) || '';
-  const catatan_guru = (formData.get('catatan_guru') as string) || null;
-  const rapor = formData.get('rapor') as File | null;
 
-  if (!siswaIdRaw || !semester || !tahun_ajaran) {
-    return { success: false, message: 'Form tidak lengkap' };
+  const payload = {
+    siswa_id: (formData.get('siswa_id') as string) || '',
+    semester: (formData.get('semester') as string) || '',
+    tahun_ajaran: (formData.get('tahun_ajaran') as string) || '',
+    catatan_guru: ((formData.get('catatan_guru') as string) || '').trim() || null,
+  };
+  const parsed = laporanSchema.safeParse(payload);
+  if (!parsed.success) {
+    const firstErr = parsed.error.issues[0]?.message || 'Form tidak valid';
+    return { success: false, message: firstErr };
   }
-  const siswa_id = siswaIdRaw;
+
+  const rapor = formData.get('rapor') as File | null;
+  const { siswa_id, semester, tahun_ajaran, catatan_guru } = parsed.data;
 
   const v = validatePdf(rapor);
   if (!v.ok) {
@@ -43,8 +61,8 @@ export async function createLaporanAction(prevState: any, formData: FormData): P
   }
 
   try {
-    const safeSemester = semester.replace(/\s+/g, '-').toLowerCase();
-    const safeTA = tahun_ajaran.replace(/\s+/g, '-');
+  const safeSemester = semester.replace(/\s+/g, '-').toLowerCase();
+  const safeTA = tahun_ajaran.replace(/\s+/g, '-');
     const filePath = `${siswa_id}/${safeSemester}-${safeTA}-${Date.now()}.pdf`;
   const { error: uploadError, data: uploaded } = await admin.storage
       .from('dokumen-rapor')
@@ -52,11 +70,8 @@ export async function createLaporanAction(prevState: any, formData: FormData): P
     if (uploadError || !uploaded?.path) {
       return { success: false, message: uploadError?.message || 'Gagal mengunggah rapor' };
     }
-
-  const { data: pub } = admin.storage
-      .from('dokumen-rapor')
-      .getPublicUrl(uploaded.path);
-    const dokumen_rapor_url = pub.publicUrl;
+  // Simpan HANYA path storage (bucket privat). Jangan public URL.
+  const dokumen_rapor_url = uploaded.path;
 
   const { error } = await admin
       .from('laporan_perkembangan')
@@ -64,7 +79,7 @@ export async function createLaporanAction(prevState: any, formData: FormData): P
     if (error) {
       // cleanup upload
       try {
-  await admin.storage.from('dokumen-rapor').remove([uploaded.path]);
+    await admin.storage.from('dokumen-rapor').remove([uploaded.path]);
       } catch {}
       return { success: false, message: error.message };
     }
@@ -104,10 +119,16 @@ export async function deleteLaporanAction(id: number, _formData: FormData): Prom
 
   // Coba hapus file dari storage (best-effort)
   try {
-    const url = row?.dokumen_rapor_url as string | undefined;
-    if (url && url.includes('/dokumen-rapor/')) {
-      const path = new URL(url).pathname.split('/dokumen-rapor/')[1];
-  if (path) await admin.storage.from('dokumen-rapor').remove([path]);
+    const stored = row?.dokumen_rapor_url as string | undefined;
+    if (stored) {
+      let path = stored;
+      // Back-compat: bila masih berupa public URL lama, ekstrak path-nya
+      if (stored.includes('/dokumen-rapor/')) {
+        try {
+          path = new URL(stored).pathname.split('/dokumen-rapor/')[1] || stored;
+        } catch {}
+      }
+      if (path) await admin.storage.from('dokumen-rapor').remove([path]);
     }
   } catch {}
 
