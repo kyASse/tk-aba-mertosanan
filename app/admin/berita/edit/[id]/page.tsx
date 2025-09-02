@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import EditForm from "../EditForm";
 
-export default async function EditBeritaPage({ params }: any) {
+export default async function EditBeritaPage({ params }: { params: { id: string } }) {
   const { id } = params || {};
 
   const supabase = await createClient();
