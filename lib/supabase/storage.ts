@@ -3,7 +3,7 @@
 import { createAdminClient } from './admin';
 
 /**
- * Create a short-lived signed URL for a rapor PDF stored in the private bucket.
+ * Create a short-lived signed URL for a report PDF stored in the private bucket.
  * Input should be a storage path (e.g., `${siswaId}/ganjil-2025-1735223.pdf`).
  * Returns null if signing fails.
  */
