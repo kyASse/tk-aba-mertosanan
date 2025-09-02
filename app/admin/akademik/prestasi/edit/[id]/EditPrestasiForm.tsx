@@ -28,7 +28,7 @@ type Props = {
 };
 
 export default function EditPrestasiForm({ prestasi, imageUrl }: Props) {
-    const [textFormState, textFormAction] = useFormState(async (_: any, formData: FormData) => {
+    const [_textFormState, textFormAction] = useFormState(async (_: any, formData: FormData) => {
         const result = await updatePrestasiAction(prestasi.id, formData);
         if (result.success) toast.success("Informasi prestasi berhasil diperbarui.");
         else toast.error(result.message);
@@ -36,7 +36,7 @@ export default function EditPrestasiForm({ prestasi, imageUrl }: Props) {
     }, { success: false, message: "" });
     
     // Pisahkan state/action untuk setiap form
-    const [imageFormState, imageFormAction] = useFormState(async (_: any, formData: FormData) => {
+    const [_imageFormState, imageFormAction] = useFormState(async (_: any, formData: FormData) => {
         toast.info("Mengunggah gambar...");
         const result = await updatePrestasiAction(prestasi.id, formData);
         if (result.success) toast.success("Gambar berhasil diunggah/diganti.");
@@ -44,7 +44,7 @@ export default function EditPrestasiForm({ prestasi, imageUrl }: Props) {
         return result;
     }, { success: false, message: "" });
     
-    const [deleteImageState, deleteImageAction] = useFormState(async (_: any, formData: FormData) => {
+    const [_deleteImageState, deleteImageAction] = useFormState(async (_: any, formData: FormData) => {
         const result = await updatePrestasiAction(prestasi.id, formData);
         if (result.success) toast.success("Gambar berhasil dihapus.");
         else toast.error(result.message);

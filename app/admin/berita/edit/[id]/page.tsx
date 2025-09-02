@@ -4,9 +4,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import EditForm from "../EditForm";
+export const dynamic = 'force-dynamic';
 
-export default async function EditBeritaPage({ params }: { params: { id: string } }) {
-  const { id } = params || {};
+export default async function EditBeritaPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   const supabase = await createClient();
 

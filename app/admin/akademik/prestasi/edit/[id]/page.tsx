@@ -4,9 +4,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import EditPrestasiForm from "./EditPrestasiForm";
+export const dynamic = 'force-dynamic';
 
-export default async function EditPrestasiPage({ params }: { params: { id: string } }) {
-    const { id } = params;
+export default async function EditPrestasiPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const supabase = await createClient();
     const prestasiId = parseInt(id, 10);
 

@@ -47,3 +47,30 @@ debug.log
 #mcp json
 /.vscode
 mcp.json
+
+# linters/cache
+.eslintcache
+
+# Next/Turbopack/SWC caches
+.turbo/
+.swc/
+.cache/
+.history/
+
+# OS/editor junk
+Thumbs.db
+Desktop.ini
+.idea/
+.fleet/
+.direnv/
+.envrc
+*.swp
+*.swo
+*.orig
+
+# logs directory
+logs/
+
+# Supabase local artifacts
+supabase/.temp/
+supabase/.branches/

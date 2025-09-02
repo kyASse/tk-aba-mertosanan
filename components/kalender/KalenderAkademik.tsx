@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
 import { categoryColors } from '@/lib/constants/calendar';
 import { fetchCalendarEvents, type CalendarEvent } from '@/lib/utils/calendar-query';
@@ -15,20 +14,13 @@ const bulanIndonesia = [
 
 const hariIndonesia = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
-// Fungsi helper untuk menambahkan opacity ke warna hex
-const addOpacityToHex = (hex: string, opacity: number) => {
-  const cleanHex = hex.replace('#', '');
-  const r = parseInt(cleanHex.substring(0, 2), 16);
-  const g = parseInt(cleanHex.substring(2, 4), 16);
-  const b = parseInt(cleanHex.substring(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-};
+// (unused helper removed)
 
 export default function KalenderAkademik() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<KalenderEvent[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchEvents();
@@ -158,7 +150,7 @@ export default function KalenderAkademik() {
                 </div>;
               }
 
-              const dayEvents = getEventsForDate(day);
+              const _dayEvents = getEventsForDate(day);
               const isToday = day.toDateString() === new Date().toDateString();
               const isSelected = selectedDate?.toDateString() === day.toDateString();
 
