@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const idNum = Number(id);
-    if (!idNum || Number.isNaN(idNum)) {
+    if (isNaN(idNum) || idNum <= 0) {
       return NextResponse.json({ error: 'Bad request' }, { status: 400 });
     }
 
