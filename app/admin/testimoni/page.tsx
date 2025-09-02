@@ -16,7 +16,7 @@ export default async function KelolaTestimoniPage() {
 
     const { data: testimoni, error } = await supabase
         .from('testimoni')
-        .select('id, nama_orang_tua, status_orang_tua, is_featured, isi_testimoni, created_at')
+        .select('id, nama_orang_tua, status_orang_tua, is_featured, isi_testimoni, created_at, created_by')
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -59,12 +59,6 @@ export default async function KelolaTestimoniPage() {
                         <Link href="/admin">
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Kembali ke Dashboard
-                        </Link>
-                    </Button>
-                    <Button asChild>
-                        <Link href="/admin/testimoni/tambah">
-                            <Plus className="w-4 h-4 mr-2" />
-                            Tambah Testimoni
                         </Link>
                     </Button>
                 </div>
@@ -126,14 +120,8 @@ export default async function KelolaTestimoniPage() {
                                     <div className="bg-gray-50 rounded-lg p-8">
                                         <h3 className="text-lg font-medium text-gray-900 mb-2">Belum ada testimoni</h3>
                                         <p className="text-gray-600 mb-4">
-                                            Mulai dengan menambahkan testimoni pertama dari orang tua siswa.
+                                            Menunggu testimoni dari orang tua.
                                         </p>
-                                        <Button asChild>
-                                            <Link href="/admin/testimoni/tambah">
-                                                <Plus className="w-4 h-4 mr-2" />
-                                                Tambah Testimoni Pertama
-                                            </Link>
-                                        </Button>
                                     </div>
                                 </div>
                             )}

@@ -2,7 +2,6 @@
 'use server';
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function createKegiatanAction(prevState: any, formData: FormData) {
     const supabase = await createClient();
@@ -18,7 +17,7 @@ export async function createKegiatanAction(prevState: any, formData: FormData) {
     const { error } = await supabase.from('kalender_akademik').insert(data);
     if (error) { return { success: false, message: error.message }; }
     revalidatePath('/admin/kalender');
-    redirect('/admin/kalender');
+    return { success: true };
 }
 
 export async function updateKegiatanAction(kegiatanId: number, prevState: any, formData: FormData) {
@@ -35,7 +34,7 @@ export async function updateKegiatanAction(kegiatanId: number, prevState: any, f
     const { error } = await supabase.from('kalender_akademik').update(data).eq('id', kegiatanId);
     if (error) { return { success: false, message: error.message }; }
     revalidatePath('/admin/kalender');
-    redirect('/admin/kalender');
+    return { success: true };
 }
 
 export async function deleteKegiatanAction(kegiatanId: number) {

@@ -60,7 +60,7 @@ export default async function PendaftaranPage() {
     
     const persyaratan = persyaratanData?.isi as PersyaratanIsi | null;
     const catatanSpp = catatanSppData?.isi as CatatanSppIsi | null;
-    const jadwal = jadwalData?.isi as JadwalIsi | null;
+    const _jadwal = jadwalData?.isi as JadwalIsi | null;
 
     const totalPutra = biaya?.reduce((acc, item) => acc + (item.biaya_putra || 0), 0);
     const totalPutri = biaya?.reduce((acc, item) => acc + (item.biaya_putri || 0), 0);

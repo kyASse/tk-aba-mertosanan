@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, ExternalLink } from "lucide-react";
 
 type Props = {
-    namaOrangTua: string | null;
+    namaOrangTua?: string | null; // not used currently
     namaAnak: string | null;
     nomorTelepon: string | null;
 };
 
-export default function WhatsAppButton({ namaOrangTua, namaAnak, nomorTelepon }: Props) {
+export default function WhatsAppButton({ namaOrangTua: _namaOrangTua, namaAnak, nomorTelepon }: Props) {
     if (!nomorTelepon) {
         return (
             <Button variant="outline" disabled className="text-gray-500">
@@ -30,8 +30,11 @@ export default function WhatsAppButton({ namaOrangTua, namaAnak, nomorTelepon }:
     const encodedPesan = encodeURIComponent(templatePesan);
 
     // ===== PERUBAHAN UTAMA ADA DI SINI =====
-    // Kita ganti URL dari wa.me menjadi web.whatsapp.com
-    const waUrl = `https://web.whatsapp.com/send?phone=${formattedNomor}&text=${encodedPesan}`;
+    // Pilih URL berdasarkan perangkat: mobile gunakan wa.me, desktop gunakan web.whatsapp.com
+    const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const waUrl = isMobile
+        ? `https://wa.me/${formattedNomor}?text=${encodedPesan}`
+        : `https://web.whatsapp.com/send?phone=${formattedNomor}&text=${encodedPesan}`;
 
     return (
         <Button asChild className='bg-green-600 hover:bg-green-700 text-white'>

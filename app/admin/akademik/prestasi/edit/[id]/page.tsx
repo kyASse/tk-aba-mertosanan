@@ -5,13 +5,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import EditPrestasiForm from "./EditPrestasiForm";
 
-type EditPageProps = {
-    params: Promise<{
-        id: string;
-    }>;
-};
+interface PageProps {
+    params: Promise<{ id: string }>;
+}
 
-export default async function EditPrestasiPage({ params }: EditPageProps) {
+export default async function EditPrestasiPage({ params }: PageProps) {
     const { id } = await params;
     const supabase = await createClient();
     const prestasiId = parseInt(id, 10);

@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { Geist } from "next/font/google";
-import { ThemeProvider } from "next-themes";
 import ClientLayoutContent from "@/components/layout/ClientLayoutContent";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -14,8 +11,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "TK ABA Mertosanan",
+  description: "Website resmi TK ABA Mertosanan: informasi sekolah, pendaftaran, berita, galeri, dan portal orang tua.",
 };
 
 const geistSans = Geist({
@@ -32,10 +29,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <Script
-          crossOrigin="anonymous"
-          src="//unpkg.com/react-scan/dist/auto.global.js"
-        />
+        {process.env.NODE_ENV !== 'production' && (
+          <Script
+            crossOrigin="anonymous"
+            src="//unpkg.com/react-scan/dist/auto.global.js"
+          />
+        )}
       </head>
       <body className={`${geistSans.className} antialiased`}>
         <ClientLayoutContent>{children}</ClientLayoutContent>

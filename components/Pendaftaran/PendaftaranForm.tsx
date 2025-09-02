@@ -81,7 +81,7 @@ const formSchema = z.object({
     dokumen_pendukung: z.any().optional(),
 });
 
-type FormSchema = z.infer<typeof formSchema>;
+
 
 export default function PendaftaranForm() {
     const [isSuccess, setIsSuccess] = useState(false);
@@ -177,12 +177,8 @@ export default function PendaftaranForm() {
                 if (uploadError) {
                     throw new Error(`Gagal mengunggah dokumen: ${uploadError.message}`);
                 }
-                
-                const { data: publicUrlData } = supabase.storage
-                    .from('dokumen-pendukung')
-                    .getPublicUrl(uploadData.path);
-                
-                dokumen_pendukung_url = publicUrlData.publicUrl;
+                // Simpan hanya path object; akses dilakukan via URL bertanda tangan
+                dokumen_pendukung_url = uploadData.path;
                 setIsUploading(false);
             }
             

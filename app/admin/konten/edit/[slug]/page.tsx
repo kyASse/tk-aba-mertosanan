@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -48,7 +48,6 @@ interface KontenItem {
 }
 
 export default function EditKontenPage({ params }: EditPageProps) {
-    const { slug } = use(params);
     const [konten, setKonten] = useState<KontenItem | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -63,9 +62,7 @@ export default function EditKontenPage({ params }: EditPageProps) {
 
     useEffect(() => {
         async function fetchKonten() {
-            const resolvedParams = await params;
-            const { slug } = resolvedParams;
-            
+            const { slug } = await params;
             const { data, error } = await supabase
                 .from('konten_halaman')
                 .select('*')

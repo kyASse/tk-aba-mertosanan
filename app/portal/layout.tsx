@@ -33,8 +33,10 @@ export default function PortalLayout({
                 disableTransitionOnChange
             >
                 <PortalNavbar />
-                <div className="min-h-screen pt-16 md:pt-20 bg-background dark:bg-background">
-                    {children}
+                <div className="min-h-screen">
+                    <main>
+                        {children}
+                    </main>
                 </div>
             </ThemeProvider>
         </div>

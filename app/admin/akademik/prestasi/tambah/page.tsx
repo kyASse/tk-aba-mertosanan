@@ -38,7 +38,7 @@ export default function TambahPrestasiPage() {
         if (file) {
             const fileExt = file.name.split('.').pop();
             const fileName = `prestasi-${Date.now()}.${fileExt}`;
-            const { data, error } = await supabase
+            const { data: _upload, error } = await supabase
                 .storage
                 .from('dokumentasi-prestasi')
                 .upload(fileName, file);

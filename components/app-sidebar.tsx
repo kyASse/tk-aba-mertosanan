@@ -58,6 +58,10 @@ const navMainData = [
         title: "Daftar Pendaftar",
         url: "/admin/pendaftar",
       },
+      {
+        title: "Kelola Siswa",
+        url: "/admin/siswa",
+      },
       // {
       //   title: "Detail Pendaftar",
       //   url: "/admin/pendaftar/detail",
@@ -103,10 +107,6 @@ const navMainData = [
         title: "Daftar Testimoni",
         url: "/admin/testimoni",
       },
-      {
-        title: "Tambah Testimoni",
-        url: "/admin/testimoni/tambah",
-      },
     ],
   },
   {
@@ -136,6 +136,10 @@ const navMainData = [
       {
         title: "Edit Biaya",
         url: "/admin/akademik/edit-biaya",
+      },
+      {
+        title: "Laporan Perkembangan",
+        url: "/admin/akademik/laporan",
       },
       {
         title: "Prestasi",
