@@ -36,7 +36,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     // Rate limiting by user + IP
-  const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  const xff = req.headers.get('x-forwarded-for');
+  const ip = xff ? xff.split(',')[0].trim() : (req.headers.get('x-real-ip') || 'unknown');
     const key = `${user.id}:${ip}`;
     if (!rateLimit(key)) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
