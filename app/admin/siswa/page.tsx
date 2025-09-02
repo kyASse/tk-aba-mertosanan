@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createSiswaAction, updateSiswaKelompokAction, linkOrCreateParentAccountAction, deleteSiswaAction } from "./actions";
+import { createSiswaAction, updateSiswaKelompokAction, linkOrCreateParentAccountAction, deleteSiswaAction, importSiswaFromPendaftarAction } from "./actions";
+import LinkParentForm from "@/components/admin/LinkParentForm";
 
 export default async function KelolaSiswaPage() {
   const supabase = await createClient();
@@ -15,10 +16,18 @@ export default async function KelolaSiswaPage() {
 
   const { data: siswa, error } = await supabase
     .from('siswa')
-    .select('id, nama_lengkap, kelompok, profile_orang_tua_id');
+    .select('id, nama_lengkap, kelompok, profile_orang_tua_id, pendaftar_asli_id');
   if (error) {
     return <div className="p-6">Gagal memuat data siswa: {error.message}</div>;
   }
+
+  // Ambil pendaftar yang sudah diterima tapi belum masuk tabel siswa
+  const { data: acceptedApplicants } = await supabase
+    .from('pendaftar')
+  .select('id, nama_lengkap, status_pendaftaran, created_at')
+    .in('status_pendaftaran', ['Diterima', 'Akun Dibuat'])
+    .order('created_at', { ascending: false });
+  const acceptedApplicantsToImport = (acceptedApplicants || []).filter((p: any) => !siswa?.some((s: any) => s.pendaftar_asli_id === p.id));
 
   return (
     <div className="p-6 space-y-6 max-w-6xl mx-auto">
@@ -55,6 +64,36 @@ export default async function KelolaSiswaPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Tambah dari Daftar Pendaftar Diterima</CardTitle>
+        </CardHeader>
+        <CardContent>
+      {acceptedApplicantsToImport && acceptedApplicantsToImport.length > 0 ? (
+            <div className="space-y-3">
+        {acceptedApplicantsToImport.map((p: any) => (
+                <form key={p.id} action={importSiswaFromPendaftarAction} className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end border-b pb-3">
+                  <div>
+                    <Label>Pendaftar</Label>
+                    <div className="font-medium">{p.nama_lengkap}</div>
+                    <input type="hidden" name="pendaftar_id" value={p.id} />
+                  </div>
+                  <div>
+                    <Label htmlFor={`kelompok-import-${p.id}`}>Kelompok</Label>
+                    <Input id={`kelompok-import-${p.id}`} name="kelompok" placeholder="TK A / TK B / dst" />
+                  </div>
+                  <div className="md:justify-self-end">
+                    <Button type="submit">Tambah sebagai Siswa</Button>
+                  </div>
+                </form>
+              ))}
+            </div>
+          ) : (
+            <div className="text-muted-foreground">Tidak ada pendaftar diterima yang perlu diimport.</div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Daftar Siswa</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -74,15 +113,7 @@ export default async function KelolaSiswaPage() {
                     <Button type="submit" variant="secondary">Simpan</Button>
                   </div>
                 </form>
-                <form action={linkOrCreateParentAccountAction.bind(null, s.id)} className="flex gap-2">
-                  <div className="flex-1">
-                    <Label htmlFor={`email-${s.id}`}>Email Orang Tua</Label>
-                    <Input id={`email-${s.id}`} name="email" type="email" placeholder="parent@mail.com" />
-                  </div>
-                  <div className="self-end">
-                    <Button type="submit">Hubungkan/Buat Akun</Button>
-                  </div>
-                </form>
+                <LinkParentForm siswaId={s.id} />
                 <form action={deleteSiswaAction.bind(null, s.id)} className="justify-self-end">
                   <Button type="submit" variant="destructive">Hapus</Button>
                 </form>

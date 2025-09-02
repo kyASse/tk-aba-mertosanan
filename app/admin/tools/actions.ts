@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { buildInitialParentPasswordFromDOB } from '@/lib/utils/password';
 
 type Result = { success: boolean; message?: string; email?: string; password?: string };
 
@@ -22,16 +23,17 @@ export async function createStaticParentRendieAction(_prev: any, _formData: Form
 
   const SISWA_ID = process.env.SISWA_ID || '93e73140-e9e0-4c80-8ee7-dc4cadd2c781';
   const EMAIL = process.env.PARENT_TEST_EMAIL || 'orangtua.rendie@example.com';
-  const PASSWORD = process.env.PARENT_TEST_PASSWORD || 'RendieTest123!';
+  const FALLBACK_PASSWORD = process.env.PARENT_TEST_PASSWORD || 'RendieTest123!';
 
   try {
     // Ensure siswa exists
     const { data: siswa, error: siswaErr } = await admin
       .from('siswa')
-      .select('id, profile_orang_tua_id')
+      .select('id, profile_orang_tua_id, tanggal_lahir')
       .eq('id', SISWA_ID)
       .single();
     if (siswaErr || !siswa) return { success: false, message: 'Data siswa tidak ditemukan.' };
+    const initialPassword = siswa.tanggal_lahir ? buildInitialParentPasswordFromDOB(siswa.tanggal_lahir) : FALLBACK_PASSWORD;
 
     // Create or find user by email
     const list = await admin.auth.admin.listUsers();
@@ -41,8 +43,9 @@ export async function createStaticParentRendieAction(_prev: any, _formData: Form
     if (!parentId) {
       const created = await admin.auth.admin.createUser({
         email: EMAIL,
-        password: PASSWORD,
+        password: initialPassword,
         email_confirm: true,
+        user_metadata: { role: 'orang_tua', must_update_password: true },
       });
       if (created.error || !created.data.user) return { success: false, message: created.error?.message || 'Gagal membuat user.' };
       parentId = created.data.user.id;
@@ -55,7 +58,7 @@ export async function createStaticParentRendieAction(_prev: any, _formData: Form
     const upd = await admin.from('siswa').update({ profile_orang_tua_id: parentId }).eq('id', SISWA_ID);
     if (upd.error) return { success: false, message: upd.error.message };
 
-    return { success: true, email: EMAIL, password: PASSWORD };
+  return { success: true, email: EMAIL, password: initialPassword };
   } catch (e: any) {
     return { success: false, message: e?.message || 'Gagal membuat akun statis.' };
   }

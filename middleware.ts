@@ -1,45 +1,48 @@
 // middleware.ts
 import { NextResponse, type NextRequest } from 'next/server'
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(request: NextRequest) {
-    let response = NextResponse.next({
-        request: {
-            headers: request.headers,
-        },
-    });
+    // Ikuti pola resmi: gunakan getAll/setAll agar cookie Supabase sinkron di Edge
+    let response = NextResponse.next({ request });
+
+    // Guard env
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        return response;
+    }
 
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         {
             cookies: {
-                get(name: string) {
-                    return request.cookies.get(name)?.value
+                getAll() {
+                    return request.cookies.getAll();
                 },
-                set(name: string, value: string, options: CookieOptions) {
-                    response.cookies.set({ name, value, ...options })
-                },
-                remove(name: string, options: CookieOptions) {
-                    response.cookies.set({ name, value: '', ...options })
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+                    response = NextResponse.next({ request });
+                    cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
                 },
             },
-        }
+        },
     );
 
-    const { data: { user } } = await supabase.auth.getUser();
+    // Penting: jangan selipkan logika di antara createServerClient & getUser
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
 
     const pathname = request.nextUrl.pathname;
 
-    // 1. Proteksi Halaman yang Memerlukan Login
-    if (!user) {
-        // Jika tidak ada user, dan mencoba akses /admin atau /portal, lempar ke login
-        if (pathname.startsWith('/admin') || pathname.startsWith('/portal')) {
-            return NextResponse.redirect(new URL('/auth/login', request.url));
-        }
+    // 1) Proteksi login
+    if (!user && (pathname.startsWith('/admin') || pathname.startsWith('/portal'))) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/auth/login';
+        return NextResponse.redirect(url);
     }
 
-    // 2. Logika Redirect SETELAH Login Berdasarkan Role
+    // 2) Redirect berdasarkan role (setelah login)
     if (user) {
         const { data: profile } = await supabase
             .from('profiles')
@@ -49,11 +52,13 @@ export async function middleware(request: NextRequest) {
 
         const role = profile?.role;
         if (role === 'orang_tua' && !pathname.startsWith('/portal') && !pathname.startsWith('/api')) {
-            // Arahkan 'orang_tua' kembali ke portal mereka jika mereka mencoba "keluar"
-            return NextResponse.redirect(new URL('/portal', request.url));
+            const url = request.nextUrl.clone();
+            url.pathname = '/portal';
+            return NextResponse.redirect(url);
         }
     }
-    
+
+    // Penting: kembalikan response yang berisi setAll cookies
     return response;
 }
 
