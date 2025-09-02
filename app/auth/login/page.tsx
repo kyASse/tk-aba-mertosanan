@@ -2,7 +2,7 @@
 
 import { LoginForm } from '@/components/login-form'
 import PageHeader from '@/components/shared/PageHeader'
-import { Settings, Users, FileText, BarChart3 } from 'lucide-react'
+import { Users, FileText, BarChart3 } from 'lucide-react'
 
 export default function LoginPage() {
   return (

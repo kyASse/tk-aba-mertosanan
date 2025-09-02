@@ -249,14 +249,16 @@ export default async function DetailPendaftarPage({ params }: DetailPageProps) {
                                     </div>
                                 )}
                                 <DataField label="Deskripsi Kebutuhan Khusus" value={pendaftar.deskripsi_kebutuhan_khusus} />
-                                {pendaftar.dokumen_pendukung_url && (
+                                                                {pendaftar.dokumen_pendukung_url && (
                                     <div className="flex items-start gap-3 py-3">
                                         <Download className="w-5 h-5 mt-0.5 text-gray-400" />
                                         <div className="flex-1 min-w-0">
                                             <dt className="text-sm font-medium text-gray-500 mb-1">Dokumen Pendukung</dt>
                                             <dd>
-                                                <a 
-                                                    href={pendaftar.dokumen_pendukung_url} 
+                                                                                                <a 
+                                                                                                        href={pendaftar.dokumen_pendukung_url.startsWith('http')
+                                                                                                            ? pendaftar.dokumen_pendukung_url
+                                                                                                            : `/api/dokumen/download?path=${encodeURIComponent(pendaftar.dokumen_pendukung_url)}`}
                                                     target="_blank" 
                                                     rel="noopener noreferrer" 
                                                     className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"

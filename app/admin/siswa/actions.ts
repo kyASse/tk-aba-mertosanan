@@ -75,7 +75,6 @@ export async function updateSiswaKelompokAction(siswaId: string, formData: FormD
 }
 
 export async function linkOrCreateParentAccountAction(siswaId: string, formData: FormData): Promise<{ success: boolean; message?: string }> {
-  const supabase = await createClient();
   const admin = await createAdminClient();
   const email = (formData.get('email') as string)?.trim().toLowerCase();
 

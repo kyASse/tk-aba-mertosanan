@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+export const dynamic = 'force-dynamic';
 import { redirect } from "next/navigation";
 import { BookOpen, Calendar, Clock, User, GraduationCap, Star } from "lucide-react";
 import KalenderAkademik from "@/components/kalender/KalenderAkademik";
@@ -14,7 +15,7 @@ export default async function PortalAkademikPage() {
     .eq('profile_orang_tua_id', user.id);
 
   // Jadwal kegiatan memakai kalender_akademik umum (bisa dikembangkan per siswa/ekstra di masa depan)
-  const { data: events } = await supabase
+  const { data: _events } = await supabase
     .from('kalender_akademik')
     .select('*')
     .order('tanggal', { ascending: true });

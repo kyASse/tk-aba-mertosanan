@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, ArrowLeft } from "lucide-react";
 import EditKegiatanForm from "./EditKegiatanForm";
+export const dynamic = 'force-dynamic';
 
 export default async function EditKegiatanPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
