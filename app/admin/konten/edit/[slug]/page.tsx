@@ -48,7 +48,6 @@ interface KontenItem {
 }
 
 export default function EditKontenPage({ params }: EditPageProps) {
-    const [slug, setSlug] = useState<string>("");
     const [konten, setKonten] = useState<KontenItem | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -64,7 +63,6 @@ export default function EditKontenPage({ params }: EditPageProps) {
     useEffect(() => {
         async function fetchKonten() {
             const { slug } = await params;
-            setSlug(slug);
             const { data, error } = await supabase
                 .from('konten_halaman')
                 .select('*')

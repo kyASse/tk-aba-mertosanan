@@ -1,5 +1,6 @@
 // app/admin/pendaftar/page.tsx
 import { createClient } from "@/lib/supabase/server";
+export const dynamic = 'force-dynamic';
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";

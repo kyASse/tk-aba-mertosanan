@@ -1,5 +1,6 @@
 // app/portal/page.tsx
 import { createClient } from "@/lib/supabase/server";
+export const dynamic = 'force-dynamic';
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CalendarDays, FileText, Megaphone, HandCoins, MessageSquareQuote } from "lucide-react";

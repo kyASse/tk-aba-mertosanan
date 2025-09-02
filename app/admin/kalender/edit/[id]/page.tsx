@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, ArrowLeft } from "lucide-react";
 import EditKegiatanForm from "./EditKegiatanForm";
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
     params: Promise<{ id: string }>;

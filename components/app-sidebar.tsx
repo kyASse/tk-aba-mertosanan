@@ -107,10 +107,6 @@ const navMainData = [
         title: "Daftar Testimoni",
         url: "/admin/testimoni",
       },
-      {
-        title: "Tambah Testimoni",
-        url: "/admin/testimoni/tambah",
-      },
     ],
   },
   {

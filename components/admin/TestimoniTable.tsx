@@ -164,13 +164,6 @@ export default function TestimoniTable({ testimoni }: TestimoniTableProps) {
                                         : 'Belum ada testimoni dalam kategori ini.'
                                     }
                                 </p>
-                                {!searchQuery && (
-                                    <Button asChild>
-                                        <Link href="/admin/testimoni/tambah">
-                                            Tambah Testimoni
-                                        </Link>
-                                    </Button>
-                                )}
                             </div>
                         </div>
                     )}
