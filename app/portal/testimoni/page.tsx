@@ -34,7 +34,7 @@ export default async function PortalTestimoniPage() {
                 {t.nama_orang_tua} {t.status_orang_tua ? `• ${t.status_orang_tua}` : ''}
               </div>
               <div className="text-xs text-muted-foreground">
-                {new Date(t.created_at as any).toLocaleDateString('id-ID')}
+                {new Date(String(t.created_at)).toLocaleDateString('id-ID')}
               </div>
             </div>
             <p className="mt-1 text-sm whitespace-pre-wrap">{t.isi_testimoni}</p>
