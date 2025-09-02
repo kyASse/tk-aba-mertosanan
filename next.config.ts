@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy-Report-Only',
             value: [
               "default-src 'self'",
-              "img-src 'self' data: blob: https:" ,
+              "img-src 'self' data: blob: https:",
               "style-src 'self' 'unsafe-inline' https:",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
               "connect-src 'self' https:",
